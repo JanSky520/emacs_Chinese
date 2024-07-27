@@ -1,0 +1,30 @@
+#+title:  org快速指南
+#+author: JanSky
+#+date:   2024-07-27
+
+
+* 简介
+Org 是一种使用快速有效的纯文本系统记笔记、维护待办事项列表和进行项目规划的模式。
+它也是一个创作和发布系统，支持使用源代码进行文字编程和可重复的研究。
+本文档是 Org 手册的精简版。它包含所有基本功能和命令，以及自定义的重要提示。
+它适用于那些因为篇幅过大而不愿阅读 200 页手册的初学者。
+
+** 安装
+重要提示：重要提示：如果您使用的 Org 版本是 Emacs 发行版的一部分，请跳过此部分并直接转到激活。
+将从网上下载的org模块添加到emacs配置中以激活
+#+begin_src emacs-lisp
+  (add-to-list 'load-path "~/path/to/orgdir/lisp")
+#+end_src
+
+** 激活
+将以下几行添加到您的 Emacs 初始化文件中，为三个命令定义全局 键，这些键在任何 Emacs 缓冲区（而不仅仅是 Org 缓冲区）中都很有用。
+请自行选择合适的键。
+#+begin_src emacs-lisp
+  (global-set-key (kbd "Cc l") #'org-store-link) 
+  (global-set-key (kbd "Cc a") #'org-agenda) 
+  (global-set-key (kbd "Cc c") #'org-capture)
+#+end_src
+
+** 反馈
+如果您发现 Org 存在问题，或者您有疑问、评论或想法，请发送邮件至 Org 邮件列表 mailto:emacs-orgmode@gnu.org。
+有关如何提交错误报告的信息，请参阅主手册。
