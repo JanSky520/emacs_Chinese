@@ -1,4 +1,3 @@
-# emacs_Chinese
 
-emacs相关中文文档计划
-[X] org快速指南
+
+- [X] org快速指南
