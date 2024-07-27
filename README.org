@@ -1,8 +1,2 @@
-
-
-* TODO org快速指南
-  asdas
-
-* TODO org手册
-
-* TODO elisp快速指南
++ [-] org快速指南
+  正进行org的施工
