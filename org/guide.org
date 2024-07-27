@@ -20,11 +20,31 @@ Org 是一种使用快速有效的纯文本系统记笔记、维护待办事项�
 将以下几行添加到您的 Emacs 初始化文件中，为三个命令定义全局 键，这些键在任何 Emacs 缓冲区（而不仅仅是 Org 缓冲区）中都很有用。
 请自行选择合适的键。
 #+begin_src emacs-lisp
-  (global-set-key (kbd "Cc l") #'org-store-link) 
-  (global-set-key (kbd "Cc a") #'org-agenda) 
-  (global-set-key (kbd "Cc c") #'org-capture)
+  (global-set-key (kbd "C-c l") #'org-store-link)
+  (global-set-key (kbd "C-c a") #'org-agenda)
+  (global-set-key (kbd "C-c c") #'org-capture)
 #+end_src
 
 ** 反馈
 如果您发现 Org 存在问题，或者您有疑问、评论或想法，请发送邮件至 Org 邮件列表 mailto:emacs-orgmode@gnu.org。
 有关如何提交错误报告的信息，请参阅主手册。
+
+
+* 文档结构
+Org 是一个大纲工具。大纲允许将文档组织成层次结构，对我来说，这是笔记和想法的最佳表示。
+通过折叠可以概览此结构，即隐藏文档的大部分内容以仅显示一般文档结构和当前正在处理的部分。
+Org 通过将整个显示和隐藏功能压缩为与 键org-cycle绑定的单个命令，大大简化了大纲的使用TAB。
+
+** 标题
+标题定义了大纲树的结构。Org 中的标题从左边距1开始，以一个或多个星号开头，后跟一个空格。例如：
+#+begin_src org
+  * 顶级标题
+  ** 第二级
+  *** 第三级
+      一些文本
+  *** 第三级
+      更多文本
+  * 另一个顶级标题
+#+end_src
+请注意，命名的标题org-footnote-section默认为 '脚注'，被视为特殊。具有此标题的子树将被导出函数默认忽略。
+有些人觉得很多星星太嘈杂，他们更喜欢轮廓上有空白，后面跟着一颗星星作为标题开头。请参阅杂项，了解实现此目的的设置。
