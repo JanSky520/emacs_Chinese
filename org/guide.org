@@ -234,40 +234,6 @@ Org 可以识别普通的 URI，通常用尖括号括起来，并将其激活为
 #+begin_src org
   [[LINK]]
 #+end_src
-当缓冲区中的链接完整时，Org 会将显示方式更改为：'DESCRIPTION' 代替 '[[LINK][DESCRIPTION]]'，以及 'LINK' 代替 '[[LINK]]'。
-要编辑不可见的 LINK 部分，可以将光标放在链接上并使用 C-c C-l。
-
-+ 内部链接
-  如果链接看起来不像一个 URL，那么它被视为在当前文件中的内部链接。
-  最重要的情况是像‘[[#my-custom-id]]’这样的链接，它链接到具有‘CUSTOM_ID’属性‘my-custom-id’的条目。
-  像‘[[My Target]]’或‘[[My Target][Find my target]]’这样的链接会在当前文件中进行文本搜索，寻找与‘<<My Target>>’对应的目标。
-
-+ 外部链接
-  Org 支持链接到文件、网站、Usenet 和电子邮件消息，BBDB 数据库条目，以及 IRC 对话和它们的日志。
-  外部链接是类似 URL 的定位符。它们以一个简短的标识字符串开始，后跟一个冒号。冒号后面不能有空格。以下是一些示例：
-  * http://www.astro.uva.nl/=dominik 网络链接
-  * file:/home/Downloads/emacs.png 文件，绝对路径
-  * /home/dominik/images/jupiter.jpg 同上
-  * file:papers/last.pdf 文件，相对路径
-  * ./papers/last.pdf 同上
-  * file:projects.org 另一个 Org 文件
-  * docview:papers/last.pdf::NNN 在 DocView 模式下打开页面 NNN
-  * id:B7423F4D-2E8A-471B-8810-C40F074717E9 通过 ID 链接到标题
-  * news:comp.emacs Usenet 链接
-  * mailto:adent@galaxy.net 邮件链接
-  * mhe:folder#id MH-E 消息链接
-  * rmail:folder#id Rmail 消息链接
-  * gnus:group#id Gnus 文章链接
-  * bbdb:R.*Stallman BBDB 链接（使用正则表达式）
-  * irc:/irc.com/#emacs/bob IRC 链接
-  * info:org#Hyperlinks Info 节点链接
-    
-  文件链接可以包含额外的信息，使得 Emacs 在跟随链接时跳转到文件中的特定位置。
-  这些信息可以是行号或在双冒号后面的搜索选项。以下是一些示例及其解释：
-
-  * file:~/code/main.c::255：跳转到第 255 行
-  * file:~/xx.org::My Target：跳转到 <<My Target>> 标记
-[[  * file:~/xx.org::#my-custom-id]]：跳转到带有自定义 ID 的条目
 
 + 处理链接
   Org 提供了多种方法来创建链接、将其插入到 Org 文件中，以及跟随链接。
