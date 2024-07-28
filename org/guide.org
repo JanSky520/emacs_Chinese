@@ -173,10 +173,120 @@ Org 支持有序列表、无序列表和描述列表。
 
 
 * 表格
+Org 配备了一个快速直观的表格编辑器。与 Emacs Calc 包（参见 GNU Emacs 计算器手册）结合使用时，支持类似电子表格的计算功能。
+Org 使得以纯 ASCII 格式化表格变得简单。任何以 ‘|’ 作为第一个非空白字符的行都被视为表格的一部分。
+‘|’ 也用作列分隔符。一个表格可能看起来像这样：
+#+begin_src org
+  | Name  | Phone | Age |
+  | Peter |  1234 |  17 |
+  | Anna  |  4321 |  25 |
+#+end_src
+每次在表格内按 TAB、RET 或 C-c C-c 时，表格会自动重新对齐。
+TAB 还会移动到下一个字段（RET 移动到下一行），并在表格末尾或水平线之前创建新的表格行。
+表格的缩进由第一行设置。任何以 ‘|-’ 开头的行都被视为水平分隔线，并将在下次对齐时扩展以覆盖整个表格宽度。
+因此，要创建上述表格，你只需输入
+#+begin_src org
+  | Name  | Phone | Age |
+  |-
+#+end_src
+然后按 TAB 来对齐表格并开始填写字段。更快的方法是输入 ‘|Name|Phone|Age’，然后按 C-c RET。
+在字段中输入文本时，Org 以特殊方式处理 DEL、Backspace 和所有字符键，以避免插入和删除操作导致其他字段发生位移。
+此外，当在使用 TAB、S-TAB 或 RET 将光标移动到新字段后立即开始输入时，该字段会自动变为空白。
+
++ 创建和转换
+   * C-c | (org-table-create-or-convert-from-region)
+     将活动区域转换为表格。如果每行都包含至少一个 TAB 字符，函数会假定这些内容是以 TAB 分隔的。
+     如果每行都包含逗号，则假定为逗号分隔值（CSV）。如果都不符合，行则会在空白处拆分为字段。
+     如果没有活动区域，此命令将创建一个空的 Org 表格。
+     但更简单的方法是直接开始输入，比如输入 | Name | Phone | Age RET | - TAB。
++ 重新对齐和字段移动
+   * C-c C-c (org-table-align): 重新对齐表格，但不移动光标。
+   * TAB (org-table-next-field): 重新对齐表格，并移动到下一个字段（单元格）。如果在行末，会创建一个新行（如果需要）。
+   * S-TAB (org-table-previous-field): 重新对齐表格，并移动到上一个字段。
+   * RET (org-table-next-row): 重新对齐表格，并移动到下一行。如果需要，会创建一个新行。
+   * S-UP (org-table-move-cell-up): 将当前单元格向上移动，通过与上方的单元格交换位置。
+   * S-DOWN (org-table-move-cell-down): 将当前单元格向下移动，通过与下方的单元格交换位置。
+   * S-LEFT (org-table-move-cell-left): 将当前单元格向左移动，通过与左侧的单元格交换位置。
+   * S-RIGHT (org-table-move-cell-right): 将当前单元格向右移动，通过与右侧的单元格交换位置。
++ 列和行编辑
+  * M-LEFT (org-table-move-column-left): 将当前列向左移动。
+  * M-RIGHT (org-table-move-column-right): 将当前列向右移动。
+  * M-S-LEFT (org-table-delete-column): 删除当前列。
+  * M-S-RIGHT (org-table-insert-column): 在光标位置左侧插入一个新列。
+  * M-UP (org-table-move-row-up): 将当前行向上移动。
+  * M-DOWN (org-table-move-row-down): 将当前行向下移动。
+  * M-S-UP (org-table-kill-row): 删除当前行或水平线。
+  * M-S-DOWN (org-table-insert-row): 在当前行上方插入一行。带有前缀参数时，将在当前行下方创建一行。
+  * C-c - (org-table-insert-hline): 在当前行下方插入一条水平线。带有前缀参数时，将在当前行上方插入一条水平线。
+  * C-c RET (org-table-hline-and-move): 在当前行下方插入一条水平线，并将光标移动到该行下方的行中。
+  * C-c ^ (org-table-sort-lines): 对表格中的行进行排序。
+    
+在指定区域内对表格行进行排序。光标位置指示用于排序的列，排序的范围是最接近的水平分隔线之间的行，或者是整个表格。
 
 
+* 超链接
+类似于 HTML，Org 也支持在文件内部、外部文件、Usenet 文章、电子邮件等地方使用链接。
+Org 可以识别普通的 URI，通常用尖括号括起来，并将其激活为可点击的链接。不过，一般的链接格式如下：
+#+begin_src org
+  [[LINK][DESCRIPTION]]
+#+end_src
+或者：
+#+begin_src org
+  [[LINK]]
+#+end_src
+当缓冲区中的链接完整时，Org 会将显示方式更改为：'DESCRIPTION' 代替 '[[LINK][DESCRIPTION]]'，以及 'LINK' 代替 '[[LINK]]'。
+要编辑不可见的 LINK 部分，可以将光标放在链接上并使用 C-c C-l。
+
++ 内部链接
+  如果链接看起来不像一个 URL，那么它被视为在当前文件中的内部链接。
+  最重要的情况是像‘[[#my-custom-id]]’这样的链接，它链接到具有‘CUSTOM_ID’属性‘my-custom-id’的条目。
+  像‘[[My Target]]’或‘[[My Target][Find my target]]’这样的链接会在当前文件中进行文本搜索，寻找与‘<<My Target>>’对应的目标。
+
++ 外部链接
+  Org 支持链接到文件、网站、Usenet 和电子邮件消息，BBDB 数据库条目，以及 IRC 对话和它们的日志。
+  外部链接是类似 URL 的定位符。它们以一个简短的标识字符串开始，后跟一个冒号。冒号后面不能有空格。以下是一些示例：
+  * http://www.astro.uva.nl/=dominik 网络链接
+  * file:/home/Downloads/emacs.png 文件，绝对路径
+  * /home/dominik/images/jupiter.jpg 同上
+  * file:papers/last.pdf 文件，相对路径
+  * ./papers/last.pdf 同上
+  * file:projects.org 另一个 Org 文件
+  * docview:papers/last.pdf::NNN 在 DocView 模式下打开页面 NNN
+  * id:B7423F4D-2E8A-471B-8810-C40F074717E9 通过 ID 链接到标题
+  * news:comp.emacs Usenet 链接
+  * mailto:adent@galaxy.net 邮件链接
+  * mhe:folder#id MH-E 消息链接
+  * rmail:folder#id Rmail 消息链接
+  * gnus:group#id Gnus 文章链接
+  * bbdb:R.*Stallman BBDB 链接（使用正则表达式）
+  * irc:/irc.com/#emacs/bob IRC 链接
+  * info:org#Hyperlinks Info 节点链接
+    
+  文件链接可以包含额外的信息，使得 Emacs 在跟随链接时跳转到文件中的特定位置。
+  这些信息可以是行号或在双冒号后面的搜索选项。以下是一些示例及其解释：
+
+  * file:~/code/main.c::255：跳转到第 255 行
+  * file:~/xx.org::My Target：跳转到 <<My Target>> 标记
+[[  * file:~/xx.org::#my-custom-id]]：跳转到带有自定义 ID 的条目
+
++ 处理链接
+  Org 提供了多种方法来创建链接、将其插入到 Org 文件中，以及跟随链接。
+  主要功能是 org-store-link，可以通过 M-x org-store-link 调用。
+  由于其重要性，我们建议将其绑定到一个广泛使用的快捷键（参见激活）。
+  该功能会存储当前位置的链接，以便稍后插入到 Org 缓冲区中（见下文）。
+  在 Org 缓冲区中，以下命令用于创建、导航或更一般地操作链接：
+  * C-c C-l (org-insert-link)：插入一个链接。该命令会提示输入要插入的链接。你可以直接输入一个链接，也可以使用历史记录键 UP 和 DOWN 访问已存储的链接。系统会提示你输入链接的描述部分。
+  * 当以 C-u 前缀参数调用时，将使用文件名补全功能来链接到文件。
+  * C-c C-l（当光标位于现有链接上） (org-insert-link)：当光标位于现有链接上时，C-c C-l 允许你编辑链接和描述部分。
+  * C-c C-o (open-link-at-point)：打开光标所在位置的链接。
+  * C-c & (org-mark-ring-goto)：跳转回记录的位置。位置由内部链接的命令记录，并由 C-c % 记录。多次连续使用该命令可以在之前记录的位置环中循环移动。
 
 
+* TODO 项目
+Org 模式并不要求 TODO 列表必须存在于单独的文档中。
+相反，TODO 项目可以作为笔记文件的一部分，因为 TODO 项目通常是在记录笔记时产生的！
+在 Org 模式中，只需将树形结构中的任何条目标记为 TODO 项目即可。这样，信息不会重复，TODO 项目也保留在其产生的上下文中。
+Org 模式提供了多种方法来概览你需要完成的所有事项，这些事项可以从多个文件中收集。
 
 
 
