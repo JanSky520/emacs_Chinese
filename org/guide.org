@@ -235,7 +235,7 @@ Org 可以识别普通的 URI，通常用尖括号括起来，并将其激活为
   [[LINK]]
 #+end_src
 
-+ 处理链接
++ 处理链接 \\
   Org 提供了多种方法来创建链接、将其插入到 Org 文件中，以及跟随链接。
   主要功能是 org-store-link，可以通过 M-x org-store-link 调用。
   由于其重要性，我们建议将其绑定到一个广泛使用的快捷键（参见激活）。
@@ -246,13 +246,147 @@ Org 可以识别普通的 URI，通常用尖括号括起来，并将其激活为
   * C-c C-l（当光标位于现有链接上） (org-insert-link)：当光标位于现有链接上时，C-c C-l 允许你编辑链接和描述部分。
   * C-c C-o (open-link-at-point)：打开光标所在位置的链接。
   * C-c & (org-mark-ring-goto)：跳转回记录的位置。位置由内部链接的命令记录，并由 C-c % 记录。多次连续使用该命令可以在之前记录的位置环中循环移动。
-
+    
 
 * TODO 项目
 Org 模式并不要求 TODO 列表必须存在于单独的文档中。
 相反，TODO 项目可以作为笔记文件的一部分，因为 TODO 项目通常是在记录笔记时产生的！
 在 Org 模式中，只需将树形结构中的任何条目标记为 TODO 项目即可。这样，信息不会重复，TODO 项目也保留在其产生的上下文中。
 Org 模式提供了多种方法来概览你需要完成的所有事项，这些事项可以从多个文件中收集。
+
+** 基本 TODO 功能
+任何标题如果以 TODO 去表示，例如：
+#+begin_src org
+  *** TODO 写信给 Sam Fortune
+#+end_src
+与 TODO 条目一起使用的最重要的命令是：
++ C-c C-t（org-todo）\\
+  循环 TODO 状态
++ S-RIGHT（org-shiftright） S-LEFT（org-shiftleft）\\
+  选择下一个/前一个 TODO 状态，类似于循环。
++ C-c / t（org-show-todo-tree）\\
+  在稀疏树中查看 TODO 项（参见稀疏树）。折叠整个缓冲区，但显示所有 TODO 项（未完成状态）及其上方的标题层次结构。
++ M-x org-agenda t（org-todo-list）\\
+  显示全局 TODO 列表。将所有议程文件（参见议程视图）中的 TODO 项（未完成状态）收集到单个缓冲区中。
+  有关更多信息，请参阅全局 TODO 列表。
++ S-M-RET（org-insert-todo-heading）\\
+  在当前 TODO 条目下方插入新的 TODO 条目。
+
+** 多状态工作流
+您可以使用 TODO 关键字来指示连续的工作进度状态：
+#+begin_src emacs-lisp
+  (setq org-todo-keywords
+      '((sequence "TODO" "FEEDBACK" "VERIFY" "|" "DONE" "DELEGATED")))
+#+end_src
+垂直分隔符将“TODO”关键字（需要采取行动的状态）与“DONE”状态（不需要进一步行动的状态）分开。
+如果不提供分隔符，则最后一个状态会被用作“DONE”状态。
+在这种设置下，命令 C-c C-t 会将一个条目从“TODO”状态切换到“FEEDBACK”，接着是“VERIFY”，最后到“DONE”和“DELEGATED”。
+
+有时你可能希望同时使用不同的 TODO 关键字集。
+例如，你可能希望拥有基本的“TODO=/=DONE”设置，同时也有一个用于修复 bug 的工作流程。那么你的设置可能会像这样：
+#+begin_src emacs-lisp
+  (setq org-todo-keywords
+      '((sequence "TODO(t)" "|" "DONE(d)")
+        (sequence "REPORT(r)" "BUG(b)" "KNOWNCAUSE(k)" "|" "FIXED(f)")))
+#+end_src
+
+关键词应该都不同，这有助于 Org 模式跟踪在给定条目中应使用哪个子序列。
+示例还展示了如何通过在每个关键词后添加括号中的字母来定义用于快速访问特定状态的键——在按下 C-c C-t 后，系统会提示输入键。
+要定义仅在单个文件中有效的 TODO 关键词，请在文件中的任何位置使用以下文本。
+#+begin_src org
+  #+TODO: TODO(t) | DONE(d)
+  #+TODO: REPORT(r) BUG(b) KNOWNCAUSE(k) | FIXED(f)
+  #+TODO: | CANCELED(c)
+#+end_src
+在更改了其中一行之后，请将光标保持在该行上，然后使用 C-c C-c 以使 Org 模式识别这些更改。
+
+** 进度日志
+要在更改 TODO 状态时记录时间戳和备注，可以使用带有前缀参数的 org-todo 命令。
+
++ C-u C-c C-t（org-todo）\\
+  提示输入备注并记录 TODO 状态更改的时间。
+
+Org 模式还可以在将 TODO 项标记为 DONE 时自动记录时间戳，并可以选择性地添加备注，甚至可以在每次更改 TODO 项状态时都进行记录。
+这个系统高度可配置，设置可以按关键字定制，并且可以在文件或子树级别进行本地化。
+有关如何记录任务的工作时间的信息，请参阅“记录工作时间”。
+
++ 关闭项目 \\
+  最基本的记录方式是跟踪某个 TODO 项被标记为完成的时间。这可以通过以下设置实现：
+  #+begin_src emacs-lisp
+    (setq org-log-done 'time)
+  #+end_src
+这样，每次将条目从 TODO（未完成）状态转换为任何 DONE 状态时，标题下方会插入一行 CLOSED: [时间戳]。
+如果你还想记录备注，可以使用：
+#+begin_src emacs-lisp
+  (setq org-log-done 'note)
+#+end_src
+此时系统会提示你输入备注，并将该备注以 Closing Note 作为标题存储在条目下方。
+
++ 追踪 TODO 状态变更 \\
+  您可能希望追踪 TODO 状态的变化。您可以选择仅记录时间戳，或者记录带有时间戳的变更说明。
+  这些记录会在标题后插入为项目化列表。当记录很多笔记时，您可能希望将这些笔记移入一个抽屉中。
+  可以通过自定义变量 org-log-into-drawer 来实现这一行为。
+  对于状态日志记录，Org 模式要求按关键字配置。
+  这是通过在每个关键字后面添加特殊标记 !（用于时间戳）和 @（用于说明）来实现的。例如：
+  #+begin_src org
+    #+TODO: TODO(t) WAIT(w@/!) | DONE(d!) CANCELED(c@)
+  #+end_src
+  这段配置定义了 TODO 关键字和快速访问键，并且要求在条目状态设置为 ‘DONE’ 时记录时间，
+  切换到 ‘WAIT’ 或 ‘CANCELED’ 时记录说明。当设置 org-todo-keywords 时，使用相同的语法也可以实现类似效果。
+
+** 优先级
+如果你大量使用 Org mode，你可能会有足够多的 TODO 项目，这时给它们排序就变得有意义了。
+可以通过在 TODO 项目的标题中添加优先级标记来进行排序，如下所示：
+#+begin_src org
+  *** TODO [#A] Write letter to Sam Fortune
+#+end_src
+Org mode 支持三种优先级：‘A’，‘B’，和‘C’。‘A’是最高优先级，‘B’是默认优先级，如果没有指定则使用‘B’。
+优先级只在日程表中起作用。
+
++ C-c , (org-priority) \\
+  设置当前标题的优先级。按 A、B 或 C 选择优先级，按 SPC 移除标记。
++ S-UP (org-priority-up) S-DOWN (org-priority-down) \\
+  增加/减少当前标题的优先级。
+
+** 将任务拆分为子任务
+通常建议将大型任务拆分为更小、更易于管理的子任务。
+你可以通过在 TODO 项目下创建一个大纲树来完成这项工作，在树下列出详细的子任务。
+为了保持对已完成子任务比例的概览，可以在标题的任何位置插入 ‘[/]’ 或 ‘[%]’。
+这些标记会在子任务的 TODO 状态发生变化时更新，或者在按下 C-c C-c 时更新。例如：
+#+begin_src org
+  * Organize Party [33%]
+  ** TODO Call people [1/2]
+  *** TODO Peter
+  *** DONE Sarah
+  ** TODO Buy food
+  ** DONE Talk to neighbor
+#+end_src
+
+** 复选框
+在普通列表中的每一项都可以通过在项目前添加字符串 ‘[ ]’ 来变成复选框。
+复选框不会被纳入全局 TODO 列表，因此它们非常适合将一个任务拆分成多个简单步骤。
+以下是一个复选框列表的示例：
+#+begin_src org
+  * TODO Organize party [2/4]
+  - [-] call people [1/2]
+    - [ ] Peter
+    - [X] Sarah
+  - [X] order food
+#+end_src
+
+** 复选框的层级结构
+复选框具有层级结构，因此如果一个复选框项下有子项，这些子项也是复选框，当你切换子项的状态时，
+父项的复选框会反映出子项的状态：即是否所有子项、一些子项或没有子项被选中。
+以下命令适用于复选框：
+
++ C-c C-c, C-u C-c C-c (org-toggle-checkbox) \\
+  切换复选框的状态，或者使用前缀参数切换当前复选框项的存在。
+
++ M-S-RET (org-insert-todo-heading) \\
+  在普通列表项中插入一个带复选框的新项。这只在光标已经位于普通列表项时有效（见“普通列表”）。
+
+
+
 
 
 
