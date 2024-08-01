@@ -387,6 +387,118 @@ Org mode 支持三种优先级：‘A’，‘B’，和‘C’。‘A’是最�
 
 
 
+* 标签
+一个有效的实现标签和上下文以便交叉关联信息的方法是将标签分配给标题。Org mode 对标签提供了广泛的支持。
+每个标题都可以包含一个标签列表；标签出现在标题的末尾。标签是包含字母、数字、‘_’ 和 ‘@’ 的普通单词。
+标签必须由单个冒号包围，例如 ‘:work:’。
+可以指定多个标签，例如 ‘:work:urgent:’。默认情况下，标签以粗体显示，并与标题具有相同的颜色。
+
++ 标签继承 \\
+  标签利用了大纲树的层级结构。如果一个标题有特定的标签，那么所有子标题也会继承该标签。例如，在下面的列表中：
+  #+begin_src org
+    * Meeting with the French group      :work:
+    ** Summary by Frank                  :boss:notes:
+    *** TODO Prepare slides for him      :action:
+  #+end_src
+  最终的标题具有标签 ‘work’，‘boss’，‘notes’，和 ‘action’，即使最终的标题并没有明确标记这些标签。
+  你还可以设置文件中所有条目应该继承的标签，就像这些标签定义在一个假想的零级别，包围整个文件一样。使用如下格式的行来实现：
+  #+begin_src org
+    #+FILETAGS: :Peter:Boss:Secret:
+  #+end_src
+
++ 设置标签 \\
+  标签可以直接在标题末尾输入。在冒号后面，使用 M-TAB 可以对标签进行补全。还有一个用于插入标签的特殊命令：
+  * C-c C-q (org-set-tags-command) \\
+    输入当前标题的新标签。Org mode 提供标签补全或特殊的单键接口来设置标签，见下文。
+  * C-c C-c (org-set-tags-command) \\
+    当光标位于标题时，这个命令与 C-c C-q 执行相同的操作。
+
+  Org 支持基于标签列表的标签插入。默认情况下，这个列表是动态构建的，包含当前缓冲区中使用的所有标签。
+  你也可以通过变量 org-tag-alist 全局指定一个固定的标签列表。最后，你可以使用 TAGS 关键字为特定文件设置默认标签，例如：
+  #+begin_src org
+    #+TAGS: @work @home @tennisclub
+    #+TAGS: laptop car pc sailboat
+  #+end_src
+  默认情况下，Org mode 使用标准的 minibuffer 补全功能来输入标签。
+  然而，它也实现了另一种更快速的标签选择方法，称为快速标签选择。此方法允许你通过单个按键来选择和取消选择标签。
+  为了使这一功能发挥作用，你应该为大多数常用标签分配唯一的字母。
+  你可以通过在 Emacs 初始化文件中配置变量 org-tag-alist 来全局设置这些字母。
+  例如，如果你发现需要在不同文件中为许多条目打上 ‘@home’ 标签，你可以设置如下：
+  #+begin_src emacs-lisp
+    (setq org-tag-alist '(("@work" . ?w) ("@home" . ?h) ("laptop" . ?l)))
+  #+end_src
+  如果标签仅对你正在处理的文件相关，你可以将 TAGS 关键字设置为：
+  #+begin_src org
+    #+TAGS: @work(w)  @home(h)  @tennisclub(t)  laptop(l)  pc(p)
+  #+end_src
+
++ 标签组 \\
+  标签可以被定义为一组其他标签的组标签。组标签可以被看作是其标签集合的“更广泛的术语”。
+  你可以通过使用括号并在组标签和相关标签之间插入冒号来设置组标签：
+  #+begin_src org
+    #+TAGS: [ GTD : Control Persp ]
+  #+end_src
+  或者，如果组中的标签应该是互斥的，可以使用花括号：
+  #+begin_src org
+    #+TAGS: { Context : @Home @Work }
+  #+end_src
+  当你搜索一个组标签时，它会返回组内及其子组中的所有成员的匹配项。
+  在日程视图中，通过组标签进行筛选时，会显示或隐藏标记有组中至少一个成员或任何子组的标题。
+  如果你想暂时忽略组标签，可以使用 org-toggle-tags-groups 切换组标签支持，该命令绑定在 C-c C-x q。
+
++ 标签搜索 \\
+  * C-c / m 或 *C-c * (org-match-sparse-tree) \\
+    创建一个稀疏树，显示所有匹配标签搜索的标题。使用 C-u 前缀参数时，忽略非 TODO 行的标题。
+  * M-x org-agenda m (org-tags-view) \\
+    从所有日程文件中创建一个全局标签匹配列表。参见“匹配标签和属性”。
+  * M-x org-agenda M (org-tags-view) \\
+    从所有日程文件中创建一个全局标签匹配列表，但仅检查 TODO 项目。
+
+  这些命令都会提示输入匹配字符串，允许使用基本的布尔逻辑，
+  比如 +boss+urgent-project1，查找标记为 ‘boss’ 和 ‘urgent’，但不包括 ‘project1’ 的条目，
+  或者 Kathy|Sally，查找标记为 ‘Kathy’ 或 ‘Sally’ 的条目。搜索字符串的完整语法丰富，
+  还允许匹配 TODO 关键字、条目级别和属性。有关更详细的描述和多个示例，请参见“匹配标签和属性”。
+
+
+* 属性
+属性是与条目关联的键值对。它们存在于名为 ‘PROPERTIES’ 的特殊抽屉中。每个属性在一行上指定，键（用冒号包围）在前，值在后：
+#+begin_src org
+  * CD collection
+  ** Classic
+  *** Goldberg Variations
+      :PROPERTIES:
+      :Title:     Goldberg Variations
+      :Composer:  J.S. Bach
+      :Publisher: Deutsche Grammophon
+      :NDisks:    1
+      :END:
+#+end_src
+你可以通过设置属性 Xyz_ALL 来定义特定属性 Xyz 的允许值。
+这个特殊的属性是可以继承的，因此如果你在级别 1 的条目中设置它，
+它会应用于整个树。当定义了允许的值后，设置相应的属性变得更加容易，并且更不容易出现输入错误。
+例如，对于 CD 收藏，我们可以这样预定义出版商和一个盒子中的磁盘数量：
+#+begin_src org
+  * CD collection
+    :PROPERTIES:
+    :NDisks_ALL:  1 2 3 4
+    :Publisher_ALL: "Deutsche Grammophon" Philips EMI
+    :END:
+#+end_src
+如果你想设置可以被文件中任何条目继承的属性，可以使用如下行：
+#+begin_src org
+  #+PROPERTY: NDisks_ALL 1 2 3 4
+#+end_src
+以下命令有助于处理属性：
++ C-c C-x p (org-set-property) \\
+  设置一个属性。此命令会提示输入属性名称和一个值。
++ C-c C-c d (org-delete-property) \\
+  从当前条目中删除一个属性。
+要创建基于属性的稀疏树和特殊列表，可以使用与标签搜索相同的命令（参见“标签”）。搜索字符串的语法在“匹配标签和属性”中有描述。
+
+
+* 日期和时间
+
+
 
 
 
