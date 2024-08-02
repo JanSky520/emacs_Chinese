@@ -689,14 +689,193 @@ Org 模式通过一个叫做捕捉（capture）的过程来实现这一点。它
 #+end_src
 
 
+* 议程视图
+由于 Org 的工作方式，TODO 项目、带时间戳的项目和标记的标题可能会分散在一个文件中，甚至在多个文件中。
+为了获得开放的行动项目或特定日期的重要事件的概览，需要将这些信息收集、排序并以有组织的方式展示出来。
+提取的信息会显示在一个特殊的议程缓冲区中。这个缓冲区是只读的，但提供了访问原始 Org 文件中相应位置的命令，
+甚至可以远程编辑这些文件。从议程缓冲区进行远程编辑意味着，例如，你可以在议程缓冲区中更改截止日期和约会的日期。
+有关议程缓冲区中可用命令的更多信息，请参见议程缓冲区中的命令。
+
+** 议程文件
+要显示的信息通常会从所有议程文件中收集，这些文件列在变量 org-agenda-files 中。
++ C-c [ (org-agenda-file-to-front) \\
+  将当前文件添加到议程文件列表中。文件会被添加到列表的前面。如果它已经在列表中，它会被移到前面。
+  如果使用前缀参数，文件会被添加/移动到列表的末尾。
++ C-c ] (org-remove-file) \\
+  从议程文件列表中移除当前文件。
++ C-'
++ C-, (org-cycle-agenda-files) \\
+  循环浏览议程文件列表，依次访问每个文件。
+
+** 议程调度器
+视图是通过调度器创建的，可以通过 M-x org-agenda 访问，或者更好的是，绑定到全局快捷键（见激活）。
+调度器显示一个菜单，需要额外的字母来执行命令。调度器提供了以下默认命令：
++ a \\
+  创建类似日历的议程（见《每周/每日议程》）。
+
++ t、T \\
+  创建所有 TODO 项目的列表（见《全局 TODO 列表》）。
++ m、M \\
+  创建匹配给定表达式的标题列表（见《匹配标签和属性》）。
++ s \\
+  创建通过布尔表达式选择的条目列表，表达式由关键字和/或正则表达式组成，这些关键字和/或正则表达式必须或必须不出现于条目中。
+
+** 每周/每日议程
+每周/每日议程的目的是像纸质日程表的一页一样，显示当前一周或一天的所有任务。
++ M-x org-agenda a (org-agenda-list) \\
+  从 Org 文件列表中编译当前周的议程。议程会显示每一天的条目。
+Org 模式理解日历的语法，并允许你在 Org 文件中直接使用日历表达式条目：
+#+begin_src org
+  * Holidays
+    :PROPERTIES:
+    :CATEGORY: Holiday
+    :END:
+  %%(org-calendar-holiday)   ; special function for holiday names
+
+  * Birthdays
+    :PROPERTIES:
+    :CATEGORY: Ann
+    :END:
+  %%(org-anniversary 1956  5 14) Arthur Dent is %d years old
+  %%(org-anniversary 1869 10  2) Mahatma Gandhi would be %d years old
+#+end_src
+Org 还可以与 Emacs 的预约通知功能互动。要将议程文件的预约添加到通知中，可以使用命令 org-agenda-to-appt。
+
+** 全局 TODO 列表
+全局 TODO 列表包含所有未完成的 TODO 项目，并将其格式化并集中到一个地方。
+远程编辑 TODO 项目使你可以通过单个按键来更改 TODO 条目的状态。有关 TODO 列表中可用的命令，请参见《议程缓冲区中的命令》。
++ M-x org-agenda t (org-todo-list) \\
+  显示全局 TODO 列表。该列表将所有议程文件中的 TODO 项目（见《议程视图》）收集到一个缓冲区中。
++ M-x org-agenda T (org-todo-list) \\
+  与上面的命令类似，但允许选择特定的 TODO 关键字。
+
+** 匹配标签和属性
+如果议程文件中的标题标记了标签（见《标签》）或具有属性（见《属性》），你可以根据这些元数据选择标题，并将它们收集到议程缓冲区中。
+这里描述的匹配语法在创建稀疏树时也适用（按 C-c / m）。
++ M-x org-agenda m (org-tags-view) \\
+  生成一个所有匹配给定标签集的标题列表。该命令会提示输入选择标准，这是一种使用标签的布尔逻辑表达式，
+  例如 +work+urgent-withboss 或 work|home（见《标签》）。
+  如果你经常需要特定的搜索，可以为其定义一个自定义命令（见《议程调度器》）。
++ M-x org-agenda M (org-tags-view) \\
+  类似于上面的命令，但仅选择那些也是 TODO 项目的标题。
+搜索字符串可以使用布尔操作符 & 代表 AND 和 | 代表 OR。& 的优先级高于 |。
+目前不支持括号。搜索中的每个元素可以是标签、匹配标签的正则表达式，或者像 PROPERTY OPERATOR VALUE 这样的表达式，
+其中包含比较操作符，用于访问属性值。
+每个元素前可以加 - 来表示排除，并且 + 是正选的语法糖。当存在 + 或 - 时，AND 操作符 & 是可选的。以下是一些示例，仅使用标签：
++ +work-boss \\
+  选择标记为 work 的标题，但排除那些也标记为 boss 的标题。
++ work|laptop \\
+  选择标记为 work 或 laptop 的标题。
++ work|laptop+night \\
+  类似于之前的命令，但要求标记为 laptop 的标题也必须标记为 night。
+你还可以同时测试属性与匹配标签，详情请参阅手册。
+
+** 搜索视图
+此议程视图是一个通用的文本搜索功能，用于 Org 模式条目。它特别有用来查找笔记。
++ M-x org-agenda s (org-search-view) \\
+  这是一个特殊的搜索功能，可以通过匹配子字符串或特定单词来选择条目，支持布尔逻辑。
+例如，搜索字符串 ‘computer equipment’ 匹配包含 ‘computer equipment’ 作为子字符串的条目。
+搜索视图还可以使用布尔逻辑搜索条目中的特定关键字。
+搜索字符串 ‘+computer +wifi -ethernet -{8\.11[bg]}’ 匹配包含关键字 ‘computer’ 和 ‘wifi’ 的条目，
+但不包含关键字 ‘ethernet’，并且也不匹配正则表达式 ‘8\.11[bg]’，即排除 ‘8.11b’ 和 ‘8.11g’。
+请注意，除了议程文件之外，此命令还会搜索 org-agenda-text-search-extra-files 列出的文件。
+
+** 议程缓冲区中的命令
+议程缓冲区中的条目链接回它们来源的 Org 文件或日历文件。
+你不能直接编辑议程缓冲区本身，但提供了命令来显示并跳转到原始条目位置，并从议程缓冲区“远程”编辑 Org 文件。
+这只是众多命令中的一部分，查看议程菜单和手册以获取完整列表。
++ 移动 \\
+  * n (org-agenda-next-line) \\
+    下一行（与 DOWN 和 C-n 相同）。
+  * p (org-agenda-previous-line) \\
+    上一行（与 UP 和 C-p 相同）。
++ 查看/跳转到 Org 文件 \\
+  * SPC (org-agenda-show-and-scroll-up) \\
+    在另一个窗口中显示条目的原始位置。使用前缀参数时，确保抽屉保持折叠状态。
+  * TAB (org-agenda-goto) \\
+    跳转到条目的原始位置，在另一个窗口中打开。
+  * RET (org-agenda-switch-to) \\
+    跳转到条目的原始位置，并关闭其他窗口。
++ 更改显示 \\
+  * o (delete-other-windows) \\
+    关闭其他窗口。
+  * v d 或 短 d (org-agenda-day-view) \\
+    切换到天视图。
+  * v w 或 短 w (org-agenda-week-view) \\
+    切换到周视图。
+  * f (org-agenda-later) \\
+    向未来推进，显示当前时间段之后的内容。例如，如果当前显示的是一周，切换到下一周。
+  * b (org-agenda-earlier) \\
+    向过去推进，显示更早的日期。
+  * . (org-agenda-goto-today) \\
+    跳转到今天。
+  * j (org-agenda-goto-date) \\
+    提示输入一个日期并跳转到该日期。
+  * v l 或 v L 或 短 l (org-agenda-log-mode) \\
+    切换到日志模式。在日志模式下，显示在日志开启时标记为完成的条目（见变量 org-log-done），以及当天已记录时间的条目。
+    当使用 C-u 前缀参数调用时，显示所有可能的日志条目，包括状态变化。
+  * r g (org-agenda-redo) \\
+    重新创建议程缓冲区，例如在修改条目的时间戳后更新显示。
+  * s (org-save-all-org-buffers) \\
+    保存当前 Emacs 会话中的所有 Org 缓冲区，以及 ID 的位置。
++ 远程编辑 \\
+  * 0--9 \\
+    数字参数。
+  * t (org-agenda-todo) \\
+    更改条目的 TODO 状态，同时在议程和原始 Org 文件中进行更新。
+  * C-k (org-agenda-kill) \\
+    删除当前议程项目及其在原始 Org 文件中所属的整个子树。
+  * C-c C-w (org-agenda-refile) \\
+    重新归档光标所在的条目。
+  * a (org-agenda-archive-default-with-confirmation) \\
+    使用在 org-archive-default-command 中设置的默认归档命令归档光标所在条目对应的子树，并要求确认。
+  * $ (org-agenda-archive) \\
+    归档当前标题对应的子树。
+  * C-c C-s (org-agenda-schedule) \\
+    为该条目安排时间。使用前缀参数时，移除安排的时间戳。
+  * C-c C-d (org-agenda-deadline) \\
+    为该条目设置截止日期。使用前缀参数时，移除截止日期。
+  * S-RIGHT (org-agenda-do-date-later) \\
+    将当前行关联的时间戳提前一天。
+  * S-LEFT (org-agenda-do-date-earlier) \\
+    将当前行关联的时间戳推迟一天。
+  * I (org-agenda-clock-in) \\
+    开始记录当前条目的时间。
+  * O (org-agenda-clock-out) \\
+    停止之前开始的时间记录。
+  * X (org-agenda-clock-cancel) \\
+    取消当前正在运行的时间记录。
+  * J (org-agenda-clock-goto) \\
+    跳转到另一个窗口中的正在运行的时间记录。
++ 退出和退出 \\
+  * q (org-agenda-quit) \\
+    退出议程，关闭议程缓冲区。
+  * x (org-agenda-exit) \\
+    退出议程，关闭议程缓冲区以及所有为编译议程而加载的 Emacs 缓冲区。
+
+** 自定义议程视图
+自定义搜索的第一个应用是为常用的搜索定义键盘快捷键，这些搜索可以是创建议程缓冲区，也可以是稀疏树（后者仅适用于当前缓冲区）。
+自定义命令在变量 org-agenda-custom-commands 中配置。你可以通过在议程调度器中按 C 来自定义此变量（见《议程调度器》）。
+也可以直接在 Emacs 初始化文件中使用 Emacs Lisp 进行设置。以下示例包含所有有效的议程视图：
+#+begin_src emacs-lisp
+  (setq org-agenda-custom-commands
+      '(("w" todo "WAITING")
+        ("u" tags "+boss-urgent")
+        ("v" tags-todo "+boss-urgent")))
+#+end_src
+每个条目中的初始字符串定义了在调度器命令后需要按下的键，以便访问该命令。
+通常这只是一个字符。第二个参数是搜索类型，后跟用于匹配的字符串或正则表达式。上述示例将定义：
++ w \\
+  作为一个全局搜索，查找 TODO 条目中关键字为 WAITING 的条目。
++ u \\
+  作为一个全局标签搜索，查找标记为 boss 但不标记为 urgent 的标题。
++ v \\
+  同样的搜索，但限制为那些也是 TODO 项目的标题。
 
 
-
-
-
-
-
-
+* 富内容的标记
+Org 主要用于组织和搜索纯文本笔记。然而，它也提供了一种轻量但强大的标记语言，用于富文本格式化及其他功能。
+与导出框架（见《导出》）结合使用时，你可以在 Org 中创作出美观的文档。
 
 
 
