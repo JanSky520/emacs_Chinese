@@ -1087,11 +1087,149 @@ iCalendar 导出后端从 Org 文件中提取日历数据并导出为标准 iCal
   并将其写入 org-icalendar-combined-agenda-file 文件名中。
 
 
-* 
+* 发布
+Org 包含一个发布管理系统，允许您配置项目的自动 HTML 转换，这些项目由互联的 Org 文件组成。
+您还可以配置 Org 以自动将导出的 HTML 页面和相关附件（如图像和源代码文件）上传到 Web 服务器。
+您还可以使用 Org 将文件转换为 PDF，甚至可以将 HTML 和 PDF 转换结合起来，使文件在服务器上同时提供这两种格式。
+有关设置的详细说明，请参阅手册。以下是一个示例：
+#+begin_src emacs-lisp
+  (setq org-publish-project-alist
+      '(("org"
+         :base-directory "~/org/"
+         :publishing-function org-html-publish-to-html
+         :publishing-directory "~/public_html"
+         :section-numbers nil
+         :with-toc nil
+         :html-head "<link rel=\"stylesheet\"
+                    href=\"../other/mystyle.css\"
+                    type=\"text/css\"/>")))
+#+end_src
++ C-c C-e P x (org-publish) \\
+  提示选择特定的项目，并发布所有属于该项目的文件。
++ C-c C-e P p (org-publish-current-project) \\
+  发布包含当前文件的项目。
++ C-c C-e P f (org-publish-current-file) \\
+  仅发布当前文件。
++ C-c C-e P a (org-publish-all) \\
+  发布所有项目。
+Org 使用时间戳来跟踪文件的更改。上述功能通常只发布已更改的文件。
+您可以通过在任何命令前加上前缀参数来覆盖此设置，强制发布所有文件。
 
 
+* 处理源代码
+Org 模式提供了许多处理源代码的功能，包括在其原生主要模式下编辑代码块、评估代码块、整理代码块以及以多种格式导出代码块及其结果。
+源代码块的结构如下：
+#+begin_src org
+  #+NAME: <name>
+  #+BEGIN_SRC <language> <switches> <header arguments>
+    <body>
+  #+END_SRC
+#+end_src
+其中：
++ <name> 是用于唯一标识代码块的字符串，
++ <language> 指定代码块的语言，例如 emacs-lisp、shell、R、python 等，
++ <switches> 可用于控制代码块的导出，
++ <header arguments> 可用于控制代码块行为的许多方面，如下所示，
++ <body> 包含实际的源代码。
+使用 C-c ' 来编辑当前的代码块。这将打开一个新的主要模式编辑缓冲区，包含源代码块的主体，准备进行任何编辑。
+再次使用 C-c ' 来关闭缓冲区并返回到 Org 缓冲区。
+
+** 使用头部参数
+头部参数以初始的冒号开始，后跟参数名称（小写字母）。
+头部参数可以通过多种方式设置；如果出现重叠或冲突，Org 会优先考虑本地设置。
++ 系统范围的头部参数 \\
+  这些参数通过自定义 org-babel-default-header-args 变量指定，或者对于特定语言 LANG，
+  通过 org-babel-default-header-args:LANG 进行指定。
++ 属性中的头部参数 \\
+  您可以使用 header-args 属性设置头部参数（参见属性）——对于语言 LANG，使用 header-args:LANG。
+  通过属性抽屉设置的头部参数适用于子树级别及以下。
++ 代码块中的头部参数 \\
+  头部参数通常在源代码块级别设置，在 BEGIN_SRC 行上：
+  #+begin_src org
+    #+NAME: factorial
+    #+BEGIN_SRC haskell :results silent :exports code :var n=0
+      fac 0 = 1
+      fac n = n * fac (n-1)
+    #+END_SRC
+  #+end_src
+  代码块的头部参数可以使用 'HEADER' 关键字分多行指定，每行一个。
+
+** 评估代码块
+使用 C-c C-c 来评估当前代码块并将其结果插入到 Org 文档中。
+默认情况下，评估只对 emacs-lisp 代码块启用，但也支持评估多种语言的代码块。
+有关支持的语言的完整列表，请参见手册。以下示例显示了一个代码块及其结果。
+
+#+begin_src org
+  ,#+BEGIN_SRC emacs-lisp
+    (+ 1 2 3 4)
+  ,#+END_SRC
+
+  ,#+RESULTS:
+  ,: 10
+#+end_src
+以下语法用于通过 var 头部参数将参数传递给代码块。
+#+begin_src org
+  :var=NAME=ASSIGN
+#+end_src
+其中，NAME 是在代码块主体中绑定的变量名。ASSIGN 是一个字面值，例如字符串、数字、表格引用、列表、字面示例、另一个代码块（无论是否有参数）或评估代码块的结果。
+
+** 评估结果
+Org 如何处理代码块执行的结果取决于多个头部参数的配合。主要的决定因素是 results 头部参数。
+它控制代码块结果的收集、类型、格式和处理方式。
++ 收集 \\
+  如何从代码块中收集结果。您可以选择 output 或 value（默认值）。
++ 类型 \\
+  预期代码块执行的结果类型。您可以选择 table、list、scalar 或 file。如果未提供，Org 会尝试猜测结果类型。
++ 格式 \\
+  Org 如何处理结果。一些可能的值包括 code、drawer、html、latex、link 和 raw。
++ 处理方式 \\
+  如何在适当格式化后插入结果。允许的值有 silent、replace（默认值）、append 或 prepend。
+将结果输出到文件的代码块，例如：图表、图形和图示，可以接受 :file FILENAME 头部参数，
+在这种情况下，结果会保存到指定的文件中，并在缓冲区中插入一个指向该文件的链接。
+
+** 导出代码块
+可以导出代码块的代码、代码块评估的结果、代码和评估结果两者，或不导出任何内容。Org 默认情况下会为大多数语言导出代码。
+exports 头部参数用于指定该部分 Org 文件是否导出为 HTML 或 LaTeX 格式。它可以设置为 code、results、both 或 none。
+
+** 提取源代码
+使用 C-c C-v t 从当前缓冲区的源代码块中提取代码，创建纯源代码文件。
+这称为“整理”（tangling）——这是一个来自文献化编程社区的术语。
+在整理代码块时，其主体会通过 org-babel-expand-src-block 展开，该函数可以展开变量和“Noweb”风格的引用。
+要整理代码块，它必须具有 tangle 头部参数，详细信息请参见手册。
 
 
+* 杂项
 
+** 补全
+Org 提供了在缓冲区内的补全功能，使用 M-TAB 键，无需使用 minibuffer。输入一个或多个字母，然后调用快捷键以原位完成文本。
+例如，此命令将补全 TeX 符号（在 \ 后）、标题开头的 TODO 关键字，以及标题中 : 后的标签。
 
+** 结构模板
+要快速插入空的结构块，例如 #+BEGIN_SRC … #+END_SRC，或将现有文本包裹在这样的块中，可以使用：
++ C-c C-, (org-insert-structure-template) \\
+  提示选择一个块结构的类型，并在光标位置插入该块。如果区域是活动的，它将被包裹在块中。
 
+** 清晰视图
+Org 的默认大纲使用星号和无缩进，对于短文档可能会显得过于杂乱。
+对于书籍般的长文档，效果则不那么显著。Org 提供了一种替代的星号和缩进方案，如下表右侧所示。
+它只使用一个星号，并将文本缩进与标题对齐：
+#+begin_src org
+  * Top level headline             |    * Top level headline
+  ** Second level                  |      * Second level
+  *** Third level                  |        * Third level
+      some text                    |          some text
+  *** Third level                  |        * Third level
+      more text                    |          more text
+  * Another top level headline     |    * Another top level headline
+#+end_src
+这种视图可以通过在显示时动态实现，使用 Org Indent 模式（M-x org-indent-mode RET），该模式在每行前添加不可见的空间。
+您可以通过自定义变量 org-startup-indented 来为所有文件启用 Org Indent 模式，或使用以下方式为单个文件启用它：
+#+begin_src org
+  #+STARTUP: indent
+#+end_src
+如果您希望缩进使用硬空格字符，以便纯文本文件与 Emacs 显示尽可能相似，
+Org 可以通过以下方式支持您：在每个标题下缩进（使用 TAB），隐藏前导星号，并且仅使用 1、3 等级别来为每个级别提供两个字符的缩进。
+要在文件中启用这种支持，请使用：
+#+begin_src org
+  #+STARTUP: hidestars odd
+#+end_src
