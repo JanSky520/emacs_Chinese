@@ -877,9 +877,217 @@ Org 还可以与 Emacs 的预约通知功能互动。要将议程文件的预约
 Org 主要用于组织和搜索纯文本笔记。然而，它也提供了一种轻量但强大的标记语言，用于富文本格式化及其他功能。
 与导出框架（见《导出》）结合使用时，你可以在 Org 中创作出美观的文档。
 
+** 段落
+段落之间至少有一个空行。如果您需要在段落内强制换行，请使用 '\\' 在行末。
+为了保留区域中的换行符、缩进和空行，但在其他方面使用正常格式，您可以使用此构造，它也可以用于格式化诗歌。
+#+begin_src org
+  #+BEGIN_VERSE
+   Great clouds overhead
+   Tiny black birds rise and fall
+   Snow covers Emacs
+
+      ---AlexSchroeder
+  #+END_VERSE
+#+end_src
+引用另一份文档中的一段文字时，通常将其格式化为左右边距均缩进的段落。您可以像这样在 Org 文档中包含引文：
+#+begin_src org
+  #+BEGIN_QUOTE
+  Everything should be made as simple as possible,
+  but not any simpler ---Albert Einstein
+  #+END_QUOTE
+#+end_src
+如果您想要将一些文本居中，请这样做：
+#+begin_src org
+  #+BEGIN_CENTER
+  Everything should be made as simple as possible, \\
+  but not any simpler
+  #+END_CENTER
+#+end_src
+
+** 强调和等宽字体
+你可以造词'*大胆的*'，'/斜体/'，'_下划线_'，'=逐字=' 和 '~代码~'，如果你必须，'+删除线+'.
+代码和逐字字符串中的文本不会根据 Org 特定语法进行处理；而是逐字导出。
+
+** 嵌入式 LaTeX 
+对于需要包含数学符号和偶尔出现的公式的科学笔记，Org 模式支持将 LaTeX 代码嵌入到其文件中。
+您可以直接使用类似 TeX 的语法来输入特殊符号、公式和整个 LaTeX 环境。
+#+begin_src latex
+  The radius of the sun is R_sun = 6.96 x 10^8 m.  On the other hand,
+  the radius of Alpha Centauri is R_{Alpha Centauri} = 1.28 x R_{sun}.
+
+  \begin{equation}                        % arbitrary environments,
+  x=\sqrt{b}                              % even tables, figures
+  \end{equation}                          % etc
+
+  If $a^2=b$ and \( b=2 \), then the solution must be
+  either $$ a=+\sqrt{2} $$ or \[ a=-\sqrt{2} \].
+#+end_src
+
+** 文字示例
+您可以添加不应受标记约束的文字示例。此类示例采用等宽字体排版，因此非常适合源代码和类似示例。
+#+begin_src org
+  #+BEGIN_EXAMPLE
+  Some example from a text file.
+  #+END_EXAMPLE
+#+end_src
+为了在使用小示例时简单起见，您还可以以冒号加空格作为示例行的开头。冒号前还可以有额外的空格：
+#+begin_src org
+  Here is an example
+     : Some example from a text file.
+#+end_src
+如果示例是来自编程语言的源代码，或者任何其他可以通过 Emacs 中的 Font Lock 标记的文本，
+您可以要求示例看起来像字体化的 Emacs 缓冲区。
+#+begin_src org
+  #+BEGIN_SRC emacs-lisp
+    (defun org-xor (a b)
+      "Exclusive or."
+      (if a (not b) b))
+  #+END_SRC
+#+end_src
+要在支持该语言的特殊缓冲区中编辑示例，请使用 C-c '进入和离开编辑缓冲区。
+
+** 图像
+图像是指向没有描述部分的图像文件的链接，例如
+#+begin_src org
+  ./img/cat.jpg
+#+end_src
+如果您希望为图像定义标题，或者为内部交叉引用定义标签（请参阅超链接），
+请确保链接单独成行，并在其前面加上 '标题' 和 '姓名' 关键字如下：
+#+begin_src org
+  #+CAPTION: This is the caption for the next figure link (or table)
+  #+NAME:   fig:SED-HR4049
+  [[./img/a.jpg]]
+#+end_src
+
+** 创建脚注
+脚注在段落中定义，以第 0 列中方括号内的脚注标记开头，不允许缩进。脚注引用只是文本中方括号内的标记。例如：
+#+begin_src org
+  The Org website[fn:1] now looks a lot better than it used to.
+  ...
+  [fn:1] The link is: https://orgmode.org
+#+end_src
+以下命令处理脚注：
++ C-c C-x f（org-footnote-action）\\
+  脚注操作命令。当光标位于脚注引用上时，跳转到定义。当光标位于定义上时，跳转到（第一个）引用。否则，创建一个新的脚注。当使用前缀参数调用此命令时，会提供一个附加选项菜单，包括重新编号。
+
++ C-c C-c（org-ctrl-c-ctrl-c） \\
+  在定义和参考之间跳转。
 
 
+* 导出
+org 可以将文档转换并导出为多种其他格式，同时尽可能保留文档的结构（参见文档结构）和标记（参见富文本标记）。
 
+** 导出调度器
+导出调度器是 Org 导出的主要界面。一个层级菜单展示了当前配置的导出格式。选项以简易切换开关的形式显示在同一屏幕上。
++ C-c C-e (org-export-dispatch) \\
+  调用导出调度器界面。
+默认情况下，Org 会导出整个缓冲区。如果 Org 缓冲区中有活动区域，则 Org 只导出该区域。
+
+** 导出设置
+
+导出器会识别缓冲区中的特殊行，以提供额外的信息。这些行可以放置在文件中的任何位置：
+#+begin_src org
+  #+TITLE: I'm in the Mood for Org
+#+end_src
+主要的导出选项包括：
++ ‘TITLE’：要显示的标题
++ ‘AUTHOR’：作者（默认为 user-full-name）
++ ‘DATE’：日期，可以是固定日期或 Org 时间戳
++ ‘EMAIL’：电子邮件地址（默认为 user-mail-address）
++ ‘LANGUAGE’：语言代码，例如 'en'
+可以通过在导出调度器中使用 'Insert template' 命令（按 # 键）来插入选项关键字集。
+
+** 目录
+目录包括文档中的所有标题。因此，其深度与文件中的标题级别相同。
+如果需要使用不同的深度或完全关闭目录，请相应地设置 org-export-with-toc 变量。
+您也可以在每个文件中使用以下 OPTIONS 关键字项来实现相同的效果：
+#+begin_src org
+  #+OPTIONS: toc:2          (only include two levels in TOC)
+  #+OPTIONS: toc:nil        (no default TOC at all)
+#+end_src
+Org 通常会在文件的第一个标题之前直接插入目录。
+
+** 包含文件
+在导出过程中，您可以包含另一个文件的内容。例如，要包含您的 .emacs 文件，可以使用：
+#+begin_src org
+  #+INCLUDE: "~/.emacs" src emacs-lisp
+#+end_src
+第一个参数是要包含的文件名。可选的第二个参数指定块类型：‘example’，‘export’ 或 ‘src’。
+可选的第三个参数指定用于格式化内容的源代码语言。这与 ‘export’ 和 ‘src’ 块类型相关。
+您可以通过 C-c ' 访问包含的文件。
+
+** 注释行
+以零个或多个空白字符开头，紧接着一个 # 和一个空白字符的行被视为注释，因此不会被导出。
+同样，被 '#+BEGIN_COMMENT … #+END_COMMENT' 包围的区域也不会被导出。
+最后，条目开头的 COMMENT 关键字（但在其他任何关键字或优先级标记之后）会注释掉整个子树。下面的命令有助于切换标题的注释状态。
++ C-c ; (org-toggle-comment)
+  切换条目开头的 COMMENT 关键字。
+
+** ASCII/UTF-8 导出
+ASCII 导出生成的输出文件仅包含纯 ASCII 字符。这是最简单和直接的文本输出方式，不包含任何 Org 标记。
+UTF-8 导出使用了该编码标准中可用的附加字符和符号。
++ C-c C-e t a
++ C-c C-e t u (org-ascii-export-to-ascii) \\
+  以 .txt 扩展名导出为 ASCII 文件。对于 myfile.org，Org 会导出为 myfile.txt，并会覆盖原文件而不发出警告。
+  对于 myfile.txt，Org 会导出为 myfile.txt.txt 以防数据丢失。
+
+** HTML 导出
+Org 模式包含一个 HTML 导出器，具有与 XHTML 1.0 严格标准兼容的广泛 HTML 格式化功能。
++ C-c C-e h h (org-html-export-to-html)
+  以 .html 扩展名导出为 HTML 文件。对于 myfile.org，Org 会导出为 myfile.html，并会覆盖原文件而不发出警告。
+  C-c C-e h o 将导出为 HTML 并在网页浏览器中打开。
+HTML 导出后端将 < 和 > 转换为 &lt; 和 &gt;。要在 Org 文件中包含原始 HTML 代码，
+以便 HTML 导出后端可以将这些 HTML 代码插入到输出中，可以使用这种内联语法：'@@html:...@@'。例如：
+#+begin_src org
+  @@html:<b>@@bold text@@html:</b>@@
+#+end_src
+对于较大的原始 HTML 代码块，可以使用以下 HTML 导出代码块：
+#+begin_src org
+  #+HTML: Literal HTML code for export
+
+  #+BEGIN_EXPORT html
+    All lines between these markers are exported literally
+  #+END_EXPORT
+#+end_src
+
+** LaTeX 导出
+LaTeX 导出后端可以处理复杂的文档，结合标准或自定义的 LaTeX 文档类，使用不同的 LaTeX 引擎生成文档，
+并生成完全链接的 PDF 文件，包括索引、参考文献和目录，适用于互动在线查看或高质量印刷出版。
+默认情况下，LaTeX 输出使用 article 类。您可以通过在文件中添加类似 #+LATEX_CLASS: myclass 的选项来更改此设置。
+类名必须列在 org-latex-classes 中。
++ C-c C-e l l (org-latex-export-to-latex) \\
+  导出为 .tex 扩展名的 LaTeX 文件。对于 myfile.org，Org 会导出为 myfile.tex，并会覆盖原文件而不发出警告。
++ C-c C-e l p (org-latex-export-to-pdf) \\
+  导出为 LaTeX 文件并转换为 PDF 文件。
++ C-c C-e l o (<没有对应的命名命令>)\\
+  导出为 LaTeX 文件并转换为 PDF，然后使用默认查看器打开 PDF。
+LaTeX 导出后端可以插入任何任意的 LaTeX 代码，参见嵌入 LaTeX。将此代码嵌入 Org 文件有三种方式，它们使用不同的引号语法。
+插入内联代码，使用 @ 符号引用：
+#+begin_src org
+  Code embedded in-line @@latex:any arbitrary LaTeX code@@ in a paragraph.
+#+end_src
+作为一个或多个关键字行插入到 Org 文件中：
+#+begin_src org
+  #+LATEX: any arbitrary LaTeX code
+#+end_src
+作为导出块插入到 Org 文件中，其中后端会导出开始和结束标记之间的所有代码：
+#+begin_src org
+  #+BEGIN_EXPORT latex
+  any arbitrary LaTeX code
+  #+END_EXPORT
+#+end_src
+
+** iCalendar 导出
+Org 模式的一个重要互操作性优势是它能够轻松地导出到或从外部应用程序导入。
+iCalendar 导出后端从 Org 文件中提取日历数据并导出为标准 iCalendar 格式。
++ C-c C-e c f (org-icalendar-export-to-ics) \\
+  从当前 Org 缓冲区创建 iCalendar 条目，并将其存储在相同目录中，文件扩展名为 .ics。
++ C-c C-e c c (org-icalendar-combine-agenda-files) \\
+  从 org-agenda-files 中的 Org 文件创建一个合并的 iCalendar 文件，
+  并将其写入 org-icalendar-combined-agenda-file 文件名中。
+
+
+* 
 
 
 
