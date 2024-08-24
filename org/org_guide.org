@@ -918,11 +918,11 @@ Org 主要用于组织和搜索纯文本笔记。然而，它也提供了一种�
 如果示例是来自编程语言的源代码，或者任何其他可以通过 Emacs 中的 Font Lock 标记的文本，
 您可以要求示例看起来像字体化的 Emacs 缓冲区。
 #+begin_src org
-  #+BEGIN_SRC emacs-lisp
+  ,#+BEGIN_SRC emacs-lisp
     (defun org-xor (a b)
       "Exclusive or."
       (if a (not b) b))
-  #+END_SRC
+  ,#+END_SRC
 #+end_src
 要在支持该语言的特殊缓冲区中编辑示例，请使用 C-c '进入和离开编辑缓冲区。
 
