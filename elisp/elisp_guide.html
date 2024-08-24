@@ -1,0 +1,769 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2024-08-24 Sat 21:00 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>elisp快速指南</title>
+<meta name="author" content="JanSky" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">elisp快速指南</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org840e167">1. 列表处理</a>
+<ul>
+<li><a href="#orgd5889ec">1.1. Lisp 中的列表</a>
+<ul>
+<li><a href="#orgffc6475">1.1.1. 数字，列表中的列表</a></li>
+<li><a href="#orga6edf8c">1.1.2. Lisp中的原子</a></li>
+<li><a href="#orgaacbd34">1.1.3. 列表中的空白</a></li>
+<li><a href="#org8d85a69">1.1.4. GNU Emacs 帮助你编写列表</a></li>
+</ul>
+</li>
+<li><a href="#org41c7de0">1.2. 运行程序</a></li>
+<li><a href="#orgfb1a7e2">1.3. 生成错误消息</a></li>
+<li><a href="#orgc3495cf">1.4. 符号名称与函数定义</a></li>
+<li><a href="#orgd211610">1.5. Lisp 解释器</a>
+<ul>
+<li><a href="#org0ad7fa0">1.5.1. 复杂情况</a></li>
+<li><a href="#orgc73e27c">1.5.2. 字节编译</a></li>
+</ul>
+</li>
+<li><a href="#org0674bb6">1.6. 求值</a>
+<ul>
+<li><a href="#org90d9dd4">1.6.1. Lisp 解释器的行为</a></li>
+<li><a href="#orgf2a3eab">1.6.2. 求值内部列表</a></li>
+</ul>
+</li>
+<li><a href="#orgd7f7cc9">1.7. 变量</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+
+
+<div id="outline-container-org840e167" class="outline-2">
+<h2 id="org840e167"><span class="section-number-2">1.</span> 列表处理</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+对未曾接触过的人来说，Lisp 是一种奇怪的编程语言。在 Lisp 代码中，到处都是括号。
+有些人甚至戏称其名称代表“Lots of Isolated Silly Parentheses”（大量孤立的愚蠢括号）。但这种说法是没有依据的。
+Lisp 实际上代表的是“LISt Processing”（列表处理），这门编程语言通过将列表（以及列表的列表）置于括号之间来处理它们。
+括号标志着列表的边界。有时列表前会有一个单引号‘'’，在 Lisp 中称为单引号。列表是 Lisp 的基础。
+</p>
+</div>
+
+<div id="outline-container-orgd5889ec" class="outline-3">
+<h3 id="orgd5889ec"><span class="section-number-3">1.1.</span> Lisp 中的列表</h3>
+<div class="outline-text-3" id="text-1-1">
+<p>
+在 Lisp 中，一个列表看起来像这样：'(rose violet daisy buttercup)。这个列表前有一个单引号。
+它也可以写成如下形式，看起来更像你可能熟悉的那种列表：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">'(rose
+violet
+daisy
+buttercup)
+</pre>
+</div>
+<p>
+这个列表的元素是四种不同的花的名称，彼此之间用空白分隔，并被括号包围，就像田野里用石墙围起来的花朵一样。
+</p>
+</div>
+
+<div id="outline-container-orgffc6475" class="outline-4">
+<h4 id="orgffc6475"><span class="section-number-4">1.1.1.</span> 数字，列表中的列表</h4>
+<div class="outline-text-4" id="text-1-1-1">
+<p>
+列表中也可以包含数字，如在这个列表中：(+ 2 2)。这个列表包含一个加号 ‘+’，后面跟着两个数字 ‘2’，它们之间用空格分隔。<br />
+</p>
+
+<p>
+在 Lisp 中，数据和程序的表示方式是相同的；也就是说，它们都是由单词、数字或其他列表组成的列表，彼此之间用空格分隔，并被括号包围。
+（由于程序看起来像数据，一个程序很容易作为另一个程序的数据使用；这是 Lisp 的一个非常强大的功能。）<br />
+</p>
+
+<p>
+这里是另一个列表，这次其中包含一个列表：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">'(this list has (a list inside of it))
+</pre>
+</div>
+<p>
+这个列表的组件是单词 ‘this’、‘list’、‘has’ 和列表 ‘(a list inside of it)’。
+内部列表由单词 ‘a’、‘list’、‘inside’、‘of’、‘it’ 组成。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orga6edf8c" class="outline-4">
+<h4 id="orga6edf8c"><span class="section-number-4">1.1.2.</span> Lisp中的原子</h4>
+<div class="outline-text-4" id="text-1-1-2">
+<p>
+在Lisp中，我们所称的“单词”被称为“原子”。这个术语源自“原子”一词的历史含义，意思是“不可分割”。
+就Lisp而言，我们在列表中使用的单词不能再分解为更小的部分，否则它们在程序中的意义就不再相同；数字和像‘+’这样的单字符符号也是如此。
+另一方面，与古代原子不同，列表可以被分解为多个部分。（参见car、cdr和cons基本函数。）<br />
+</p>
+
+<p>
+在一个列表中，原子之间用空格分隔。它们可以紧挨着括号。<br />
+</p>
+
+<p>
+从技术上讲，Lisp中的列表由括号组成，括号内包含由空格分隔的原子、其他列表或同时包含原子和其他列表。
+一个列表可以只有一个原子，也可以什么都没有。一个空列表看起来像这样：`()`，被称为“空列表”。
+与其他任何东西不同，空列表同时被视为原子和列表。<br />
+</p>
+
+<p>
+原子和列表的打印表示被称为符号表达式，或更简洁地称为s-表达式。单独的“表达式”一词可以指打印表示，也可以指计算机内部存储的原子或列表。
+通常，人们会随意使用“表达式”这一术语。（另外，在许多文本中，“形式”一词也被用作“表达式”的同义词。）<br />
+</p>
+
+<p>
+顺便提一下，当原子被认为是不可分割时，它们才被命名为“原子”；但后来发现物理原子并非不可分割。
+原子的一部分可以分裂出来，或者它可以裂变成两部分，且这两部分大小大致相等。物理原子的命名过于仓促，在其真实本质被发现之前就被命名了。
+在Lisp中，某些类型的原子，如数组，可以分为多个部分；但实现这一操作的机制与分裂列表的机制不同。
+就列表操作而言，列表中的原子是不可分割的。<br />
+</p>
+
+<p>
+与英语类似，Lisp 原子的组成字母的含义与这些字母组合成单词后的含义是不同的。
+例如，南美洲树懒的名称“ai”与两个单词“a”和“i”的含义完全不同。<br />
+</p>
+
+<p>
+在自然界中有很多种原子，但在 Lisp 中只有几种：例如，数字，如 37、511 或 1729；以及符号，如‘+’、‘foo’或‘forward-line’。
+我们在上面例子中列出的单词都是符号。在日常的 Lisp 对话中，"原子" 这个词不常用，因为程序员通常会更具体地说明他们正在处理的原子类型。
+Lisp 编程主要涉及列表中的符号（有时也包括数字）。顺便说一下，前面三个单词构成的括号中的注释是一个符合 Lisp 规范的列表，
+因为它由原子（在这种情况下是符号）组成，这些符号用空格分隔并用括号括起来，没有任何非 Lisp 的标点符号。<br />
+</p>
+
+<p>
+双引号中的文本——即使是句子或段落——也是一个原子。以下是一个例子：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">'(this list includes "text between quotation marks.")
+</pre>
+</div>
+<p>
+在 Lisp 中，所有被引号包围的文本，包括标点符号和空格，都被视为一个单一的原子。这种原子称为字符串（"字符串"），
+通常用于计算机打印给人类阅读的消息。字符串是一种与数字或符号不同的原子，其使用方式也不同。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgaacbd34" class="outline-4">
+<h4 id="orgaacbd34"><span class="section-number-4">1.1.3.</span> 列表中的空白</h4>
+<div class="outline-text-4" id="text-1-1-3">
+<p>
+列表中的空白量并不重要。从 Lisp 语言的角度来看：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">'(this list
+ looks like this)
+</pre>
+</div>
+<p>
+与这个列表是完全相同的：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">'(this list looks like this)
+</pre>
+</div>
+<p>
+这两个例子展示的在 Lisp 中是同一个列表，即由符号‘this’、‘list’、‘looks’、‘like’和‘this’按顺序组成的列表。<br />
+</p>
+
+<p>
+额外的空白和换行是为了让列表更易于人类阅读。当 Lisp 读取表达式时，它会去除所有多余的空白
+（但在原子之间至少需要有一个空格，以便区分它们）。<br />
+</p>
+
+<p>
+虽然看起来有点奇怪，但我们看到的这些例子几乎涵盖了 Lisp 列表的所有形式！
+在 Lisp 中的其他列表或多或少都类似于这些例子，只是列表可能会更长、更复杂。
+简而言之，一个列表在括号之间，一个字符串在引号之间，一个符号看起来像一个单词，一个数字看起来像一个数字。
+（在某些情况下，方括号、点和其他一些特殊字符可能会被使用；然而，我们在大多数情况下都不需要它们。）
+</p>
+</div>
+</div>
+
+<div id="outline-container-org8d85a69" class="outline-4">
+<h4 id="org8d85a69"><span class="section-number-4">1.1.4.</span> GNU Emacs 帮助你编写列表</h4>
+<div class="outline-text-4" id="text-1-1-4">
+<p>
+当你在 GNU Emacs 中使用 Lisp 交互模式或 Emacs Lisp 模式输入 Lisp 表达式时，你可以使用多个命令来格式化 Lisp 表达式，
+使其更易于阅读。例如，按下 TAB 键会自动将光标所在的行缩进到正确的位置。
+通常，将代码区域正确缩进的命令绑定在 M-C-\ 键上。
+缩进的设计使你能够清楚地看到列表的哪些元素属于哪个列表——子列表的元素比外部列表的元素缩进更多。<br />
+</p>
+
+<p>
+此外，当你输入一个右括号时，Emacs 会短暂地将光标跳回到匹配的左括号处，以便你确认它对应的是哪个左括号。
+这非常有用，因为在 Lisp 中你输入的每个列表都必须确保右括号与左括号匹配。
+（有关 Emacs 模式的更多信息，请参见《GNU Emacs 手册》中的“主要模式”部分。）
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org41c7de0" class="outline-3">
+<h3 id="org41c7de0"><span class="section-number-3">1.2.</span> 运行程序</h3>
+<div class="outline-text-3" id="text-1-2">
+<p>
+在 Lisp 中，任何列表都是一个准备运行的程序。如果你运行它（在 Lisp 中的术语是“求值”），
+计算机将执行以下三种情况之一：什么都不做，只是返回列表本身；向你发送错误消息；或者，将列表中的第一个符号视为命令并执行某些操作。<br />
+</p>
+
+<p>
+我在前面部分的一些示例列表前面加的单引号 `’` 被称为“引用”；当它位于列表前时，它告诉 Lisp 对列表不做任何处理，只是按原样接受它
+。但是，如果列表前没有引用符号，列表的第一个元素是特殊的：它是计算机必须执行的命令。（在 Lisp 中，这些命令被称为“函数”。）
+上面显示的列表 `(+ 2 2)` 前面没有引用符号，因此 Lisp 理解 `+` 是一个指令，要求对列表的其余部分进行处理：将后续的数字相加。<br />
+</p>
+
+<p>
+如果你在 GNU Emacs 的 Info 中阅读此内容，通过这样对列表进行求值：将光标放在以下列表的右括号之后，然后键入 `C-x C-e`：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(+ 2 2)
+</pre>
+</div>
+<p>
+你会看到数字 4 出现在回显区域（你刚刚做的就是对列表求值。回显区域是屏幕底部显示或回显文本的那一行）。
+现在，尝试对一个带有引用符号的列表做同样的操作：将光标放在以下列表的右括号之后，然后键入 `C-x C-e`：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">'(this is a quoted list)
+</pre>
+</div>
+<p>
+你会看到 `(this is a quoted list)` 出现在回显区域。<br />
+</p>
+
+<p>
+在这两种情况下，你所做的都是向 GNU Emacs 内的一个名为 Lisp 解释器的程序发出命令，要求解释器对表达式进行求值。
+Lisp 解释器的名称源自于一个人为表达式赋予意义并解释它的任务。<br />
+</p>
+
+<p>
+你也可以对不在列表中的原子进行求值——即那些没有被括号包围的原子；同样，Lisp 解释器会将人类可读的表达式翻译成计算机语言。
+但在讨论这个之前（见变量），我们将先讨论当你出错时 Lisp 解释器会做什么。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgfb1a7e2" class="outline-3">
+<h3 id="orgfb1a7e2"><span class="section-number-3">1.3.</span> 生成错误消息</h3>
+<div class="outline-text-3" id="text-1-3">
+<p>
+为了让你在不小心做错时不会过于担心，我们现在将向 Lisp 解释器发出一个命令，以生成错误消息。
+这是一个无害的操作；实际上，我们经常会故意生成错误消息。一旦你理解了术语，错误消息实际上是很有帮助的。
+与其称它们为“错误”消息，不如称它们为“帮助”消息。它们就像在陌生国度中的路标；虽然解读它们可能很难，但一旦理解了，它们就能指明方向。<br />
+</p>
+
+<p>
+错误消息由 GNU Emacs 内置的调试器生成。我们将进入调试器。你可以通过输入 `q` 退出调试器。<br />
+</p>
+
+<p>
+我们要做的是对一个未引用且第一个元素不是有效命令的列表进行求值。
+下面是一个几乎与我们刚刚使用的列表完全相同的列表，但没有前面的单引号。将光标放在列表之后，然后输入 `C-x C-e`：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(this is an unquoted list)
+</pre>
+</div>
+<p>
+一个 Backtrace 窗口将会打开，你应该在其中看到以下内容：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">---------- Buffer: *Backtrace* ----------
+Debugger entered--Lisp error: (void-function this)
+  (this is an unquoted list)
+  eval((this is an unquoted list) nil)
+  elisp--eval-last-sexp(nil)
+  eval-last-sexp(nil)
+  funcall-interactively(eval-last-sexp nil)
+  call-interactively(eval-last-sexp nil nil)
+  command-execute(eval-last-sexp)
+---------- Buffer: *Backtrace* ----------
+</pre>
+</div>
+<p>
+你的光标将位于这个窗口中（你可能需要等待几秒钟才会看到它）。要退出调试器并关闭调试器窗口，输入：q <br />
+</p>
+
+<p>
+基于我们已经知道的内容，我们几乎可以理解这个错误消息。<br />
+</p>
+
+<p>
+你应该从下往上读取 Backtrace 缓冲区；它告诉你 Emacs 做了什么。
+当你输入 C-x C-e 时，你进行了对命令 eval-last-sexp 的交互调用。
+eval 是 "evaluate"（求值）的缩写，而 sexp 是 "symbolic expression"（符号表达式）的缩写。
+该命令的意思是 "求值最后一个符号表达式"，也就是光标前面的那个表达式。<br />
+</p>
+
+<p>
+上面的每一行告诉你 Lisp 解释器接下来求值的内容。最近的操作在最上面。
+这个缓冲区被称为 Backtrace 缓冲区，因为它让你能够追踪 Emacs 的操作顺序。<br />
+</p>
+
+<p>
+在 Backtrace 缓冲区的顶部，你会看到这一行：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">Debugger entered--Lisp error: (void-function this)
+</pre>
+</div>
+<p>
+Lisp 解释器试图求值列表的第一个原子，即单词 'this'。正是这个操作产生了错误消息 'void-function this'。<br />
+</p>
+
+<p>
+消息中包含了 'void-function' 和 'this' 这两个词。<br />
+</p>
+
+<p>
+‘function’ 这个词之前提到过一次。它是一个非常重要的词。对于我们的目的，
+我们可以这样定义它：函数是一组给计算机的指令，告诉计算机执行某些操作。<br />
+</p>
+
+<p>
+现在我们可以开始理解这个错误消息：'void-function this'。函数（即单词 'this'）没有定义任何一组指令让计算机执行。<br />
+</p>
+
+<p>
+这个略显奇怪的词语 'void-function' 是为了说明 Emacs Lisp 的实现方式，即当一个符号没有附加函数定义时，应该包含指令的位置是空的。<br />
+</p>
+
+<p>
+另一方面，由于我们能够通过求值 (+ 2 2) 成功地得到 2 加 2 的结果，
+我们可以推断出符号 + 必定有一组指令让计算机遵循，而这些指令必须是将 `+` 后面的数字相加。<br />
+</p>
+
+<p>
+可以避免在这种情况下 Emacs 进入调试器。我们在这里不解释如何做到这一点，但我们会提到结果是什么样的，
+因为如果你在使用的某些 Emacs 代码中遇到错误，你可能会遇到类似的情况。
+在这种情况下，你只会看到一行错误消息；它会出现在回显区域，看起来像这样：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">Symbol's function definition is void: this
+</pre>
+</div>
+<p>
+当你输入一个按键时，哪怕只是移动光标，消息就会消失。<br />
+</p>
+
+<p>
+我们已经知道 “Symbol” 这个词的含义。它指的是列表的第一个原子，即单词 “this”。“function” 这个词指的是告诉计算机该做什么的指令。
+（从技术上讲，符号告诉计算机在哪里找到指令，但这是一个我们目前可以忽略的复杂问题。）<br />
+</p>
+
+<p>
+这个错误消息可以理解为：‘Symbol's function definition is void: this’。符号（即单词 “this”）缺少让计算机执行的指令。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc3495cf" class="outline-3">
+<h3 id="orgc3495cf"><span class="section-number-3">1.4.</span> 符号名称与函数定义</h3>
+<div class="outline-text-3" id="text-1-4">
+<p>
+基于我们迄今为止讨论的内容，我们可以明确 Lisp 的另一个特征——一个重要的特征：像 + 这样的符号本身并不是计算机要执行的那组指令。
+相反，符号可能只是暂时用来定位定义或指令集的一种方式。我们所看到的是用来找到这些指令的名称。
+人的名字也是同样的道理。我可以被称为 "Bob"；然而，我并不是字母 "B"、"o"、"b"，而是（或曾经是）与某个特定生命形式一致关联的意识。
+名字并不是我本身，但它可以用来指代我。<br />
+</p>
+
+<p>
+在 Lisp 中，一组指令可以附加到多个名称上。例如，用于加法运算的计算机指令可以同时链接到符号 plus 和符号 +
+（在某些 Lisp 方言中就是如此）。在人类社会中，我可以被称为 "Robert" 或 "Bob" 以及其他名字。<br />
+</p>
+
+<p>
+另一方面，一个符号在同一时间只能有一个函数定义与之关联。否则，计算机会因为不知道使用哪个定义而感到困惑。
+如果在人类社会中也存在这种情况，那么世界上只有一个人可以叫 "Bob"。
+不过，符号名称所指向的函数定义可以轻松更改。（参见《安装函数定义》）。<br />
+</p>
+
+<p>
+由于 Emacs Lisp 规模庞大，通常习惯于为符号命名，以便识别该函数所属的 Emacs 部分。
+因此，处理 Texinfo 的所有函数名称都以 "texinfo-" 开头，而处理邮件读取的函数名称则以 "rmail-" 开头。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd211610" class="outline-3">
+<h3 id="orgd211610"><span class="section-number-3">1.5.</span> Lisp 解释器</h3>
+<div class="outline-text-3" id="text-1-5">
+<p>
+基于我们所见的内容，我们现在可以开始理解 Lisp 解释器在我们命令它求值一个列表时的工作原理。
+首先，它查看列表前是否有引号；如果有，引擎解释器就直接返回列表。
+另一方面，如果没有引号，解释器会查看列表中的第一个元素，并检查它是否有函数定义。
+如果有，解释器就执行函数定义中的指令。否则，解释器会打印一条错误消息。<br />
+</p>
+
+<p>
+这就是 Lisp 的工作原理，很简单。接下来我们还会探讨一些额外的复杂情况，但这些是基本原理。
+当然，要编写 Lisp 程序，你需要知道如何编写函数定义并将其附加到名称上，以及如何在不让自己或计算机混淆的情况下做到这一点。<br />
+</p>
+</div>
+
+<div id="outline-container-org0ad7fa0" class="outline-4">
+<h4 id="org0ad7fa0"><span class="section-number-4">1.5.1.</span> 复杂情况</h4>
+<div class="outline-text-4" id="text-1-5-1">
+<p>
+现在，我们来探讨第一个复杂情况。除了列表外，Lisp 解释器还可以求值一个未加引号且没有括号的符号。
+Lisp 解释器会尝试将该符号的值作为变量来确定。这种情况在变量部分有描述。（参见《变量》）。<br />
+</p>
+
+<p>
+第二个复杂情况出现是因为有些函数不常见，它们的工作方式与常规方法不同。这些不常规的函数被称为特殊形式（special forms）。
+它们用于一些特殊的任务，比如定义函数，而且数量不多。在接下来的几章中，你将会接触到一些较为重要的特殊形式。<br />
+</p>
+
+<p>
+除了特殊形式，还有宏。宏是 Lisp 中定义的一种结构，它与函数的不同之处在于，宏将一个 Lisp 表达式翻译为另一个表达式，
+以替代原始表达式进行求值。（参见《Lisp 宏》）。<br />
+</p>
+
+<p>
+对于本介绍的目的，你不需要过于担心某个东西是特殊形式、宏，还是普通函数。
+例如，if 是一种特殊形式（参见《if 特殊形式》），但 when 是一种宏（参见《Lisp 宏》）。
+在早期版本的 Emacs 中，defun 是一种特殊形式，但现在它是一种宏（参见《defun 宏》）。不过，它的行为仍然相同。<br />
+</p>
+
+<p>
+最后一个复杂情况是：如果 Lisp 解释器所查看的函数不是特殊形式，并且它是列表的一部分，解释器会查看该列表中是否包含另一个列表。
+如果存在内部列表，Lisp 解释器首先会确定如何处理该内部列表，然后再处理外部列表。
+如果内部列表中还有嵌套的列表，解释器会先处理那个嵌套的列表，以此类推。它总是首先处理最内层的列表。
+解释器首先处理最内层的列表，以求值该列表的结果。该结果可能会被外层表达式使用。<br />
+</p>
+
+<p>
+否则，解释器会从左到右依次处理每个表达式。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgc73e27c" class="outline-4">
+<h4 id="orgc73e27c"><span class="section-number-4">1.5.2.</span> 字节编译</h4>
+<div class="outline-text-4" id="text-1-5-2">
+<p>
+关于解释的另一个方面：Lisp 解释器能够解释两种实体：人类可读的代码（我们将专注于此），
+以及经过特殊处理的代码，称为字节编译代码，这种代码不可供人类阅读。字节编译代码的运行速度比人类可读代码更快。<br />
+</p>
+
+<p>
+你可以通过运行 byte-compile-file 等编译命令之一，将人类可读代码转换为字节编译代码。
+字节编译代码通常存储在以 .elc 为扩展名的文件中，而不是 .el 扩展名的文件中。
+在 emacs/lisp 目录中你会看到这两种类型的文件；需要阅读的是扩展名为 .el 的文件。<br />
+</p>
+
+<p>
+实际上，对于大多数自定义或扩展 Emacs 的操作，你不需要进行字节编译，因此我在此不会讨论这一话题。
+有关字节编译的完整描述，请参见《GNU Emacs Lisp 参考手册》中的字节编译部分。
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-org0674bb6" class="outline-3">
+<h3 id="org0674bb6"><span class="section-number-3">1.6.</span> 求值</h3>
+<div class="outline-text-3" id="text-1-6">
+<p>
+当 Lisp 解释器处理一个表达式时，这一活动被称为求值。我们说解释器“对表达式进行求值”。
+我之前已经多次使用过这个术语。根据《韦氏新大学词典》，这个词源自日常语言的用法，意为“确定价值或数量；评估”。
+</p>
+</div>
+
+<div id="outline-container-org90d9dd4" class="outline-4">
+<h4 id="org90d9dd4"><span class="section-number-4">1.6.1.</span> Lisp 解释器的行为</h4>
+<div class="outline-text-4" id="text-1-6-1">
+<p>
+在对一个表达式求值之后，Lisp 解释器很可能会返回计算机通过执行函数定义中的指令所产生的值，或者可能会放弃该函数并产生一条错误消息。
+（解释器也可能被“抛到”另一个函数中，或者可能会试图在无限循环中不断重复它正在做的事情。这些行为较为少见，我们可以忽略它们。）
+最常见的是，解释器会返回一个值。<br />
+</p>
+
+<p>
+在解释器返回一个值的同时，它也可能会执行其他操作，例如移动光标或复制文件；这种类型的操作被称为副作用。
+对我们人类来说很重要的操作，比如打印结果，对于 Lisp 解释器来说通常是副作用。学习如何使用副作用相对容易。<br />
+</p>
+
+<p>
+总而言之，对符号表达式进行求值通常会导致 Lisp 解释器返回一个值，并可能执行一个副作用；否则会产生一个错误。<br />
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf2a3eab" class="outline-4">
+<h4 id="orgf2a3eab"><span class="section-number-4">1.6.2.</span> 求值内部列表</h4>
+<div class="outline-text-4" id="text-1-6-2">
+<p>
+如果求值作用于嵌套在另一个列表中的列表，则外部列表在求值时可能会使用第一次求值返回的值作为信息。
+这就解释了为什么先对内部表达式进行求值：它们返回的值会被外部表达式使用。<br />
+</p>
+
+<p>
+我们可以通过求值另一个加法示例来探究这一过程。将光标放在以下表达式之后，然后输入 C-x C-e：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(+ 2 (+ 3 3))  
+</pre>
+</div>
+<p>
+数字 8 会出现在回显区域。<br />
+</p>
+
+<p>
+发生的情况是，Lisp 解释器首先对内部表达式 (+ 3 3) 进行求值，返回的值是 6；然后，它对外部表达式求值，
+仿佛它是 (+ 2 6)，结果返回值是 8。由于没有更多的外部表达式需要求值，解释器将该值打印在回显区域。<br />
+</p>
+
+<p>
+现在，C-x C-e 这一组合键调用的命令名称变得容易理解了：这个命令的名称是 eval-last-sexp。
+sexp 是 “symbolic expression”（符号表达式）的缩写，而 eval 是 “evaluate”（求值）的缩写。该命令对最后一个符号表达式进行求值。<br />
+</p>
+
+<p>
+作为实验，你可以尝试将光标放在表达式后面的下一行的开头，或者放在表达式内部，然后对该表达式进行求值。<br />
+</p>
+
+<p>
+以下是该表达式的另一个副本：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(+ 2 (+ 3 3))  
+</pre>
+</div>
+<p>
+如果你将光标放在紧跟表达式之后的空白行的开头，并输入 C-x C-e，你仍然会在回显区域看到数字 8。
+现在尝试将光标放在表达式内部。如果你将光标放在倒数第二个括号之后（所以看起来它位于最后一个括号上方），你会在回显区域看到数字 6！
+这是因为该命令对表达式 (+ 3 3) 进行了求值。<br />
+</p>
+
+<p>
+现在将光标放在数字之后。输入 C-x C-e，你将得到这个数字本身。
+在 Lisp 中，如果你对一个数字进行求值，你会得到这个数字本身——这就是数字与符号的区别。
+如果你对以 + 等符号开头的列表进行求值，你会得到计算机执行与该名称关联的函数定义中的指令后的结果。
+如果对符号本身进行求值，则会发生不同的情况，我们将在下一节中看到。<br />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orgd7f7cc9" class="outline-3">
+<h3 id="orgd7f7cc9"><span class="section-number-3">1.7.</span> 变量</h3>
+<div class="outline-text-3" id="text-1-7">
+<p>
+是
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="date">Date: 2024-08-18</p>
+<p class="author">Author: JanSky</p>
+<p class="date">Created: 2024-08-24 Sat 21:00</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
