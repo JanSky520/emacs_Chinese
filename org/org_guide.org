@@ -918,11 +918,11 @@ Org 主要用于组织和搜索纯文本笔记。然而，它也提供了一种�
 如果示例是来自编程语言的源代码，或者任何其他可以通过 Emacs 中的 Font Lock 标记的文本，
 您可以要求示例看起来像字体化的 Emacs 缓冲区。
 #+begin_src org
-  #+BEGIN_SRC emacs-lisp
+  ,#+BEGIN_SRC emacs-lisp
     (defun org-xor (a b)
       "Exclusive or."
       (if a (not b) b))
-  #+END_SRC
+  ,#+END_SRC
 #+end_src
 要在支持该语言的特殊缓冲区中编辑示例，请使用 C-c '进入和离开编辑缓冲区。
 
@@ -1100,10 +1100,10 @@ Org 使用时间戳来跟踪文件的更改。上述功能通常只发布已更�
 Org 模式提供了许多处理源代码的功能，包括在其原生主要模式下编辑代码块、评估代码块、整理代码块以及以多种格式导出代码块及其结果。
 源代码块的结构如下：
 #+begin_src org
-  #+NAME: <name>
-  #+BEGIN_SRC <language> <switches> <header arguments>
+  ,#+NAME: <name>
+  ,#+BEGIN_SRC <language> <switches> <header arguments>
     <body>
-  #+END_SRC
+  ,#+END_SRC
 #+end_src
 其中：
 + <name> 是用于唯一标识代码块的字符串，
@@ -1126,11 +1126,11 @@ Org 模式提供了许多处理源代码的功能，包括在其原生主要模�
 + 代码块中的头部参数 \\
   头部参数通常在源代码块级别设置，在 BEGIN_SRC 行上：
   #+begin_src org
-    #+NAME: factorial
-    #+BEGIN_SRC haskell :results silent :exports code :var n=0
+    ,#+NAME: factorial
+    ,#+BEGIN_SRC haskell :results silent :exports code :var n=0
       fac 0 = 1
       fac n = n * fac (n-1)
-    #+END_SRC
+    ,#+END_SRC
   #+end_src
   代码块的头部参数可以使用 'HEADER' 关键字分多行指定，每行一个。
 
@@ -1145,7 +1145,7 @@ Org 模式提供了许多处理源代码的功能，包括在其原生主要模�
   ,#+END_SRC
 
   ,#+RESULTS:
-  ,: 10
+  : 10
 #+end_src
 以下语法用于通过 var 头部参数将参数传递给代码块。
 #+begin_src org
