@@ -294,7 +294,380 @@ sexp 是 “symbolic expression”（符号表达式）的缩写，而 eval 是 
 如果对符号本身进行求值，则会发生不同的情况，我们将在下一节中看到。\\
 
 ** 变量
-是
+在 Emacs Lisp 中，一个符号可以附加一个值，就像它可以附加一个函数定义一样。两者是不同的。
+函数定义是一组计算机将执行的指令。而一个值则是某种可以变化的东西，比如数字或名字（这也是为什么这样的符号被称为变量）。
+符号的值可以是 Lisp 中的任何表达式，例如符号、数字、列表或字符串。一个有值的符号通常被称为变量。\\
+
+一个符号可以同时附加函数定义和值，也可以只附加其中一个。这两者是独立的。
+这有点类似于“剑桥”这个名字既可以指代马萨诸塞州的城市，也可以附加一些信息，比如“著名的编程中心”。\\
+
+另一种理解方式是将符号想象成一个有抽屉的柜子。函数定义放在一个抽屉里，值放在另一个抽屉里，等等。
+存放值的抽屉中的内容可以更改，而不会影响存放函数定义的抽屉中的内容，反之亦然。
+
+*** fill-column，一个示例变量
+变量 fill-column 说明了一个附加了值的符号：在每个 GNU Emacs 缓冲区中，这个符号都被设置为某个值，通常是 72 或 70，
+但有时也会设置为其他值。要查看这个符号的值，可以直接对其进行求值。
+如果你正在 GNU Emacs 中的 Info 阅读此内容，你可以将光标放在符号后面，然后按 C-x C-e：
+#+begin_src emacs-lisp
+  fill-column
+#+end_src
+当我输入 `C-x C-e` 后，Emacs 在回显区域显示了数字 72。这是我在编写这段文字时 fill-column 被设置的值。
+在你的 Info 缓冲区中，这个值可能不同。请注意，作为变量返回的值和函数执行其指令后返回的值，其显示方式完全相同。
+从 Lisp 解释器的角度来看，返回的值就是返回的值。一旦知道了这个值，它来自什么表达式就不再重要了。\\
+
+一个符号可以附加任何值，或者用行话来说，我们可以将变量绑定到一个值：可以是一个数字，比如 72；
+可以是一个字符串，比如 "such as this"；可以是一个列表，比如 (spruce pine oak)；我们甚至可以将一个变量绑定到一个函数定义。\\
+
+符号可以通过几种方式绑定到一个值。有关其中一种方式的信息，请参阅“设置变量的值”。
+
+*** 没有函数的符号的错误信息
+当我们对 fill-column 求值以查看其作为变量的值时，没有在这个词周围加上括号。这是因为我们并不打算将其用作函数名。\\
+
+如果 fill-column 是列表中的第一个或唯一元素，Lisp 解释器将尝试查找附加给它的函数定义。
+但 fill-column 并没有函数定义。试着对以下内容求值：
+#+begin_src emacs-lisp
+  (fill-column)
+#+end_src
+你会创建一个名为 *Backtrace* 的缓冲区，其中显示：
+#+begin_src emacs-lisp
+  ---------- Buffer: *Backtrace* ----------
+  Debugger entered--Lisp error: (void-function fill-column)
+    (fill-column)
+    eval((fill-column) nil)
+    elisp--eval-last-sexp(nil)
+    eval-last-sexp(nil)
+    funcall-interactively(eval-last-sexp nil)
+    call-interactively(eval-last-sexp nil nil)
+    command-execute(eval-last-sexp)
+  ---------- Buffer: *Backtrace* ----------
+#+end_src
+（记住，要退出调试器并关闭调试器窗口，在 *Backtrace* 缓冲区中输入 q。）
+
+*** 没有值的符号的错误信息
+如果你尝试对一个没有绑定值的符号进行求值，你将收到一条错误信息。你可以通过尝试我们的 2 加 2 来看到这一点。
+在以下表达式中，将光标放在 + 后面、第一个数字 2 之前，然后输入 C-x C-e：
+#+begin_src emacs-lisp
+  (+ 2 2)
+#+end_src
+在 GNU Emacs 22 中，你会创建一个名为 *Backtrace* 的缓冲区，其中显示：
+#+begin_src emacs-lisp
+  ---------- Buffer: *Backtrace* ----------
+  Debugger entered--Lisp error: (void-variable +)
+    eval(+)
+    elisp--eval-last-sexp(nil)
+    eval-last-sexp(nil)
+    funcall-interactively(eval-last-sexp nil)
+    call-interactively(eval-last-sexp nil nil)
+    command-execute(eval-last-sexp)
+  ---------- Buffer: *Backtrace* ----------
+#+end_src
+（同样，你可以通过在 *Backtrace* 缓冲区中输入 q 来退出调试器。）\\
+
+这个回溯与我们看到的第一个错误信息不同，第一个错误信息显示为“Debugger entered--Lisp error: (void-function this)”。
+在这个案例中，函数没有作为变量的值；而在另一个错误信息中，函数（“this”这个词）没有定义。\\
+
+在我们对 + 进行的实验中，我们让 Lisp 解释器对 + 进行求值，并查找变量的值，而不是函数定义。
+我们通过将光标放在符号后面，而不是像之前那样放在封闭列表的括号后面来实现这一点。
+结果，Lisp 解释器求值了前面的 s-表达式，在这种情况下就是 + 本身。\\
+
+由于 + 没有绑定任何值，只有函数定义，因此错误信息报告该符号作为变量的值为空。
+
+** 参数
+为了了解信息如何传递给函数，我们再次来看一下我们熟悉的例子，即两个数相加。在 Lisp 中，这样写：
+#+begin_src emacs-lisp
+  (+ 2 2)
+#+end_src
+如果你对这个表达式求值，数字 4 会出现在你的回显区域。Lisp 解释器的作用是将 + 后面的数字相加。\\
+
+这些被 + 加起来的数字被称为函数 + 的参数。这些数字是传递给函数的信息。\\
+
+“参数”一词来源于数学中的用法，并不指两个人之间的争论；相反，它指的是传递给函数的信息，在这个例子中就是传递给 + 的信息。
+在 Lisp 中，函数的参数是跟在函数后面的原子或列表。通过对这些原子或列表求值获得的值会传递给函数。
+不同的函数需要不同数量的参数，有些函数甚至不需要参数。
+
+*** 参数的数据类型
+传递给函数的数据类型取决于函数使用的信息类型。像 + 这样的函数，其参数必须是数值，因为 + 是用来进行数值相加的。
+而其他函数则会使用不同类型的数据作为参数。\\
+
+例如，concat 函数将两个或多个文本字符串连接在一起，生成一个新的字符串。它的参数是字符串。
+将两个字符串 "abc" 和 "def" 连接起来会生成单一字符串 "abcdef"。你可以通过对以下表达式求值来验证这一点：
+#+begin_src emacs-lisp
+  (concat "abc" "def")
+#+end_src
+对这个表达式求值的结果是 "abcdef"。
+
+像 substring 这样的函数则会同时使用字符串和数字作为参数。这个函数返回字符串的一部分，即第一个参数的子字符串。
+substring 函数接受三个参数。第一个参数是字符字符串，第二个和第三个参数是数字，
+用于指示子字符串的起始位置（包含）和结束位置（不包含）。这些数字表示从字符串开头起字符（包括空格和标点符号）的计数。
+请注意，字符串中的字符编号从零开始，而不是从一开始。\\
+
+例如，如果你对以下表达式求值：
+#+begin_src emacs-lisp
+  (substring "The quick brown fox jumped." 16 19)
+#+end_src
+你会在回显区域看到 "fox"。这些参数包括字符串和两个数字。\\
+
+请注意，传递给 substring 的字符串虽然由几个用空格分隔的单词组成，但它仍然是一个单一的原子。
+Lisp 将两个引号之间的所有内容都视为字符串的一部分，包括空格。
+你可以将 substring 函数视为一种“原子粉碎机”，因为它能够从一个不可分割的原子中提取出一部分。
+不过，substring 只能从字符串类型的参数中提取子字符串，不能从其他类型的原子（如数字或符号）中提取。
+
+*** 作为变量或列表值的参数
+参数可以是一个符号，当对其求值时会返回一个值。
+例如，当单独对符号 fill-column 求值时，它会返回一个数字。这个数字可以用于加法运算中。\\
+
+将光标放在以下表达式后面，然后输入 C-x C-e：
+#+begin_src emacs-lisp
+  (+ 2 fill-column)
+#+end_src
+结果将是一个比单独求值 fill-column 时多出 2 的数字。对我来说，这是 74，因为我的 fill-column 值是 72。\\
+
+正如我们刚刚看到的，参数可以是一个符号，在求值时返回一个值。此外，参数还可以是一个列表，在求值时返回一个值。
+例如，在以下表达式中，函数 concat 的参数是字符串 "The " 和 " red foxes." 以及列表 (number-to-string (+ 2 fill-column))。
+#+begin_src emacs-lisp
+  (concat "The " (number-to-string (+ 2 fill-column)) " red foxes.")
+#+end_src
+如果你对这个表达式求值——并且如果你的 Emacs 中 fill-column 的值为 72——那么回显区域中将显示 "The 74 red foxes."。
+（注意，你必须在单词 "The" 后和单词 "red" 前加上空格，这样它们才会出现在最终的字符串中。
+number-to-string 函数将加法函数返回的整数转换为字符串。number-to-string 也被称为 int-to-string。）
+
+*** 可变数量的参数
+一些函数，例如 concat、+ 或 *，可以接受任意数量的参数。（* 是乘法的符号。）
+你可以通过对以下每个表达式按常规方式求值来验证这一点。回显区域中显示的结果在文本中用 ⇒ 表示，你可以将其理解为“求值结果为”。\\
+
+在第一组中，这些函数没有参数：
+#+begin_src emacs-lisp
+  (+)       ⇒ 0
+
+  (*)       ⇒ 1
+#+end_src
+在这一组中，每个函数有一个参数：
+#+begin_src emacs-lisp
+  (+ 3)     ⇒ 3
+
+  (* 3)     ⇒ 3
+#+end_src
+在这一组中，每个函数有三个参数：
+#+begin_src emacs-lisp
+  (+ 3 4 5) ⇒ 12
+
+  (* 3 4 5) ⇒ 60
+#+end_src
+
+*** 使用错误类型的对象作为参数
+当一个函数被传递了错误类型的参数时，Lisp 解释器会生成一条错误消息。例如，+ 函数期望其参数的值是数字。
+作为实验，我们可以传递一个引用的符号 hello 而不是数字。将光标放在以下表达式后面，然后输入 C-x C-e：
+#+begin_src emacs-lisp
+  (+ 2 'hello)
+#+end_src
+当你这样做时，会生成一条错误消息。发生的情况是，+ 试图将 2 与 hello 返回的值相加，
+但 hello 返回的值是符号 hello，而不是一个数字。只有数字才能相加，所以 + 无法执行加法操作。\\
+
+你将创建并进入一个名为 *Backtrace* 的缓冲区，其中显示：
+#+begin_src emacs-lisp
+  ---------- Buffer: *Backtrace* ----------
+  Debugger entered--Lisp error:
+           (wrong-type-argument number-or-marker-p hello)
+    +(2 hello)
+    eval((+ 2 'hello) nil)
+    elisp--eval-last-sexp(t)
+    eval-last-sexp(nil)
+    funcall-interactively(eval-print-last-sexp nil)
+    call-interactively(eval-print-last-sexp nil nil)
+    command-execute(eval-print-last-sexp)
+  ---------- Buffer: *Backtrace* ----------
+#+end_src
+像往常一样，错误信息试图提供帮助，并在你学会如何解读它之后变得容易理解。\\
+
+错误消息的第一部分很直接，提示“错误的类型参数”（wrong type argument）。
+接下来是一个看起来神秘的术语“number-or-marker-p”。这个术语试图告诉你 + 函数期望接收到哪种类型的参数。\\
+
+符号 number-or-marker-p 表示 Lisp 解释器正在尝试确定提供给它的信息（参数的值）是否为数字或标记（代表缓冲区位置的特殊对象）。
+它的作用是测试 + 函数是否接收到可以相加的数字。它还测试参数是否是被称为标记的东西，这是一种 Emacs Lisp 的特定功能。
+（在 Emacs 中，缓冲区中的位置记录为标记。当使用 C-@ 或 C-SPC 命令设置标记时，其位置作为标记保存。
+标记可以被视为一个数字——该位置距缓冲区起始位置的字符数。）在 Emacs Lisp 中，`+` 可以用于将标记位置的数值相加。\\
+
+number-or-marker-p 中的 p 是早期 Lisp 编程实践的体现。p 代表谓词（predicate）。
+在早期 Lisp 研究者使用的术语中，谓词指的是一个判断某个属性是“真”还是“假”的函数。
+因此，p 告诉我们 number-or-marker-p 是一个函数的名称，该函数用于判断提供的参数是否为数字或标记。
+其他以 p 结尾的 Lisp 符号包括 zerop（一个测试其参数是否为零的函数）和 listp（一个测试其参数是否为列表的函数）。\\
+
+最后，错误消息的最后一部分是符号 hello。这是传递给 + 的参数的值。
+如果传递给 + 的参数是正确类型的对象，这个值会是一个数字，例如 37，而不是像 hello 这样的符号。
+但在那种情况下，你就不会收到错误信息了。
+
+*** message 函数
+和 + 函数一样，message 函数也可以接受可变数量的参数。它用于向用户发送消息，非常有用，因此我们将在这里介绍它。\\
+
+消息会显示在回显区域。例如，你可以通过对以下列表求值，将一条消息打印在你的回显区域中：
+#+begin_src emacs-lisp
+  (message "This message appears in the echo area!")
+#+end_src
+双引号之间的整个字符串是一个单一的参数，并将被完整打印。
+（注意，在这个例子中，消息本身会在回显区域中显示在双引号内；这是因为你看到了 message 函数返回的值。
+在你编写的程序中，大多数使用 message 的情况下，文本会作为副作用打印在回显区域，而不会带有引号。
+有关此类示例，请参阅 multiply-by-seven 的详细介绍。）\\
+
+然而，如果在引用的字符串中有一个 '%s'，message 函数不会按原样打印 '%s'，而是会查找字符串之后的参数。
+它会对第二个参数求值，并在字符串中 `'%s'` 所在的位置打印该值。\\
+
+你可以通过将光标放在以下表达式后并输入 C-x C-e 来验证这一点：
+#+begin_src emacs-lisp
+  (message "The name of this buffer is: %s." (buffer-name))
+#+end_src
+在 Info 中，回显区域会显示 "The name of this buffer is: *info*."。
+buffer-name 函数返回缓冲区的名称作为字符串，message 函数将其插入 %s 的位置。\\
+
+要将一个值以整数形式打印，可以像使用 %s 一样使用 %d。例如，要在回显区域中打印 `fill-column` 的值，可以对以下表达式求值：
+#+begin_src emacs-lisp
+  (message "The value of fill-column is %d." fill-column)
+#+end_src
+在我的系统上，当我对这个列表求值时，回显区域会显示 "The value of fill-column is 72."。\\
+
+如果引用的字符串中有多个 %s，第一个 %s 位置会打印引用字符串后第一个参数的值，第二个 %s 位置会打印第二个参数的值，依此类推。\\
+
+例如，如果你对以下表达式求值：
+#+begin_src emacs-lisp
+  (message "There are %d %s in the office!"
+         (- fill-column 14) "pink elephants")
+#+end_src
+在你的回显区域中会出现一条相当异想天开的消息。在我的系统上，它显示为 "There are 58 pink elephants in the office!"。\\
+
+表达式 (- fill-column 14) 会被求值，得到的数字将被插入到 %d 的位置；
+而双引号中的字符串 "pink elephants" 被视为一个单独的参数，并被插入到 %s 的位置。
+（也就是说，双引号之间的字符串求值为其自身，就像数字一样。）\\
+
+最后，这是一个稍微复杂的例子，不仅说明了如何计算一个数字，还展示了如何在表达式中使用另一个表达式来生成替换 %s 的文本：
+#+begin_src emacs-lisp
+  (message "He saw %d %s"
+           (- fill-column 32)
+           (concat "red "
+                   (substring
+                    "The quick brown foxes jumped." 16 21)
+                   " leaping."))
+#+end_src
+在这个例子中，message 有三个参数：字符串 "He saw %d %s"，表达式 (- fill-column 32)，以及以 concat 函数开头的表达式。
+(- fill-column 32) 的求值结果被插入到 %d 的位置，而 concat 表达式的返回值则被插入到 %s 的位置。\\
+
+当你的 fill-column 值为 70 并且你对这个表达式求值时，回显区域会显示消息 "He saw 38 red foxes leaping."。
+
+** 设置变量的值
+有几种方法可以为变量赋值。其中一种方法是使用特殊形式 setq。另一种方法是使用 let（参见 let）。
+在专业术语中，这个过程称为将变量绑定到一个值。\\
+
+以下部分不仅描述了 setq 的工作原理，还说明了参数是如何传递的。
+
+*** 使用 setq
+要将符号 flowers 的值设置为列表 (rose violet daisy buttercup)，请通过将光标放在表达式后面并按下 C-x C-e 来对以下表达式求值：
+#+begin_src emacs-lisp
+  (setq flowers '(rose violet daisy buttercup))
+#+end_src
+回显区域会显示列表 (rose violet daisy buttercup)，这是 setq 特殊形式返回的内容。
+作为副作用，符号 flowers 被绑定到该列表；也就是说，符号 flowers，可以视为一个变量，被赋予了这个列表作为其值。
+（顺便说一下，这个过程说明了对 Lisp 解释器设置值的副作用可以是我们人类感兴趣的主要效果。
+这是因为每个 Lisp 函数必须返回一个值，除非它遇到错误，但它只有在被设计为具有副作用时才会有副作用。）\\
+
+在对 setq 表达式求值后，你可以对符号 flowers 求值，它将返回你刚刚设置的值。以下是这个符号。将光标放在它后面并输入 C-x C-e。
+#+begin_src emacs-lisp
+  flowers
+#+end_src
+当你对 flowers 求值时，回显区域会显示列表 (rose violet daisy buttercup)。\\
+
+顺便提一下，如果你对带有前置单引号的变量 'flowers 求值，你将在回显区域看到的是符号本身，即 flowers。
+以下是带有引号的符号，你可以试试这个：
+#+begin_src emacs-lisp
+  'flowers
+#+end_src
+另外，作为一种额外的方便，setq 允许你在一个表达式中为多个不同的变量设置不同的值。\\
+
+要使用 setq 将变量 carnivores 的值设置为列表 '(lion tiger leopard)，可以使用以下表达式：
+#+begin_src emacs-lisp
+  (setq carnivores '(lion tiger leopard))
+#+end_src
+此外，setq 可以用来为不同的变量分配不同的值。第一个参数被绑定到第二个参数的值，第三个参数被绑定到第四个参数的值，依此类推。
+例如，你可以使用以下表达式将一组树的列表分配给符号 trees，并将一组食草动物的列表分配给符号 herbivores：
+#+begin_src emacs-lisp
+  (setq trees '(pine fir oak maple)
+        herbivores '(gazelle antelope zebra))
+#+end_src
+（这个表达式同样可以放在一行上，但可能不适合在一页上显示；而且人类更容易阅读格式整齐的列表。）\\
+
+虽然我一直在使用“赋值”这个术语，但还有另一种理解 setq 工作方式的方式，那就是 setq 使符号指向列表。
+这种思维方式非常普遍，在后续章节中，我们将遇到至少一个名称中包含“指针”的符号。
+这个名称的选择是因为该符号有一个值，特别是一个列表，附加在它上面；或者换句话说，符号被设置为指向列表。
+
+*** 计数
+下面是一个使用 setq 进行计数的示例。这可以用于计算你的程序某部分重复执行的次数。
+首先，将一个变量设置为零；然后每次程序重复执行时，将这个数字加一。
+要做到这一点，你需要一个变量作为计数器，以及两个表达式：一个初始的 setq 表达式将计数器变量设置为零；
+第二个 setq 表达式在每次被计算时增加计数器的值。
+#+begin_src emacs-lisp
+  (setq counter 0)                ; 这是初始化器。
+
+  (setq counter (+ counter 1))    ; 这是增量器。
+
+  counter                         ; 这是计数器。
+#+end_src
+（‘;’ 后的文字是注释。详见“更改函数定义”部分。）\\
+
+如果你计算第一个表达式，即初始化器 (setq counter 0)，然后计算第三个表达式 counter，回显区域将显示数字 0。
+如果你接着计算第二个表达式，即增量器 (setq counter (+ counter 1))，计数器将获得值 1。
+因此，如果你再次计算 counter，回显区域将显示数字 1。每次你计算第二个表达式，计数器的值都会增加。\\
+
+当你计算增量器 (setq counter (+ counter 1)) 时，Lisp 解释器首先计算最里面的列表，即加法。
+为了计算这个列表，它必须计算变量 counter 和数字 1。当它计算变量 counter 时，会获取其当前值。
+然后将这个值和数字 1 传递给 +，后者将它们相加。这个和作为内部列表的值返回，并传递给 setq，
+后者将变量 counter 设置为这个新值。因此，变量 counter 的值发生了变化。
+
+** 总结
+学习 Lisp 就像爬山，最开始的部分是最陡峭的。你现在已经攀登了最困难的部分，接下来随着你的进步会变得越来越容易。\\
+
+总结如下：
+- Lisp 程序由表达式组成，表达式可以是列表或单个原子。
+- 列表由零个或多个原子或内嵌列表组成，这些元素之间用空格分隔，并由括号包围。列表可以为空。
+- 原子可以是多个字符组成的符号，如 forward-paragraph，也可以是单个字符的符号，如 +，或者是双引号括起来的字符串，或数字。
+- 数字的值就是它本身。
+- 双引号括起来的字符串的值也是它本身。
+- 当你单独计算一个符号时，会返回它的值。
+- 当你计算一个列表时，Lisp 解释器会查看列表中的第一个符号，然后查看绑定到该符号的函数定义。接着会执行函数定义中的指令。
+- 单引号 ' 告诉 Lisp 解释器返回紧随其后的表达式本身，而不是像没有引号时那样进行计算。
+- 参数是传递给函数的信息。函数的参数是通过计算列表中除了第一个元素以外的其他元素得到的。
+- 函数在被计算时总是返回一个值（除非出现错误）；此外，它还可能执行一些作为副作用的操作。在许多情况下，函数的主要目的是产生副作用。
+
+** 练习
+几个简单的练习：
+1. 通过计算一个不在括号内的适当符号生成一条错误信息。
+2. 通过计算一个在括号内的适当符号生成一条错误信息。
+3. 创建一个每次递增2而不是1的计数器。
+4. 编写一个在计算时在回显区域打印信息的表达式。
+
+
+* 练习计算
+在学习如何编写 Emacs Lisp 函数定义之前，花一些时间计算已经编写的各种表达式是很有用的。
+这些表达式将是以函数作为其第一个（通常也是唯一的）元素的列表。由于与缓冲区相关的一些函数既简单又有趣，我们将从这些函数开始。
+在本节中，我们将计算其中的一些函数。在另一节中，我们将研究其他几个与缓冲区相关的函数的代码，看看它们是如何编写的。
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
