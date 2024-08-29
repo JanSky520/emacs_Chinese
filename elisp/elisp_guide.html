@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2024-08-25 Sun 01:14 -->
+<!-- 2024-08-29 Thu 23:50 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>elisp快速指南</title>
@@ -201,65 +201,73 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org0462f5c">1. 列表处理</a>
+<li><a href="#org1f10e7c">1. 列表处理</a>
 <ul>
-<li><a href="#org059ff45">1.1. Lisp 中的列表</a>
+<li><a href="#org0580673">1.1. Lisp 中的列表</a>
 <ul>
-<li><a href="#org4c509ae">1.1.1. 数字，列表中的列表</a></li>
-<li><a href="#org35a47ab">1.1.2. Lisp中的原子</a></li>
-<li><a href="#org44b73bd">1.1.3. 列表中的空白</a></li>
-<li><a href="#org5e6b5b4">1.1.4. GNU Emacs 帮助你编写列表</a></li>
+<li><a href="#org10f8a9e">1.1.1. 数字，列表中的列表</a></li>
+<li><a href="#orgde29428">1.1.2. Lisp中的原子</a></li>
+<li><a href="#orga4fa25f">1.1.3. 列表中的空白</a></li>
+<li><a href="#orgca403a1">1.1.4. GNU Emacs 帮助你编写列表</a></li>
 </ul>
 </li>
-<li><a href="#org713d533">1.2. 运行程序</a></li>
-<li><a href="#org98a0a07">1.3. 生成错误消息</a></li>
-<li><a href="#org60257ec">1.4. 符号名称与函数定义</a></li>
-<li><a href="#org4176fae">1.5. Lisp 解释器</a>
+<li><a href="#org8c5e22c">1.2. 运行程序</a></li>
+<li><a href="#org16245a4">1.3. 生成错误消息</a></li>
+<li><a href="#orge28b44f">1.4. 符号名称与函数定义</a></li>
+<li><a href="#org6de70e8">1.5. Lisp 解释器</a>
 <ul>
-<li><a href="#org227849b">1.5.1. 复杂情况</a></li>
-<li><a href="#orgaf63b57">1.5.2. 字节编译</a></li>
+<li><a href="#orgf8e4ba2">1.5.1. 复杂情况</a></li>
+<li><a href="#org69b5f64">1.5.2. 字节编译</a></li>
 </ul>
 </li>
-<li><a href="#orgd669e2d">1.6. 求值</a>
+<li><a href="#orga7f2b68">1.6. 求值</a>
 <ul>
-<li><a href="#org6d87b23">1.6.1. Lisp 解释器的行为</a></li>
-<li><a href="#orgbe11ccf">1.6.2. 求值内部列表</a></li>
+<li><a href="#orgaaf1fca">1.6.1. Lisp 解释器的行为</a></li>
+<li><a href="#org69cf0bb">1.6.2. 求值内部列表</a></li>
 </ul>
 </li>
-<li><a href="#org61b8ad3">1.7. 变量</a>
+<li><a href="#org7c02407">1.7. 变量</a>
 <ul>
-<li><a href="#org42ba08c">1.7.1. fill-column，一个示例变量</a></li>
-<li><a href="#org9ef1a00">1.7.2. 没有函数的符号的错误信息</a></li>
-<li><a href="#orge99acc0">1.7.3. 没有值的符号的错误信息</a></li>
+<li><a href="#org8ae643c">1.7.1. fill-column，一个示例变量</a></li>
+<li><a href="#org8b2f016">1.7.2. 没有函数的符号的错误信息</a></li>
+<li><a href="#org7cd489d">1.7.3. 没有值的符号的错误信息</a></li>
 </ul>
 </li>
-<li><a href="#org5992c92">1.8. 参数</a>
+<li><a href="#org4bba7b8">1.8. 参数</a>
 <ul>
-<li><a href="#orga99ed3b">1.8.1. 参数的数据类型</a></li>
-<li><a href="#orga30c939">1.8.2. 作为变量或列表值的参数</a></li>
-<li><a href="#orgbe493bc">1.8.3. 可变数量的参数</a></li>
-<li><a href="#org288dc85">1.8.4. 使用错误类型的对象作为参数</a></li>
-<li><a href="#org38021b5">1.8.5. message 函数</a></li>
+<li><a href="#org97404d1">1.8.1. 参数的数据类型</a></li>
+<li><a href="#orgbbd6748">1.8.2. 作为变量或列表值的参数</a></li>
+<li><a href="#orge0698ba">1.8.3. 可变数量的参数</a></li>
+<li><a href="#org5769631">1.8.4. 使用错误类型的对象作为参数</a></li>
+<li><a href="#org1ad5901">1.8.5. message 函数</a></li>
 </ul>
 </li>
-<li><a href="#org94b34a1">1.9. 设置变量的值</a>
+<li><a href="#org1a45605">1.9. 设置变量的值</a>
 <ul>
-<li><a href="#org7fc67a8">1.9.1. 使用 setq</a></li>
-<li><a href="#orgf5f387c">1.9.2. 计数</a></li>
+<li><a href="#org04bcacc">1.9.1. 使用 setq</a></li>
+<li><a href="#org2242316">1.9.2. 计数</a></li>
 </ul>
 </li>
-<li><a href="#org0e47932">1.10. 总结</a></li>
-<li><a href="#org067f891">1.11. 练习</a></li>
+<li><a href="#orgedcc462">1.10. 总结</a></li>
+<li><a href="#org68d435d">1.11. 练习</a></li>
 </ul>
 </li>
-<li><a href="#org32268ab">2. 练习计算</a></li>
+<li><a href="#orgaf6d84c">2. 练习计算</a>
+<ul>
+<li><a href="#orgc5a0cb4">2.1. 缓冲区名称</a></li>
+<li><a href="#orgeb98ebc">2.2. 获取缓冲区</a></li>
+<li><a href="#orgd76ba29">2.3. 切换缓冲区</a></li>
+<li><a href="#org1fa1e98">2.4. 缓冲区大小和点的位置</a></li>
+<li><a href="#orge85584e">2.5. 练习</a></li>
+</ul>
+</li>
 </ul>
 </div>
 </div>
 
 
-<div id="outline-container-org0462f5c" class="outline-2">
-<h2 id="org0462f5c"><span class="section-number-2">1.</span> 列表处理</h2>
+<div id="outline-container-org1f10e7c" class="outline-2">
+<h2 id="org1f10e7c"><span class="section-number-2">1.</span> 列表处理</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 对未曾接触过的人来说，Lisp 是一种奇怪的编程语言。在 Lisp 代码中，到处都是括号。
@@ -269,8 +277,8 @@ Lisp 实际上代表的是“LISt Processing”（列表处理），这门编程
 </p>
 </div>
 
-<div id="outline-container-org059ff45" class="outline-3">
-<h3 id="org059ff45"><span class="section-number-3">1.1.</span> Lisp 中的列表</h3>
+<div id="outline-container-org0580673" class="outline-3">
+<h3 id="org0580673"><span class="section-number-3">1.1.</span> Lisp 中的列表</h3>
 <div class="outline-text-3" id="text-1-1">
 <p>
 在 Lisp 中，一个列表看起来像这样：'(rose violet daisy buttercup)。这个列表前有一个单引号。
@@ -288,8 +296,8 @@ buttercup)
 </p>
 </div>
 
-<div id="outline-container-org4c509ae" class="outline-4">
-<h4 id="org4c509ae"><span class="section-number-4">1.1.1.</span> 数字，列表中的列表</h4>
+<div id="outline-container-org10f8a9e" class="outline-4">
+<h4 id="org10f8a9e"><span class="section-number-4">1.1.1.</span> 数字，列表中的列表</h4>
 <div class="outline-text-4" id="text-1-1-1">
 <p>
 列表中也可以包含数字，如在这个列表中：(+ 2 2)。这个列表包含一个加号 ‘+’，后面跟着两个数字 ‘2’，它们之间用空格分隔。<br />
@@ -314,8 +322,8 @@ buttercup)
 </div>
 </div>
 
-<div id="outline-container-org35a47ab" class="outline-4">
-<h4 id="org35a47ab"><span class="section-number-4">1.1.2.</span> Lisp中的原子</h4>
+<div id="outline-container-orgde29428" class="outline-4">
+<h4 id="orgde29428"><span class="section-number-4">1.1.2.</span> Lisp中的原子</h4>
 <div class="outline-text-4" id="text-1-1-2">
 <p>
 在Lisp中，我们所称的“单词”被称为“原子”。这个术语源自“原子”一词的历史含义，意思是“不可分割”。
@@ -371,8 +379,8 @@ Lisp 编程主要涉及列表中的符号（有时也包括数字）。顺便说
 </div>
 </div>
 
-<div id="outline-container-org44b73bd" class="outline-4">
-<h4 id="org44b73bd"><span class="section-number-4">1.1.3.</span> 列表中的空白</h4>
+<div id="outline-container-orga4fa25f" class="outline-4">
+<h4 id="orga4fa25f"><span class="section-number-4">1.1.3.</span> 列表中的空白</h4>
 <div class="outline-text-4" id="text-1-1-3">
 <p>
 列表中的空白量并不重要。从 Lisp 语言的角度来看：
@@ -407,8 +415,8 @@ Lisp 编程主要涉及列表中的符号（有时也包括数字）。顺便说
 </div>
 </div>
 
-<div id="outline-container-org5e6b5b4" class="outline-4">
-<h4 id="org5e6b5b4"><span class="section-number-4">1.1.4.</span> GNU Emacs 帮助你编写列表</h4>
+<div id="outline-container-orgca403a1" class="outline-4">
+<h4 id="orgca403a1"><span class="section-number-4">1.1.4.</span> GNU Emacs 帮助你编写列表</h4>
 <div class="outline-text-4" id="text-1-1-4">
 <p>
 当你在 GNU Emacs 中使用 Lisp 交互模式或 Emacs Lisp 模式输入 Lisp 表达式时，你可以使用多个命令来格式化 Lisp 表达式，
@@ -426,8 +434,8 @@ Lisp 编程主要涉及列表中的符号（有时也包括数字）。顺便说
 </div>
 </div>
 
-<div id="outline-container-org713d533" class="outline-3">
-<h3 id="org713d533"><span class="section-number-3">1.2.</span> 运行程序</h3>
+<div id="outline-container-org8c5e22c" class="outline-3">
+<h3 id="org8c5e22c"><span class="section-number-3">1.2.</span> 运行程序</h3>
 <div class="outline-text-3" id="text-1-2">
 <p>
 在 Lisp 中，任何列表都是一个准备运行的程序。如果你运行它（在 Lisp 中的术语是“求值”），
@@ -471,8 +479,8 @@ Lisp 解释器的名称源自于一个人为表达式赋予意义并解释它的
 </div>
 </div>
 
-<div id="outline-container-org98a0a07" class="outline-3">
-<h3 id="org98a0a07"><span class="section-number-3">1.3.</span> 生成错误消息</h3>
+<div id="outline-container-org16245a4" class="outline-3">
+<h3 id="org16245a4"><span class="section-number-3">1.3.</span> 生成错误消息</h3>
 <div class="outline-text-3" id="text-1-3">
 <p>
 为了让你在不小心做错时不会过于担心，我们现在将向 Lisp 解释器发出一个命令，以生成错误消息。
@@ -585,8 +593,8 @@ Lisp 解释器试图求值列表的第一个原子，即单词 'this'。正是�
 </div>
 </div>
 
-<div id="outline-container-org60257ec" class="outline-3">
-<h3 id="org60257ec"><span class="section-number-3">1.4.</span> 符号名称与函数定义</h3>
+<div id="outline-container-orge28b44f" class="outline-3">
+<h3 id="orge28b44f"><span class="section-number-3">1.4.</span> 符号名称与函数定义</h3>
 <div class="outline-text-3" id="text-1-4">
 <p>
 基于我们迄今为止讨论的内容，我们可以明确 Lisp 的另一个特征——一个重要的特征：像 + 这样的符号本身并不是计算机要执行的那组指令。
@@ -603,7 +611,7 @@ Lisp 解释器试图求值列表的第一个原子，即单词 'this'。正是�
 <p>
 另一方面，一个符号在同一时间只能有一个函数定义与之关联。否则，计算机会因为不知道使用哪个定义而感到困惑。
 如果在人类社会中也存在这种情况，那么世界上只有一个人可以叫 "Bob"。
-不过，符号名称所指向的函数定义可以轻松更改。（参见《安装函数定义》）。<br />
+不过，符号名称所指向的函数定义可以轻松更改。（参见《设置函数定义》）。<br />
 </p>
 
 <p>
@@ -613,8 +621,8 @@ Lisp 解释器试图求值列表的第一个原子，即单词 'this'。正是�
 </div>
 </div>
 
-<div id="outline-container-org4176fae" class="outline-3">
-<h3 id="org4176fae"><span class="section-number-3">1.5.</span> Lisp 解释器</h3>
+<div id="outline-container-org6de70e8" class="outline-3">
+<h3 id="org6de70e8"><span class="section-number-3">1.5.</span> Lisp 解释器</h3>
 <div class="outline-text-3" id="text-1-5">
 <p>
 基于我们所见的内容，我们现在可以开始理解 Lisp 解释器在我们命令它求值一个列表时的工作原理。
@@ -629,8 +637,8 @@ Lisp 解释器试图求值列表的第一个原子，即单词 'this'。正是�
 </p>
 </div>
 
-<div id="outline-container-org227849b" class="outline-4">
-<h4 id="org227849b"><span class="section-number-4">1.5.1.</span> 复杂情况</h4>
+<div id="outline-container-orgf8e4ba2" class="outline-4">
+<h4 id="orgf8e4ba2"><span class="section-number-4">1.5.1.</span> 复杂情况</h4>
 <div class="outline-text-4" id="text-1-5-1">
 <p>
 现在，我们来探讨第一个复杂情况。除了列表外，Lisp 解释器还可以求值一个未加引号且没有括号的符号。
@@ -666,8 +674,8 @@ Lisp 解释器会尝试将该符号的值作为变量来确定。这种情况在
 </div>
 </div>
 
-<div id="outline-container-orgaf63b57" class="outline-4">
-<h4 id="orgaf63b57"><span class="section-number-4">1.5.2.</span> 字节编译</h4>
+<div id="outline-container-org69b5f64" class="outline-4">
+<h4 id="org69b5f64"><span class="section-number-4">1.5.2.</span> 字节编译</h4>
 <div class="outline-text-4" id="text-1-5-2">
 <p>
 关于解释的另一个方面：Lisp 解释器能够解释两种实体：人类可读的代码（我们将专注于此），
@@ -688,8 +696,8 @@ Lisp 解释器会尝试将该符号的值作为变量来确定。这种情况在
 </div>
 </div>
 
-<div id="outline-container-orgd669e2d" class="outline-3">
-<h3 id="orgd669e2d"><span class="section-number-3">1.6.</span> 求值</h3>
+<div id="outline-container-orga7f2b68" class="outline-3">
+<h3 id="orga7f2b68"><span class="section-number-3">1.6.</span> 求值</h3>
 <div class="outline-text-3" id="text-1-6">
 <p>
 当 Lisp 解释器处理一个表达式时，这一活动被称为求值。我们说解释器“对表达式进行求值”。
@@ -697,8 +705,8 @@ Lisp 解释器会尝试将该符号的值作为变量来确定。这种情况在
 </p>
 </div>
 
-<div id="outline-container-org6d87b23" class="outline-4">
-<h4 id="org6d87b23"><span class="section-number-4">1.6.1.</span> Lisp 解释器的行为</h4>
+<div id="outline-container-orgaaf1fca" class="outline-4">
+<h4 id="orgaaf1fca"><span class="section-number-4">1.6.1.</span> Lisp 解释器的行为</h4>
 <div class="outline-text-4" id="text-1-6-1">
 <p>
 在对一个表达式求值之后，Lisp 解释器很可能会返回计算机通过执行函数定义中的指令所产生的值，或者可能会放弃该函数并产生一条错误消息。
@@ -717,8 +725,8 @@ Lisp 解释器会尝试将该符号的值作为变量来确定。这种情况在
 </div>
 </div>
 
-<div id="outline-container-orgbe11ccf" class="outline-4">
-<h4 id="orgbe11ccf"><span class="section-number-4">1.6.2.</span> 求值内部列表</h4>
+<div id="outline-container-org69cf0bb" class="outline-4">
+<h4 id="org69cf0bb"><span class="section-number-4">1.6.2.</span> 求值内部列表</h4>
 <div class="outline-text-4" id="text-1-6-2">
 <p>
 如果求值作用于嵌套在另一个列表中的列表，则外部列表在求值时可能会使用第一次求值返回的值作为信息。
@@ -773,8 +781,8 @@ sexp 是 “symbolic expression”（符号表达式）的缩写，而 eval 是 
 </div>
 </div>
 
-<div id="outline-container-org61b8ad3" class="outline-3">
-<h3 id="org61b8ad3"><span class="section-number-3">1.7.</span> 变量</h3>
+<div id="outline-container-org7c02407" class="outline-3">
+<h3 id="org7c02407"><span class="section-number-3">1.7.</span> 变量</h3>
 <div class="outline-text-3" id="text-1-7">
 <p>
 在 Emacs Lisp 中，一个符号可以附加一个值，就像它可以附加一个函数定义一样。两者是不同的。
@@ -793,8 +801,8 @@ sexp 是 “symbolic expression”（符号表达式）的缩写，而 eval 是 
 </p>
 </div>
 
-<div id="outline-container-org42ba08c" class="outline-4">
-<h4 id="org42ba08c"><span class="section-number-4">1.7.1.</span> fill-column，一个示例变量</h4>
+<div id="outline-container-org8ae643c" class="outline-4">
+<h4 id="org8ae643c"><span class="section-number-4">1.7.1.</span> fill-column，一个示例变量</h4>
 <div class="outline-text-4" id="text-1-7-1">
 <p>
 变量 fill-column 说明了一个附加了值的符号：在每个 GNU Emacs 缓冲区中，这个符号都被设置为某个值，通常是 72 或 70，
@@ -822,8 +830,8 @@ sexp 是 “symbolic expression”（符号表达式）的缩写，而 eval 是 
 </div>
 </div>
 
-<div id="outline-container-org9ef1a00" class="outline-4">
-<h4 id="org9ef1a00"><span class="section-number-4">1.7.2.</span> 没有函数的符号的错误信息</h4>
+<div id="outline-container-org8b2f016" class="outline-4">
+<h4 id="org8b2f016"><span class="section-number-4">1.7.2.</span> 没有函数的符号的错误信息</h4>
 <div class="outline-text-4" id="text-1-7-2">
 <p>
 当我们对 fill-column 求值以查看其作为变量的值时，没有在这个词周围加上括号。这是因为我们并不打算将其用作函数名。<br />
@@ -859,8 +867,8 @@ Debugger entered--Lisp error: (void-function fill-column)
 </div>
 </div>
 
-<div id="outline-container-orge99acc0" class="outline-4">
-<h4 id="orge99acc0"><span class="section-number-4">1.7.3.</span> 没有值的符号的错误信息</h4>
+<div id="outline-container-org7cd489d" class="outline-4">
+<h4 id="org7cd489d"><span class="section-number-4">1.7.3.</span> 没有值的符号的错误信息</h4>
 <div class="outline-text-4" id="text-1-7-3">
 <p>
 如果你尝试对一个没有绑定值的符号进行求值，你将收到一条错误信息。你可以通过尝试我们的 2 加 2 来看到这一点。
@@ -907,8 +915,8 @@ Debugger entered--Lisp error: (void-variable +)
 </div>
 </div>
 
-<div id="outline-container-org5992c92" class="outline-3">
-<h3 id="org5992c92"><span class="section-number-3">1.8.</span> 参数</h3>
+<div id="outline-container-org4bba7b8" class="outline-3">
+<h3 id="org4bba7b8"><span class="section-number-3">1.8.</span> 参数</h3>
 <div class="outline-text-3" id="text-1-8">
 <p>
 为了了解信息如何传递给函数，我们再次来看一下我们熟悉的例子，即两个数相加。在 Lisp 中，这样写：
@@ -932,8 +940,8 @@ Debugger entered--Lisp error: (void-variable +)
 </p>
 </div>
 
-<div id="outline-container-orga99ed3b" class="outline-4">
-<h4 id="orga99ed3b"><span class="section-number-4">1.8.1.</span> 参数的数据类型</h4>
+<div id="outline-container-org97404d1" class="outline-4">
+<h4 id="org97404d1"><span class="section-number-4">1.8.1.</span> 参数的数据类型</h4>
 <div class="outline-text-4" id="text-1-8-1">
 <p>
 传递给函数的数据类型取决于函数使用的信息类型。像 + 这样的函数，其参数必须是数值，因为 + 是用来进行数值相加的。
@@ -979,8 +987,8 @@ Lisp 将两个引号之间的所有内容都视为字符串的一部分，包括
 </div>
 </div>
 
-<div id="outline-container-orga30c939" class="outline-4">
-<h4 id="orga30c939"><span class="section-number-4">1.8.2.</span> 作为变量或列表值的参数</h4>
+<div id="outline-container-orgbbd6748" class="outline-4">
+<h4 id="orgbbd6748"><span class="section-number-4">1.8.2.</span> 作为变量或列表值的参数</h4>
 <div class="outline-text-4" id="text-1-8-2">
 <p>
 参数可以是一个符号，当对其求值时会返回一个值。
@@ -1014,8 +1022,8 @@ number-to-string 函数将加法函数返回的整数转换为字符串。number
 </div>
 </div>
 
-<div id="outline-container-orgbe493bc" class="outline-4">
-<h4 id="orgbe493bc"><span class="section-number-4">1.8.3.</span> 可变数量的参数</h4>
+<div id="outline-container-orge0698ba" class="outline-4">
+<h4 id="orge0698ba"><span class="section-number-4">1.8.3.</span> 可变数量的参数</h4>
 <div class="outline-text-4" id="text-1-8-3">
 <p>
 一些函数，例如 concat、+ 或 <b>，可以接受任意数量的参数。（</b> 是乘法的符号。）
@@ -1052,8 +1060,8 @@ number-to-string 函数将加法函数返回的整数转换为字符串。number
 </div>
 </div>
 
-<div id="outline-container-org288dc85" class="outline-4">
-<h4 id="org288dc85"><span class="section-number-4">1.8.4.</span> 使用错误类型的对象作为参数</h4>
+<div id="outline-container-org5769631" class="outline-4">
+<h4 id="org5769631"><span class="section-number-4">1.8.4.</span> 使用错误类型的对象作为参数</h4>
 <div class="outline-text-4" id="text-1-8-4">
 <p>
 当一个函数被传递了错误类型的参数时，Lisp 解释器会生成一条错误消息。例如，+ 函数期望其参数的值是数字。
@@ -1116,8 +1124,8 @@ number-or-marker-p 中的 p 是早期 Lisp 编程实践的体现。p 代表谓�
 </div>
 </div>
 
-<div id="outline-container-org38021b5" class="outline-4">
-<h4 id="org38021b5"><span class="section-number-4">1.8.5.</span> message 函数</h4>
+<div id="outline-container-org1ad5901" class="outline-4">
+<h4 id="org1ad5901"><span class="section-number-4">1.8.5.</span> message 函数</h4>
 <div class="outline-text-4" id="text-1-8-5">
 <p>
 和 + 函数一样，message 函数也可以接受可变数量的参数。它用于向用户发送消息，非常有用，因此我们将在这里介绍它。<br />
@@ -1211,8 +1219,8 @@ buffer-name 函数返回缓冲区的名称作为字符串，message 函数将其
 </div>
 </div>
 
-<div id="outline-container-org94b34a1" class="outline-3">
-<h3 id="org94b34a1"><span class="section-number-3">1.9.</span> 设置变量的值</h3>
+<div id="outline-container-org1a45605" class="outline-3">
+<h3 id="org1a45605"><span class="section-number-3">1.9.</span> 设置变量的值</h3>
 <div class="outline-text-3" id="text-1-9">
 <p>
 有几种方法可以为变量赋值。其中一种方法是使用特殊形式 setq。另一种方法是使用 let（参见 let）。
@@ -1224,8 +1232,8 @@ buffer-name 函数返回缓冲区的名称作为字符串，message 函数将其
 </p>
 </div>
 
-<div id="outline-container-org7fc67a8" class="outline-4">
-<h4 id="org7fc67a8"><span class="section-number-4">1.9.1.</span> 使用 setq</h4>
+<div id="outline-container-org04bcacc" class="outline-4">
+<h4 id="org04bcacc"><span class="section-number-4">1.9.1.</span> 使用 setq</h4>
 <div class="outline-text-4" id="text-1-9-1">
 <p>
 要将符号 flowers 的值设置为列表 (rose violet daisy buttercup)，请通过将光标放在表达式后面并按下 C-x C-e 来对以下表达式求值：
@@ -1292,8 +1300,8 @@ buffer-name 函数返回缓冲区的名称作为字符串，message 函数将其
 </div>
 </div>
 
-<div id="outline-container-orgf5f387c" class="outline-4">
-<h4 id="orgf5f387c"><span class="section-number-4">1.9.2.</span> 计数</h4>
+<div id="outline-container-org2242316" class="outline-4">
+<h4 id="org2242316"><span class="section-number-4">1.9.2.</span> 计数</h4>
 <div class="outline-text-4" id="text-1-9-2">
 <p>
 下面是一个使用 setq 进行计数的示例。这可以用于计算你的程序某部分重复执行的次数。
@@ -1329,8 +1337,8 @@ counter                         ; 这是计数器。
 </div>
 </div>
 
-<div id="outline-container-org0e47932" class="outline-3">
-<h3 id="org0e47932"><span class="section-number-3">1.10.</span> 总结</h3>
+<div id="outline-container-orgedcc462" class="outline-3">
+<h3 id="orgedcc462"><span class="section-number-3">1.10.</span> 总结</h3>
 <div class="outline-text-3" id="text-1-10">
 <p>
 学习 Lisp 就像爬山，最开始的部分是最陡峭的。你现在已经攀登了最困难的部分，接下来随着你的进步会变得越来越容易。<br />
@@ -1354,8 +1362,8 @@ counter                         ; 这是计数器。
 </div>
 </div>
 
-<div id="outline-container-org067f891" class="outline-3">
-<h3 id="org067f891"><span class="section-number-3">1.11.</span> 练习</h3>
+<div id="outline-container-org68d435d" class="outline-3">
+<h3 id="org68d435d"><span class="section-number-3">1.11.</span> 练习</h3>
 <div class="outline-text-3" id="text-1-11">
 <p>
 几个简单的练习：
@@ -1371,21 +1379,314 @@ counter                         ; 这是计数器。
 </div>
 
 
-<div id="outline-container-org32268ab" class="outline-2">
-<h2 id="org32268ab"><span class="section-number-2">2.</span> 练习计算</h2>
+<div id="outline-container-orgaf6d84c" class="outline-2">
+<h2 id="orgaf6d84c"><span class="section-number-2">2.</span> 练习计算</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 在学习如何编写 Emacs Lisp 函数定义之前，花一些时间计算已经编写的各种表达式是很有用的。
 这些表达式将是以函数作为其第一个（通常也是唯一的）元素的列表。由于与缓冲区相关的一些函数既简单又有趣，我们将从这些函数开始。
 在本节中，我们将计算其中的一些函数。在另一节中，我们将研究其他几个与缓冲区相关的函数的代码，看看它们是如何编写的。
 </p>
+
+<ul class="org-ul">
+<li>如何求值</li>
+</ul>
+<p>
+每当你给 Emacs Lisp 一个编辑命令，例如移动光标或滚动屏幕的命令时，你都在对一个表达式求值，
+该表达式的第一个元素是一个函数。这就是 Emacs 的工作方式。<br />
+</p>
+
+<p>
+当你输入按键时，你使 Lisp 解释器评估一个表达式，这就是你得到结果的方式。
+即使是输入普通文本也涉及评估一个 Emacs Lisp 函数，在这种情况下，这个函数使用 self-insert-command，
+它简单地插入你输入的字符。你通过按键输入来求值的函数被称为交互函数或命令；
+如何使一个函数变为交互式将在关于如何编写函数定义的章节中说明。参见“使一个函数变为交互式”。<br />
+</p>
+
+<p>
+除了输入键盘命令，我们已经看到求值表达式的第二种方法：将光标定位在一个列表后面，然后按 C-x C-e。
+这是我们将在本节的其余部分中做的操作。还有其他对表达式求值的方法，我们将在遇到时描述它们。
+</p>
+
+<p>
+除了用于练习求值之外，接下来的几节中显示的函数本身也非常重要。
+学习这些函数可以清楚地区分缓冲区和文件、如何切换到缓冲区以及如何确定缓冲区中的位置。
+</p>
+</div>
+
+<div id="outline-container-orgc5a0cb4" class="outline-3">
+<h3 id="orgc5a0cb4"><span class="section-number-3">2.1.</span> 缓冲区名称</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+buffer-name 和 buffer-file-name 这两个函数展示了文件和缓冲区之间的区别。
+当你求值以下表达式 (buffer-name) 时，缓冲区的名称会出现在回显区域。
+当你求值 (buffer-file-name) 时，缓冲区所指向的文件的名称会出现在回显区域。
+通常，(buffer-name) 返回的名称与它所指向的文件的名称相同，而 (buffer-file-name) 返回的是文件的完整路径名。<br />
+</p>
+
+<p>
+文件和缓冲区是两个不同的实体。文件是计算机中永久记录的信息（除非你删除它）。
+另一方面，缓冲区是 Emacs 中的信息，在编辑会话结束时（或当你杀死缓冲区时）会消失。
+通常，缓冲区包含你从文件中复制的信息；我们说缓冲区正在访问该文件。你所操作和修改的是这个副本。
+对缓冲区的更改不会更改文件，直到你保存缓冲区。当你保存缓冲区时，缓冲区会被复制到文件中，因此被永久保存。<br />
+</p>
+
+<p>
+如果你在 GNU Emacs 的 Info 模式中阅读此内容，你可以将光标放在每个表达式后面并按 C-x C-e 来对它们求值。
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(buffer-name)
+
+(Buffer-file-name)
+</pre>
+</div>
+<p>
+当我在 Info 中执行此操作时，对 (buffer-name) 求值返回的值是 *info*，而对 (buffer-file-name) 求值返回的值是 nil。<br />
+</p>
+
+<p>
+另一方面，当我编写此文档时，对 (buffer-name) 求值返回的值是 "introduction.texinfo"，
+而对 (buffer-file-name) 求值返回的值是 "/gnu/work/intro/introduction.texinfo"。<br />
+</p>
+
+<p>
+前者是缓冲区的名称，后者是文件的名称。在 Info 中，缓冲区名称是 *info*。Info 没有指向任何文件，
+所以对 (buffer-file-name) 求值的结果是 nil。符号 nil 源自拉丁语，意为“无”；在这种情况下，它意味着该缓冲区没有关联到任何文件。
+（在 Lisp 中，nil 也用于表示“假”，并且是空列表 () 的同义词。）<br />
+</p>
+
+<p>
+当我在写作时，我的缓冲区名称是 "introduction.texinfo"。它所指向的文件名称是 "/gnu/work/intro/introduction.texinfo"。<br />
+</p>
+
+<p>
+（在表达式中，括号告诉 Lisp 解释器将 buffer-name 和 buffer-file-name 作为函数处理；
+如果没有括号，解释器会尝试将这些符号作为变量进行求值。参见“变量”。）<br />
+</p>
+
+<p>
+尽管文件和缓冲区之间存在区别，你常常会发现人们在指代缓冲区时说成文件，反之亦然。
+实际上，大多数人会说“我在编辑一个文件”，而不是说“我在编辑一个即将保存到文件的缓冲区”。
+从上下文中几乎总能清楚地知道人们的意思。然而，当处理计算机程序时，记住这种区别是很重要的，因为计算机不像人那么聪明。<br />
+</p>
+
+<p>
+顺便提一下，“缓冲区”一词源自其作为缓冲垫的含义，可以减弱碰撞的冲击力。
+在早期的计算机中，缓冲区缓冲了文件与计算机中央处理单元之间的交互。
+存放文件的磁鼓或磁带和中央处理单元是两种截然不同的设备，它们以各自的速度间歇地工作。
+缓冲区使它们能够有效地协同工作。最终，缓冲区从一个中介、一个临时存储地，发展成为进行工作的地方。
+这种转变有点像一个小港口发展成一个大城市：起初它只是一个临时储存货物并等待装船的地方，后来它成为了一个商业和文化中心。<br />
+</p>
+
+<p>
+并非所有缓冲区都与文件相关联。例如，*scratch* 缓冲区不访问任何文件。同样，*Help* 缓冲区也不与任何文件关联。
+</p>
+
+<p>
+在早期，如果你没有 ~/.emacs 文件并通过只输入 emacs 命令（而不是指定任何文件）启动一个 Emacs 会话，
+Emacs 会以 <b>scratch</b> 缓冲区可见的状态启动。如今，你会看到一个启动画面。
+你可以按照启动画面上建议的命令之一操作，访问一个文件，或者按 q 退出启动画面并进入 <b>scratch</b> 缓冲区。<br />
+</p>
+
+<p>
+如果你切换到 <b>scratch</b> 缓冲区，输入 (buffer-name)，将光标放在它后面，然后按 C-x C-e 来对表达式求值。
+返回的名称 <b>scratch</b> 将出现在回显区域中。*scratch* 是缓冲区的名称。
+当你在 <b>scratch</b> 缓冲区中输入 (buffer-file-name)`并进行求值时，nil 将会出现在回显区域中，
+就像你在 Info 中求值 (buffer-file-name) 时一样。
+</p>
+
+<p>
+顺便说一下，如果你在 <b>scratch</b> 缓冲区中，希望表达式返回的值出现在 <b>scratch</b> 缓冲区本身而不是回显区域中，
+可以输入 C-u C-x C-e 而不是 C-x C-e。这会使返回的值出现在表达式之后。缓冲区看起来会像这样：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(buffer-name)"*Scratch*"
+</pre>
+</div>
+<p>
+你不能在 Info 中这样做，因为 Info 是只读的，它不允许你更改缓冲区的内容。
+但是，你可以在任何可以编辑的缓冲区中这样做；当你编写代码或文档（例如本书）时，这个功能非常有用。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgeb98ebc" class="outline-3">
+<h3 id="orgeb98ebc"><span class="section-number-3">2.2.</span> 获取缓冲区</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+buffer-name 函数返回缓冲区的名称；要获取缓冲区本身，则需要使用另一个函数：current-buffer。
+如果你在代码中使用这个函数，你将得到的是缓冲区本身。<br />
+</p>
+
+<p>
+名称和名称所指的对象或实体是不同的。你不是你的名字，你是一个被别人用名字称呼的人。
+如果你请求与乔治交谈，而有人递给你一张写有字母“G”、“e”、“o”、“r”、“g”和“e”的卡片，你可能会觉得好笑，但不会满意。
+你想交谈的不是名字，而是名字所指的人。缓冲区也是类似的：*scratch* 是 scratch 缓冲区的名称，但名称不是缓冲区本身。
+要获取缓冲区本身，你需要使用像 current-buffer 这样的函数。
+</p>
+
+<p>
+然而，这里有一个小小的复杂之处：如果你在表达式中单独对 current-buffer 求值（如我们在这里将做的那样），
+你看到的将是缓冲区名称的打印表示形式，而不是缓冲区的内容。
+Emacs 之所以这样工作，有两个原因：缓冲区可能有成千上万行长，太长而不便于显示；
+并且另一个缓冲区可能具有相同的内容但名称不同，因此区分它们是很重要的。
+</p>
+
+<p>
+以下是包含该函数的一个表达式：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(current-buffer)
+</pre>
+</div>
+<p>
+如果你在 Emacs 的 Info 中以通常方式评估这个表达式，#&lt;buffer *info*&gt; 将会出现在回显区域。
+这种特殊格式表明返回的是缓冲区本身，而不仅仅是其名称。<br />
+</p>
+
+<p>
+顺便提一下，虽然你可以在程序中输入数字或符号，但你不能输入缓冲区的打印表示形式：
+获取缓冲区本身的唯一方法是使用像 current-buffer 这样的函数。<br />
+</p>
+
+<p>
+一个相关的函数是 other-buffer。它返回最近选择的、当前缓冲区之外的另一个缓冲区，而不是它名称的打印表示形式。
+如果你最近在 <b>scratch</b> 缓冲区之间来回切换，other-buffer 将返回那个缓冲区。<br />
+</p>
+
+<p>
+你可以通过评估以下表达式看到这一点：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(other-buffer)
+</pre>
+</div>
+<p>
+你应该会看到 #&lt;buffer *scratch*&gt; 出现在回显区域中，或者看到你最近切换回的其他缓冲区的名称。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgd76ba29" class="outline-3">
+<h3 id="orgd76ba29"><span class="section-number-3">2.3.</span> 切换缓冲区</h3>
+<div class="outline-text-3" id="text-2-3">
+<p>
+other-buffer 函数在用作需要缓冲区作为参数的函数的参数时，实际上提供了一个缓冲区。
+我们可以通过使用 other-buffer 和 switch-to-buffer 来切换到不同的缓冲区，看到这一点。
+</p>
+
+<p>
+但首先，简要介绍一下 switch-to-buffer 函数。
+当你在 Info 和 <b>scratch</b> 缓冲区之间来回切换以求值 (buffer-name) 时，
+你很可能按下了 C-x b，然后在 minibuffer 中提示你输入要切换到的缓冲区名称时输入了 *scratch*。
+这些按键 C-x b 会使 Lisp 解释器评估交互函数 switch-to-buffer。
+正如我们之前所说，这就是 Emacs 的工作方式：不同的按键调用或运行不同的函数。
+例如，C-f 调用 forward-char，M-e 调用 `forward-sentence`，等等。
+</p>
+
+<p>
+通过在表达式中写出 switch-to-buffer 并提供一个要切换到的缓冲区，我们可以像 C-x b 那样切换缓冲区：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(switch-to-buffer (other-buffer))
+</pre>
+</div>
+<p>
+switch-to-buffer 符号是列表的第一个元素，因此 Lisp 解释器会将其视为一个函数，并执行与之相关的指令。
+但在此之前，解释器会注意到 other-buffer 在括号内，并先对该符号进行处理。
+other-buffer 是该列表的第一个（在此情况下也是唯一的）元素，因此 Lisp 解释器会调用或运行该函数，它将返回另一个缓冲区。
+接下来，解释器运行 switch-to-buffer，并将返回的另一个缓冲区作为参数传递给它，这就是 Emacs 将要切换到的缓冲区。
+如果你在 Info 中阅读此内容，现在就试试。对这个表达式求值。（要返回原缓冲区，请键入 C-x b RET。）<br />
+</p>
+
+<p>
+在本文件后续章节的编程示例中，你会更常看到 set-buffer 函数，而不是 switch-to-buffer。
+这是因为计算机程序和人类之间存在差异：人类有眼睛，期望在计算机终端上看到自己正在处理的缓冲区。
+这显而易见，几乎不言自明。然而，程序没有眼睛。当计算机程序处理缓冲区时，该缓冲区不需要在屏幕上可见。<br />
+</p>
+
+<p>
+switch-to-buffer 是为人类设计的，它做了两件事：它切换 Emacs 的注意力指向的缓冲区，并在窗口中将显示的缓冲区切换到新缓冲区。
+而 set-buffer 只做一件事：它将计算机程序的注意力切换到另一个缓冲区。
+屏幕上的缓冲区保持不变（当然，通常在命令运行完成之前那里不会发生任何变化）。<br />
+</p>
+
+<p>
+另外，我们刚刚引入了另一个术语，即“调用”（call）。当你评估一个列表时，其中的第一个符号是一个函数，你就是在调用那个函数。
+这个术语的使用源于将函数视为一个可以为你做某事的实体——就像水管工是一个你可以打电话给他或她修理漏水的实体一样。
+</p>
+</div>
+</div>
+
+<div id="outline-container-org1fa1e98" class="outline-3">
+<h3 id="org1fa1e98"><span class="section-number-3">2.4.</span> 缓冲区大小和点的位置</h3>
+<div class="outline-text-3" id="text-2-4">
+<p>
+最后，让我们来看几个相对简单的函数：buffer-size、point、point-min 和 point-max。
+这些函数提供了有关缓冲区大小以及光标在其中位置的信息。<br />
+</p>
+
+<p>
+buffer-size 函数告诉你当前缓冲区的大小；即，该函数返回缓冲区中字符的数量。
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(buffer-size)
+</pre>
+</div>
+<p>
+你可以通过将光标定位在表达式之后并按 C-x C-e 的通常方式来评估它。<br />
+</p>
+
+<p>
+在 Emacs 中，光标的当前位置称为“点”（point）。表达式 (point) 返回一个数字，表示从缓冲区开头到光标所在位置的字符数量。
+</p>
+
+<p>
+你可以通过以通常方式评估以下表达式，查看当前缓冲区中点的字符计数：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(point)
+</pre>
+</div>
+<p>
+在我写下这些内容时，point 的值是 65724。point 函数在本书后面的一些示例中经常使用。<br />
+</p>
+
+<p>
+point 的值当然取决于它在缓冲区中的位置。如果你在这个位置对 point 求值，那么该数值会更大：
+</p>
+<div class="org-src-container">
+<pre class="src src-emacs-lisp">(point)
+</pre>
+</div>
+
+<p>
+对我来说，point 在此位置的值是 66043，这意味着两个表达式之间有 319 个字符（包括空格）。
+（毫无疑问，你会看到不同的数字，因为在我第一次 point 求值之后，我已经对内容进行了编辑。）<br />
+</p>
+
+<p>
+point-min 函数与 point 类似，但它返回当前缓冲区中 point 的最小允许值。这个值通常是 1，除非启用了“缩小”功能。
+（缩小是一种机制，通过它你可以限制自己或程序只在缓冲区的一部分进行操作。详见“缩小和扩展”部分。）
+同样，point-max 函数返回当前缓冲区中 point 的最大允许值。
+</p>
+</div>
+</div>
+
+<div id="outline-container-orge85584e" class="outline-3">
+<h3 id="orge85584e"><span class="section-number-3">2.5.</span> 练习</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+找到一个你正在处理的文件，并移至其中间位置。找出该文件的缓冲区名称、文件名、长度以及你在文件中的位置。
+</p>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="date">Date: 2024-08-18</p>
 <p class="author">Author: JanSky</p>
-<p class="date">Created: 2024-08-25 Sun 01:14</p>
+<p class="date">Created: 2024-08-29 Thu 23:50</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
