@@ -1,8 +1,9 @@
 + org快速指南 \\
   第一期现已全部完工，不影响阅读。有些地方翻译可能存在瑕疵，本人水平有限，后面会重写校准润色。
   有 org 的大佬，还请指正存在的问题，我会参考修正。
-  [[[[https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/]]][百度]]
-  [[http://www.baidu.com][baidu]]
+
+  [[https://jansky520.github.io/p/org%E5%BF%AB%E9%80%9F%E6%8C%87%E5%8D%97/][在线浏览]]
+
   * 现已对全文重新校正，修正了原文中的部分翻译错误。
 
 + elisp快速指南 \\
