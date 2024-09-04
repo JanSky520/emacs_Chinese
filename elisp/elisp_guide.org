@@ -1110,29 +1110,537 @@ let 可以一次创建多个变量。同时，let 为其创建的每个变量赋
 （“执行”是一个术语，意味着计算一个列表；它来自该词的含义“付诸实际效果”（《牛津英语词典》）。
 因为你计算一个表达式来执行一个动作，“执行”已经演变为“计算”的同义词。）
 
+*** let 表达式的部分
+let 表达式由三个部分组成。第一部分是符号 let。第二部分是一个列表，称为 varlist，其中的每个元素要么是单独的符号，
+要么是一个包含两个元素的列表，其中第一个元素是一个符号。let 表达式的第三部分是 let 的主体。主体通常由一个或多个列表组成。\\
+
+let 表达式的模板如下所示：
+#+begin_src emacs-lisp
+  (let varlist body…)
+#+end_src
+varlist 中的符号是通过 let 特殊形式赋予初始值的变量。
+单独的符号初始值为 nil；每个作为两个元素列表的第一个元素的符号被绑定到 Lisp 解释器在评估第二个元素时返回的值。\\
+
+因此，varlist 可能如下所示：(thread (needles 3))。
+在这种情况下，在一个 let 表达式中，Emacs 将符号 thread 绑定到初始值 nil，并将符号 needles 绑定到初始值 3。\\
+
+当你编写一个 let 表达式时，你需要将相应的表达式放入 let 表达式模板的各个位置。\\
+
+如果 varlist 由两个元素的列表组成（通常是这种情况），则 let 表达式的模板如下所示：
+#+begin_src emacs-lisp
+  (let ((variable value)
+      (variable value)
+      …)
+  body…)
+#+end_src
+
+*** 示例 let 表达式  
+以下表达式创建了两个变量 zebra 和 tiger 并赋予它们初始值。let 表达式的主体是一个调用 message 函数的列表。
+#+begin_src emacs-lisp
+  (let ((zebra "stripes")
+        (tiger "fierce"))
+    (message "One kind of animal has %s and another is %s."
+             zebra tiger))
+#+end_src
+这里，varlist 是 ((zebra "stripes") (tiger "fierce"))。\\
+
+两个变量分别是 zebra 和 tiger。每个变量是一个包含两个元素的列表的第一个元素，每个值是其两个元素列表的第二个元素。
+在 varlist 中，Emacs 将变量 zebra 绑定到值 "stripes"，并将变量 tiger 绑定到值 "fierce"。
+在这个例子中，这两个值都是字符串。值也可以是另一个列表或一个符号。let 的主体紧跟在保存变量的列表之后。
+在这个例子中，主体是一个使用 message 函数在回显区域打印字符串的列表。\\
+
+你可以按照通常的方式来求值这个例子，将光标放在最后一个括号后面，然后键入 C-x C-e。当你这样做时，回显区域中会出现以下内容：
+#+begin_src shell
+  "One kind of animal has stripes and another is fierce."
+#+end_src
+正如我们之前看到的，message 函数打印其第一个参数，除了 %s 以外。
+在这个例子中，变量 zebra 的值在第一个 %s 的位置打印，变量 tiger 的值在第二个 %s 的位置打印。\\
+
+*** 在 let 语句中的未初始化变量  
+如果你在 let 语句中没有将变量绑定到特定的初始值，它们将自动绑定到 nil 作为初始值，如下面的表达式所示：
+#+begin_src emacs-lisp
+  (let ((birch 3)
+        pine
+        fir
+        (oak 'some))
+    (message
+     "Here are %d variables with %s, %s, and %s value."
+     birch pine fir oak))
+#+end_src
+这里，varlist 是 ((birch 3) pine fir (oak 'some))。\\
+
+如果你以通常的方式对这个表达式求值，在回显区域中会出现以下内容：
+#+begin_src shell
+  "Here are 3 variables with nil, nil, and some value."
+#+end_src
+在这个例子中，Emacs 将符号 birch 绑定到数字 3，将符号 pine 和 fir 绑定到 nil，并将符号 oak 绑定到值 some。\\
+
+请注意，在 let 的第一部分中，变量 pine 和 fir 单独作为原子存在，未被括号包围；这是因为它们被绑定到 nil（空列表）。
+但 oak 被绑定到 some，因此它是列表 (oak 'some) 的一部分。同样地，birch 被绑定到数字 3，因此它在一个包含该数字的列表中。
+（由于数字自我求值，不需要引用它。此外，数字在消息中使用 %d 而不是 %s 进行打印。）
+这四个变量作为一个整体被放入一个列表中，以将它们与 let 的主体部分区分开来。
+
+*** let 如何绑定变量  
+Emacs Lisp 支持两种将变量名称绑定到其值的方式。这些方式决定了特定绑定在程序的哪些部分是有效的。
+由于历史原因，Emacs Lisp 默认使用一种称为动态绑定（dynamic binding）的变量绑定形式。
+然而，在本手册中，我们讨论的是另一种更为推荐的绑定形式，称为词法绑定（lexical binding），除非另有说明。
+（未来，Emacs 的维护者计划将默认绑定方式更改为词法绑定）。如果你以前使用过其他编程语言，你可能已经熟悉词法绑定的行为方式。\\
+
+为了在程序中使用词法绑定，你应当在 Emacs Lisp 文件的第一行添加以下内容：
+#+begin_src emacs-lisp
+  ;;; -*- lexical-binding: t -*-
+#+end_src
+关于这方面的更多信息，请参阅《The Emacs Lisp Reference Manual》中的“Variable Scoping”章节。
+
+**** 词法绑定和动态绑定的区别  
+如我们之前讨论的那样（参见《let 防止混淆》），在词法绑定下使用 let 创建局部变量时，这些变量仅在 let 表达式的主体中有效。
+在代码的其他部分，它们具有其他含义，因此，如果你在 let 主体中调用了在其他地方定义的函数，该函数将无法“看到”你所创建的局部变量。
+（另一方面，如果你调用的是在 let 主体中定义的函数，该函数将能够看到并修改来自该 let 表达式的局部变量。）\\
+
+在动态绑定下，规则不同：当你使用 let 时，你创建的局部变量在 let 表达式的执行期间有效。
+这意味着，如果你的 let 表达式调用了一个函数，无论该函数定义在何处（包括在完全不同的文件中），该函数都能看到这些局部变量。\\
+
+另一种思考动态绑定下 let 的方式是，每个变量名都有一个全局的“栈”绑定，每当你使用该变量名时，它都会引用栈顶的绑定。
+（你可以将其想象为桌子上的一叠写有值的纸张。）当你使用 let 动态绑定一个变量时，
+它会将你指定的新绑定放在栈顶，然后执行 let 的主体。一旦 let 主体执行完毕，它会将该绑定从栈中移除，显示出下方的绑定。\\
+
+**** 词法绑定与动态绑定的示例  
+在某些情况下，词法绑定和动态绑定的行为是相同的。但是，在其他情况下，它们可能会改变程序的含义。
+例如，看看在词法绑定下，这段代码会发生什么：
+#+begin_src emacs-lisp
+  ;;; -*- lexical-binding: t -*-
+
+  (setq x 0)
+
+  (defun getx ()
+    x)
+
+  (setq x 1)
+
+  (let ((x 2))
+    (getx))
+       ⇒ 1
+#+end_src
+在这里，(getx) 的结果是 1。在词法绑定下，getx 看不到我们 let 表达式中的值。
+这是因为 getx 的主体在我们的 let 表达式主体之外。
+由于 getx 是在我们代码的最顶层全局定义的（即，不是在任何 `let` 表达式的主体内定义的），它在全局范围内查找并找到了 x。
+在执行 getx 时，x 的当前全局值是 1，所以 getx 返回的也是 1。\\
+
+如果我们使用动态绑定，那么行为就会不同：
+#+begin_src emacs-lisp
+  ;;; -*- lexical-binding: nil -*-
+
+  (setq x 0)
+
+  (defun getx ()
+    x)
+
+  (setq x 1)
+
+  (let ((x 2))
+    (getx))
+       ⇒ 2
+#+end_src
+现在，(getx) 的结果是 2！这是因为在动态绑定下，当执行 getx 时，栈顶的 x 绑定来自我们的 let 表达式。
+这一次，getx 看不到全局的 x 值，因为在绑定的栈中，全局绑定位于 let 表达式的绑定之下。\\
+
+（有些变量也是“特殊”的，即使在 lexical-binding 为 t 的情况下，它们也总是动态绑定的。参见“使用 defvar 初始化变量”。）
+
+** if 特殊形式  
+另一个特殊形式是条件 if。这种形式用于指示计算机做出决策。
+你可以在不使用 if 的情况下编写函数定义，但由于它的使用频率足够高且重要性足够大，所以在这里包含它。
+例如，它在函数 beginning-of-buffer 的代码中被使用。\\
+
+if 的基本概念是，如果一个测试为真，则计算一个表达式；如果测试不为真，则不计算该表达式。
+例如，你可能会做出这样的决策：“如果天气温暖且阳光明媚，那么去海滩！”
+
+*** 更详细地看 if 
+在 Lisp 中编写的 if 表达式不使用单词 "then"；测试和动作是列表的第二和第三个元素，其第一个元素是 if。
+尽管如此，if 表达式的测试部分通常称为 if 部分，第二个参数通常称为 then 部分。\\
+
+此外，当编写 if 表达式时，真假测试通常与符号 if 写在同一行上，但如果测试为真，
+要执行的动作（即 then 部分）则写在第二行及随后的行上。这使得 if 表达式更易于阅读。
+#+begin_src emacs-lisp
+  (if true-or-false-test
+      action-to-carry-out-if-test-is-true)
+#+end_src
+真假测试将是一个由 Lisp 解释器求值的表达式。\\
+
+以下是一个你可以用通常方式求值的示例。测试是数字 5 是否大于数字 4。由于确实如此，将打印消息 “5 is greater than 4!”。
+#+begin_src emacs-lisp
+  (if (> 5 4)                             ; if-part
+    (message "5 is greater than 4!"))   ; then-part
+#+end_src
+（函数 > 测试它的第一个参数是否大于第二个参数，如果是，则返回 true。）\\
+
+当然，在实际使用中，if 表达式中的测试不会像表达式 （> 5 4） 那样一直固定不变。
+相反，测试中使用的变量至少有一个将绑定到一个事先未知的值。（如果值是事先已知的，我们就不需要运行测试了！）\\
+
+例如，这个值可能被绑定到函数定义的一个参数上。在以下函数定义中，动物的特征是传递给函数的一个值。
+如果绑定到 characteristic 的值是 "fierce"，那么将打印消息 “It is a tiger!”；否则，将返回 nil。
+#+begin_src emacs-lisp
+  (defun type-of-animal (characteristic)
+    "Print message in echo area depending on CHARACTERISTIC.
+  If the CHARACTERISTIC is the string \"fierce\",
+  then warn of a tiger."
+    (if (equal characteristic "fierce")
+        (message "It is a tiger!")))
+#+end_src
+如果你在 GNU Emacs 中阅读这段内容，你可以用通常的方式对函数定义求值，将其安装到 Emacs 中，
+然后你可以求值以下两个表达式来查看结果：
+#+begin_src emacs-lisp
+  (type-of-animal "fierce")
+
+  (type-of-animal "striped")
+#+end_src
+当你求值 (type-of-animal "fierce") 时，你将在回显区域看到以下消息：“It is a tiger!”；
+而当你求值 (type-of-animal "striped") 时，你将在回显区域看到 nil。
+
+*** type-of-animal 函数的详细解释  
+让我们详细看看 type-of-animal 函数。\\
+
+type-of-animal 的函数定义是通过填充两个模板的槽位来编写的，一个是整个函数定义的模板，另一个是 if 表达式的模板。\\
+
+对于每个非交互函数的模板如下：
+#+begin_src emacs-lisp
+  (defun name-of-function (argument-list)
+    "documentation…"
+    body…)
+#+end_src
+与这个模板匹配的函数部分如下所示：
+#+begin_src emacs-lisp
+  (defun type-of-animal (characteristic)
+    "Print message in echo area depending on CHARACTERISTIC.
+  If the CHARACTERISTIC is the string \"fierce\",
+  then warn of a tiger."
+    body: the if expression)
+#+end_src
+函数的名称是 type-of-animal；它接收一个参数的值。参数列表后面是一个多行文档字符串。
+文档字符串包含在这个例子中，因为为每个函数定义编写文档字符串是一个好习惯。函数定义的主体由 if 表达式组成。\\
+
+if 表达式的模板如下所示：
+#+begin_src emacs-lisp
+  (if true-or-false-test
+    action-to-carry-out-if-the-test-returns-true)
+#+end_src
+在 type-of-animal 函数中，if 的代码如下所示：
+#+begin_src emacs-lisp
+(if (equal characteristic "fierce")
+    (message "It is a tiger!"))
+#+end_src
+这里，真假测试是以下表达式：
+#+begin_src emacs-lisp
+  (equal characteristic "fierce")
+#+end_src
+在 Lisp 中，equal 是一个函数，用于确定它的第一个参数是否等于第二个参数。
+第二个参数是字符串 "fierce"，第一个参数是符号 characteristic 的值——换句话说，就是传递给这个函数的参数。\\
+
+在 type-of-animal 的第一个例子中，传递给 type-of-animal 的参数是 "fierce"。
+由于 "fierce" 等于 "fierce"，表达式 (equal characteristic "fierce") 返回 true。
+在这种情况下，if 会求值它的第二个参数或 then 部分：(message "It is a tiger!")。\\
+
+另一方面，在 type-of-animal 的第二个例子中，传递给 type-of-animal 的参数是 "striped"。
+由于 "striped" 不等于 "fierce"，因此 then 部分不会被求值，if 表达式返回 nil。
+
+** If–then–else 表达式  
+if 表达式可以有一个可选的第三个参数，称为 else 部分，用于当真假测试返回 false 时的情况。
+当这种情况发生时，if 表达式的第二个参数或 then 部分不被求值，而第三个参数或 else 部分被求值。
+你可以将其想象为决策“如果天气温暖且阳光明媚，那么去海滩，否则读书！”的阴天替代方案。\\
+
+在 Lisp 代码中没有写出单词 "else"；if 表达式的 else 部分位于 then 部分之后。
+在书写的 Lisp 代码中，else 部分通常会从新的一行开始，并且缩进比 then 部分少：
+#+begin_src emacs-lisp
+  (if true-or-false-test
+      action-to-carry-out-if-the-test-returns-true
+    action-to-carry-out-if-the-test-returns-false)
+#+end_src
+例如，以下 if 表达式在你用通常的方式求值时会打印消息 “4 is not greater than 5!”：
+#+begin_src emacs-lisp
+  (if (> 4 5)                               ; if 部分
+      (message "4 falsely greater than 5!") ; then 部分
+    (message "4 is not greater than 5!"))   ; else 部分
+#+end_src
+注意，不同的缩进层次使得 then 部分与 else 部分易于区分。
+（GNU Emacs 有几个命令可以自动正确缩进 if 表达式。参见“GNU Emacs Helps You Type Lists”。）\\
+
+我们可以通过简单地在 if 表达式中添加一个额外的部分来扩展 type-of-animal 函数，使其包含 else 部分。\\
+
+如果你求值以下版本的 type-of-animal 函数定义以将其安装，然后求值后续的两个表达式以传递不同的参数给函数，你可以看到这样做的效果。
+#+begin_src emacs-lisp
+  (defun type-of-animal (characteristic)  ; Second version.
+  "Print message in echo area depending on CHARACTERISTIC.
+  If the CHARACTERISTIC is the string \"fierce\",
+  then warn of a tiger; else say it is not fierce."
+    (if (equal characteristic "fierce")
+        (message "It is a tiger!")
+      (message "It is not fierce!")))
+#+end_src
+#+begin_src emacs-lisp
+  (type-of-animal "fierce")
+
+  (type-of-animal "striped")
+#+end_src
+当你求值 (type-of-animal "fierce") 时，你会在回显区域看到如下消息：“It is a tiger!”；
+但当你求值 (type-of-animal "striped") 时，你会看到 “It is not fierce!”。\\
+
+（当然，如果特征是 “ferocious”，消息 “It is not fierce!” 也会被打印出来，这就会产生误导！
+编写代码时，你需要考虑到某些此类参数将被 if 测试的可能性，并据此编写程序。）
+
+** Emacs Lisp 中的真与假
+if 表达式中的真值测试有一个重要的方面。到目前为止，我们已经提到“真”和“假”作为谓词的值，仿佛它们是新的 Emacs Lisp 对象。
+事实上，“假”只是我们老朋友 nil。除此之外，任何其他值——无论是什么——都被视为“真”。\\
+
+用于测试真值的表达式，如果其求值结果不是 nil，则被解释为真。
+换句话说，如果测试返回的值是一个数字（如 47）、一个字符串（如 "hello"）、一个符号（除了 `nil` 之外，例如 `flowers`）、
+一个列表（只要它不是空的），甚至是一个缓冲区，那么该测试结果就会被视为真。
+
+*** 对 nil 的解释
+在展示真值测试之前，我们需要解释一下 nil。\\
+
+在 Emacs Lisp 中，符号 nil 有两个含义。首先，它表示一个空列表。其次，它表示假值，并且是一个真假测试为假时返回的值。
+nil 可以写成空列表 ()，也可以写成 nil。对于 Lisp 解释器来说，() 和 nil 是相同的。
+然而，对人类而言，通常使用 nil 表示假，而使用 () 表示空列表。\\
+
+在 Emacs Lisp 中，任何不为 nil 的值——也就是说，不是空列表的值——都被视为真。
+这意味着，如果一个求值的结果不是空列表，那么一个 if 表达式将测试为真。
+例如，如果一个数字被放在测试的位置，它将被求值并返回它本身，因为数字在求值时会返回它自己。
+在这种条件下，if 表达式将测试为真。只有当表达式求值为 nil（一个空列表）时，测试结果才为假。\\
+
+通过求值以下示例中的两个表达式，你可以看到这一点。\\
+
+在第一个示例中，数字 4 作为 `if` 表达式中的测试进行求值，并返回它本身；
+因此，表达式的 then 部分被求值并返回，结果“true”显示在回显区域中。
+在第二个示例中，nil 表示假；因此，表达式的 else 部分被求值并返回，结果“false”显示在回显区域中。
+#+begin_src emacs-lisp
+  (if 4
+      'true
+    'false)
+
+  (if nil
+      'true
+    'false)
+#+end_src
+顺便提一下，如果测试中没有其他可用的值可以返回真，那么 Lisp 解释器将返回符号 t 表示真。
+例如，表达式 (> 5 4) 在求值时返回 t，你可以通过通常的方式求值来验证这一点：
+#+begin_src emacs-lisp
+  (> 5 4)
+#+end_src
+另一方面，如果测试结果为假，该函数返回 nil。
+#+begin_src emacs-lisp
+  (> 4 5)
+#+end_src
+
+** save-excursion
+save-excursion 是我们将在本章讨论的最后一个特殊形式。\\
+
+在用于编辑的 Emacs Lisp 程序中，save-excursion 函数非常常见。
+它会保存光标的位置，执行函数体，然后如果光标的位置发生了变化，它将光标恢复到之前的位置。
+其主要目的是防止用户因光标的意外移动而感到惊讶和困扰。
+
+*** 光标位置（Point）和标记（Mark）
+在讨论 save-excursion 之前，首先了解一下 GNU Emacs 中的光标位置（point）和标记（mark）会更有帮助。
+光标位置（point）是当前光标所在的位置。光标所在的位置就是光标位置。
+更准确地说，在光标看似位于字符上方的终端中，光标位置位于该字符之前。在 Emacs Lisp 中，光标位置是一个整数。
+缓冲区中的第一个字符为编号 1，第二个字符为编号 2，依此类推。函数 point 返回光标的当前位置作为一个数字。
+每个缓冲区都有其自身的光标位置值。\\
+
+标记（mark）是缓冲区中的另一个位置，其值可以通过像 C-SPC（set-mark-command）这样的命令设置。
+如果设置了标记，可以使用命令 C-x C-x（exchange-point-and-mark）使光标跳转到标记位置，并将标记设置为光标之前的位置。
+此外，如果设置了另一个标记，之前标记的位置将被保存到标记环（mark ring）中。
+可以通过多次输入 C-u C-SPC 将光标跳转到已保存的标记。\\
+
+缓冲区中光标位置和标记之间的部分称为区域（region）。
+许多命令作用于区域，例如 center-region、count-words-region、kill-region 和 print-region。\\
+
+save-excursion 这个特殊形式保存光标的位置，并在 Lisp 解释器评估该特殊形式主体中的代码后恢复这个位置。
+因此，如果光标位于一段文本的开头，而某些代码将光标移动到缓冲区的末尾，那么在函数体中的表达式被评估后，
+save-excursion 会将光标恢复到其原来的位置。\\
+
+在 Emacs 中，函数通常会在其内部操作过程中移动光标，即使用户不希望如此。
+例如，count-words-region 会移动光标。为了防止用户被这些既意外又（从用户角度来看）不必要的跳转所打扰，
+save-excursion 经常被用来保持光标在用户预期的位置。使用 save-excursion 是一种良好的编程习惯。\\
+
+为了确保“家里”保持整洁，即使 save-excursion 内部的代码出现问题（更准确地说，使用专业术语是“异常退出”），
+save-excursion 也会恢复光标的位置。这个特性非常有用。\\
+
+除了记录光标位置的值之外，save-excursion 还会跟踪当前缓冲区，并同样恢复它。
+这意味着你可以编写更改缓冲区的代码，save-excursion 会将你切换回原来的缓冲区。
+这正是 save-excursion 在 append-to-buffer 中的用法。（参见 append-to-buffer 的定义。）
+
+*** save-excursion 表达式的模板
+
+使用 save-excursion 的代码模板非常简单：
+#+begin_src emacs-lisp
+  (save-excursion
+    body…)
+#+end_src
+函数体是由一个或多个表达式组成，这些表达式将由 Lisp 解释器按顺序进行求值。
+如果函数体中有多个表达式，则最后一个表达式的值将作为 save-excursion 函数的返回值。
+函数体中的其他表达式只是为了其副作用而求值；而 save-excursion 本身也是仅为了其副作用而使用（即恢复光标位置）。\\
+
+更详细地说，save-excursion 表达式的模板如下所示：
+#+begin_src emacs-lisp
+  (save-excursion
+    first-expression-in-body
+    second-expression-in-body
+    third-expression-in-body
+     …
+    last-expression-in-body)
+#+end_src
+一个表达式当然可以是一个单独的符号，也可以是一个列表。\\
+
+在 Emacs Lisp 代码中，save-excursion 表达式通常出现在 let 表达式的函数体中，如下所示：
+#+begin_src emacs-lisp
+  (let varlist
+    (save-excursion
+    body…))
+#+end_src
+
+** 回顾
+在前几章中，我们介绍了一个宏和相当多的函数及特殊形式。以下是它们的简要描述，另包括一些尚未提及的类似函数。
+
++ eval-last-sexp \\
+  计算光标当前位置之前的最后一个符号表达式。除非该函数在调用时有一个参数，否则其值会显示在回显区域；
+  如果有参数，输出将显示在当前缓冲区中。此命令通常绑定为 C-x C-e。
++ defun \\
+  定义函数。这个宏包含最多五个部分：函数名称、用于传递给函数的参数模板、文档说明、可选的交互式声明，以及函数体。
+
+例如，在 Emacs 中，dired-unmark-all-marks 函数的定义如下所示。
+#+begin_src emacs-lisp
+  (defun dired-unmark-all-marks ()
+  "Remove all marks from all files in the Dired buffer."
+  (interactive)
+  (dired-unmark-all-files ?\r))
+#+end_src
++ interactive \\
+   声明该函数可以在交互模式下使用。这个特殊形式可以跟随一个字符串，字符串包含一个或多个部分，这些部分会依次将信息传递给函数的参数。
+   这些部分还可以告诉解释器提示输入信息。字符串的各部分用换行符 \n 分隔。 \\
+
+   常见的代码字符包括：
+
+   * b 现有缓冲区的名称。
+
+   * f 现有文件的名称。
+
+   * p 数字前缀参数。（注意这里的 p 是小写的。）
+
+   * r 光标位置和标记位置，作为两个数字参数，最小的在前。这是唯一一个指定两个连续参数而不是一个的代码字母。
+
+   有关 interactive 的完整代码字符列表，请参阅《GNU Emacs Lisp 参考手册》中的 Code Characters for interactive。
+
++ let \\
+   声明一个变量列表用于 let 的函数体内，并给它们一个初始值，可以是 nil 或指定值；
+   然后计算 let 函数体内的其余表达式，并返回最后一个表达式的值。
+   在 let 的函数体内，Lisp 解释器不会看到与 let 外部绑定的相同名称的变量的值。\\
+
+   例如，
+   #+begin_src emacs-lisp
+     (let ((foo (buffer-name))
+      (bar (buffer-size)))
+     (message
+       "This buffer is %s and has %d characters."
+       foo bar))
+   #+end_src
+
++ save-excursion \\
+   记录在评估该特殊形式的主体之前的点（point）和当前缓冲区的值。然后，在主体评估完成后，恢复点和缓冲区的值。
+
+   例如，
+   #+begin_src emacs-lisp
+     (message "We are %d characters into this buffer."
+            (- (point)
+               (save-excursion
+                 (goto-char (point-min)) (point))))
+   #+end_src
++ if \\
+  评估函数的第一个参数；如果它为真，则评估第二个参数；否则，如果存在第三个参数，则评估第三个参数。\\
+
+  if 特殊形式被称为条件语句。在 Emacs Lisp 中，还有其他条件语句，但 `if` 可能是最常用的。\\
+
+  例如，
+  #+begin_src emacs-lisp
+    (if (= 22 emacs-major-version)
+        (message "This is version 22 Emacs")
+      (message "This is not version 22 Emacs"))
+  #+end_src
+
++ <
++ >
++ <=
++ >=
++ < \\
+  < 函数测试其第一个参数是否小于第二个参数。对应的函数 > 测试第一个参数是否大于第二个参数。
+  同样，<= 测试第一个参数是否小于或等于第二个参数，而 >= 则测试第一个参数是否大于或等于第二个参数。
+  在所有情况下，两个参数都必须是数字或标记（标记指的是缓冲区中的位置）。
+
++ = \\
+  = 函数测试两个参数（都为数字或标记）是否相等。
+
++ equal 和 eq \\
+  测试两个对象是否相同。equal 和 eq 使用了“相同”这个词的不同含义：equal 在两个对象具有相似的结构和内容时返回真，
+  例如两本相同的书的副本。而 eq 则在两个参数实际上是同一个对象时返回真。
+
++ string<
++ string-lessp
++ string=
++ string-equal \\
+  string-lessp 函数测试其第一个参数是否小于第二个参数。该函数的一个简短别名（由 defalias 定义）是 string<。\\
+
+  string-lessp 的参数必须是字符串或符号，比较顺序是字典序，因此大小写是区分的。符号的打印名称被用来代替符号本身进行比较。\\
+
+  空字符串 "" （不包含任何字符的字符串）比任何字符字符串都小。\\
+
+  string-equal 提供了相应的相等性测试，其简短别名是 string=。没有对应于 >, >= 或 <= 的字符串测试函数。
+
++ message \\
+  在回显区打印消息。第一个参数是一个字符串，可以包含 %s、%d 或 %c，用来打印后续参数的值。
+  %s 的参数必须是字符串或符号，%d 的参数必须是数字。%c 的参数必须是 ASCII 码数字，将按照具有该 ASCII 码的字符进行打印。
+  （还有其他各种 % 序列没有提到。）
+
++ setq
++ set \\
+  setq 是一种特殊形式，用于将其第一个参数的值设置为第二个参数的值。
+  setq 会自动为第一个参数加上引号，对于后续的参数对也做相同处理。
+
++ buffer-name \\
+  在没有参数的情况下，返回当前缓冲区的名称，作为一个字符串。
+
++ buffer-file-name \\
+  在没有参数的情况下，返回当前缓冲区正在访问的文件的名称。
+
++ current-buffer \\
+  返回 Emacs 当前活动的缓冲区；该缓冲区可能并不是屏幕上可见的缓冲区。
+
++ other-buffer \\
+  返回最近选择的缓冲区（除了作为参数传递给 `other-buffer` 的缓冲区和当前缓冲区之外）。
+
++ switch-to-buffer \\
+  选择一个缓冲区让 Emacs 变为活动状态，并在当前窗口显示该缓冲区，以便用户查看。通常绑定到 `C-x b`。
+
++ set-buffer \\
+  将 Emacs 的注意力切换到程序将要运行的缓冲区。不改变窗口所显示的内容。
+
++ buffer-size \\
+  返回当前缓冲区中的字符数。
+
++ point \\
+  返回光标当前位置的值，作为从缓冲区开始算起的字符数的整数。
+
++ point-min \\
+  返回当前缓冲区中 point 的最小允许值。通常为 1，除非使用了窄化（narrowing）。
+
++ point-max \\
+  返回当前缓冲区中 point 的最大允许值。通常为缓冲区的末尾，除非使用了窄化（narrowing）。
+
+** 练习
+1. 编写一个非交互式函数，它将其参数（一个数字）的值加倍。然后将该函数设置为交互式函数。
+2. 编写一个函数，测试当前 fill-column 的值是否大于传递给该函数的参数。如果是，则打印一条相应的消息。
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+* 一些与缓冲区相关的函数
+在本章中，我们将详细研究 GNU Emacs 中使用的几个函数。这种学习方法称为“逐步讲解”（walk-through）。
+这些函数作为 Lisp 代码的示例，但并不是假想的例子；除了第一个简化的函数定义外，这些函数展示了 GNU Emacs 中实际使用的代码。
+你可以从这些定义中学到很多东西。这里描述的函数都与缓冲区相关。稍后，我们将学习其他函数。
 
 
 
