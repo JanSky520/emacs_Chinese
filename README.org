@@ -13,4 +13,4 @@
   * 在elisp文件夹中新增elisp_function.el文件，内置整合了elisp快速指南中出现的函数及注释，方便查阅
   * 已完成对第三章的翻译工作
 
-欢迎有意加入汉化的大佬们可以联系我，邮箱 zhangrihao24@mails.ucas.ac.cn
+欢迎有意加入汉化的兄弟们可以联系我，邮箱 zhangrihao24@mails.ucas.ac.cn
