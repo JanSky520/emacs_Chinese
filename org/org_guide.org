@@ -4,41 +4,34 @@
 #+STARTUP: overview
 
 * 简介
-Org 是一种使用快速有效的纯文本系统记笔记、维护待办事项列表和进行项目规划的模式。
-它也是一个创作和发布系统，支持使用源代码进行文学编程和可重复的研究。\\
-
-本文档是 Org 手册的精简版。它包含所有基本功能和命令，以及自定义的重要提示。
-它适用于那些因为篇幅过大而不愿阅读 200 页手册的初学者。
-
++ Org 是一种使用快速有效的纯文本系统记笔记、维护待办事项列表和进行项目规划的模式。
+  它也是一个创作和发布系统，支持使用源代码进行文学编程和可重复的研究。
++ 本文档是 Org 手册的精简版。它包含所有基本功能和命令，以及自定义的重要提示。
+  它适用于那些因为篇幅过大而不愿阅读 200 页手册的初学者。
 ** 安装
 重要提示：如果您使用的 Org 版本是 Emacs 发行版的一部分，请跳过此部分并直接转到激活。
 将从网上下载的 org 模块添加到 Emacs 配置中以激活
 #+begin_src emacs-lisp
   (add-to-list 'load-path "~/path/to/orgdir/lisp")
 #+end_src
-
 ** 激活
-将以下几行添加到您的 Emacs 初始化文件中，为三个命令定义全局键，这些键在任何 Emacs 缓冲区（而不仅仅是 Org 缓冲区）中都很有用。
-可根据自身习惯自行选择合适的键。
+将以下几行添加到您的 Emacs 初始化文件中，为三个命令定义全局键，这些键在任何 Emacs 缓冲区（而不仅仅是 Org 缓冲区）
+中都很有用。可根据自身习惯自行选择合适的键。
 #+begin_src emacs-lisp
   (global-set-key (kbd "C-c l") #'org-store-link)
   (global-set-key (kbd "C-c a") #'org-agenda)
   (global-set-key (kbd "C-c c") #'org-capture)
 #+end_src
-
 ** 反馈
 如果您发现 Org 存在问题，或者您有疑问、评论或想法，请发送邮件至 Org 邮件列表 mailto:emacs-orgmode@gnu.org。
 有关如何提交错误报告的信息，请参阅主手册。
-
-
 * 文档结构
 Org 是一个大纲工具。大纲允许将文档组织成层次结构，对于我们来说，这是对笔记和想法的最佳表示。
 通过折叠可以快速浏览文档的结构，即隐藏文档的大部分内容以仅显示一般文档结构和当前正在处理的部分。
 Org 通过将整个显示和隐藏功能通过 TAB 键与 org-cycle 绑定的单个命令，大大简化了整体的使用。
-
 ** 标题
-标题定义了大纲树的结构。Org 中的标题从左边距开始，以一个或多个星号开头，后跟一个空格。例如：
-#+begin_src org
++ 标题定义了大纲树的结构。Org 中的标题从左边距开始，以一个或多个星号开头，后跟一个空格。例如：
+  #+begin_src org
   * 顶级标题
   ** 第二级
   *** 第三级
@@ -47,40 +40,29 @@ Org 通过将整个显示和隐藏功能通过 TAB 键与 org-cycle 绑定的单
       更多文本
   * 另一个顶级标题
 #+end_src
-请注意，命名的标题 org-footnote-section 默认为 '脚注'，被视为特殊。具有此标题的子树将被导出函数默认忽略。\\
-
-有些人觉得很多星星太嘈杂，他们更喜欢轮廓上有空白，后面跟着一颗星星作为标题开头。请参阅杂项，了解实现此目的的设置。
-
+  请注意，命名的标题 org-footnote-section 默认为 '脚注'，被视为特殊。具有此标题的子树将被导出函数默认忽略。
++ 有些人觉得很多星星太嘈杂，他们更喜欢轮廓上有空白，后面跟着一颗星星作为标题开头。请参阅杂项，了解实现此目的的设置。
 ** 可见的循环
-TAB 功能可在缓冲区中隐藏文本。
-Org 模式使用两个命令，分别绑定到 TAB 和 S-TAB（org-cycle 和 org-shifttab），以改变缓冲区中的可见性。
-
-+ TAB (org-cycle) \\
++ TAB 功能可在缓冲区中隐藏文本。
+  Org 模式使用两个命令，分别绑定到 TAB 和 S-TAB（org-cycle 和 org-shifttab），以改变缓冲区中的可见性。
++ TAB (org-cycle) 
   子树循环：在当前子树的状态之间轮换。
-+ S-TAB (org-global-cycle) | C-u TAB (org-cycle) \\
++ S-TAB (org-global-cycle) | C-u TAB (org-cycle) 
   全局循环：在整个缓冲区的状态之间轮换
-
-当 Emacs 首次访问 Org 文件时，全局状态设置为概览，默认不隐藏文档内容。
-可以通过变量 org-startup-folded 进行配置，或者通过在文件中添加 STARTUP 关键字来进行文件级别的配置。
-关键字可以是 overview(隐藏全部内容)、content(仅显示标题包括子标题)、showall(文档内容全部显示)、showeverything
-或 show<n>levels（n = 2..5），例如：
-#+begin_src org
++ 当 Emacs 首次访问 Org 文件时，全局状态设置为概览，默认不隐藏文档内容。
+  可以通过变量 org-startup-folded 进行配置，或者通过在文件中添加 STARTUP 关键字来进行文件级别的配置。
+  关键字可以是 overview(隐藏全部内容)、content(仅显示标题包括子标题)、showall(文档内容全部显示)、showeverything
+  或 show<n>levels（n = 2..5），例如：
+  #+begin_src org
   #+STARTUP: content
 #+end_src
-
 ** 移动
 以下命令用于跳转到缓冲区中的其他标题。
-+ C-c C-n (org-next-visible-heading) \\
-  跳转到下一个标题。
-+ C-c C-p (org-previous-visible-heading) \\
-  跳转到上一个标题。 
-+ C-c C-f (org-backward-heading-same-level) \\
-  跳转到下一个同级标题。  
-+ C-c C-b (outline-backward-same-level) \\
-  跳转到上一个同级标题。  
-+ C-c C-u (outline-up-heading) \\
-  向上跳转到更高层级的标题。
-
++ C-c C-n (org-next-visible-heading) 跳转到下一个标题。
++ C-c C-p (org-previous-visible-heading) 跳转到上一个标题。 
++ C-c C-f (org-backward-heading-same-level) 跳转到下一个同级标题。  
++ C-c C-b (outline-backward-same-level) 跳转到上一个同级标题。  
++ C-c C-u (outline-up-heading) 向上跳转到更高层级的标题。
 ** 结构编辑
 + M-RET (org-meta-return) \\
   插入与当前级别相同的新标题。如果光标在普通列表项中，则创建一个新项（参见普通列表）。
@@ -97,7 +79,7 @@ Org 模式使用两个命令，分别绑定到 TAB 和 S-TAB（org-cycle 和 org
   将条目或区域重新归档到不同的位置。参见“重新归档和复制”。  
 + C-x n s (org-narrow-to-subtree) | C-x n w (widen) \\
   将缓冲区限制到当前子树，然后再扩大它。
-当有一个活动区域（瞬态标记模式）时，提升和降级操作将作用于该区域内的所有标题。
++ 当有一个活动区域（瞬态标记模式）时，提升和降级操作将作用于该区域内的所有标题。
 
 ** 稀疏树
 Org mode 的一个重要功能是能够为大纲树中的选定信息构建稀疏树，使整个文档尽可能地折叠。
