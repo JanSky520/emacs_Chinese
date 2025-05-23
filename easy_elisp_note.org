@@ -222,8 +222,51 @@
 ** 其他分支结构
 1. cond 可以处理多个分支条件
    #+begin_src emacs-lisp
-     
+     (defun fee (age)
+             (cond
+              ((or (<= age 3) (>= age 65)) 0)
+              ((<= 4 age 6) 0.5)
+              ((<= 7 age 12) 1.0)
+              ((<= 13 age 15) 1.5)
+              ((<= 16 age 18) 1.8)
+              (t 2.0)))
    #+end_src
+2. 用于检测数据类型的函数，以 p 结尾
+   #+begin_src emacs-lisp
+     (consp '(1 . 2))   ; => t（是 cons 对）
+     (listp '(1 2 3))   ; => t（是列表）
+     (listp '())        ; => t（空列表也是列表）
+     (null nil)         ; => t（检查是否是 nil）
+     (symbolp 'hello)   ; => t（是符号）
+     (integerp 42)      ; => t（是整数）
+     (floatp 3.14)      ; => t（是浮点数）
+   #+end_src
+3. 用于比较符号的函数
+   #+begin_src emacs-lisp
+     (char-equal ?A ?a)     ; => t 不区分大小写
+     (= ?A ?a)              ; => nil 区分大小写
+
+     (< ?a ?b)     ; => t（a < b）
+     (> ?Z ?Y)     ; => t（Z > Y）
+   #+end_src
+4. 用于比较字符串的函数
+   #+begin_src emacs-lisp
+     ;; 区分大小写的比较
+     (string-equal "foo" "foo")   ; => t
+     (string-equal "Foo" "foo")   ; => nil
+
+     ;; 不区分大小写的比较
+     (string-equal (downcase "Foo") (downcase "foo")) ; => t
+
+     ;; 字典序比较
+     (string-lessp "apple" "banana")     ; => t（"apple" < "banana"）
+     (string-greaterp "Zebra" "apple")   ; => nil（"Zebra" < "apple"，按 ASCII 码）
+   #+end_src
+5. 练习 3：成绩（A-D）是由分数决定的。编写一个将分数映射为成绩的函数，映射规则如下
+   + A 如果 score ≥ 80
+   + B 如果 60 ≤ score ≤ 79
+   + C 如果 40 ≤ score ≤ 59
+   + D 如果 score < 40
 ** 练习解答
 1. 练习 1
    #+begin_src emacs-lisp
@@ -252,7 +295,15 @@
        (if (or (< x 0) (< y 0) (< z 0))
            (* x y z)))
    #+end_src
-
+3. 练习 3
+   #+begin_src emacs-lisp
+     (defun test (x)
+       (cond
+        ((>= x 80) 'A)
+        ((<= 60 x 79) 'B)
+        ((<= 40 x 59) 'C)
+        (t 'D)))
+   #+end_src
 
 
 
