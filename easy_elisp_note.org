@@ -1,7 +1,5 @@
 * 将 elisp 作为简单的计算器
--------
 ** 四种基本算术操作
------
 1. 四则运算的基本用法，及浮点数的转换
    #+begin_src emacs-lisp
      (+ 10 1)      ; 10 + 1 = 11
@@ -23,7 +21,6 @@
    + 求和：39, 48, 72, 23, 91
    + 求平均值：39, 48, 72, 23, 91（结果取为浮点数）
 ** 其他算术操作
------
 1. 求余数和平方根
    #+begin_src emacs-lisp
      (% 10 3)    ; 10 % 3 = 1
@@ -48,7 +45,6 @@
    + 3的4次幂
    + 1000的对数
 ** 习题解答
------
 1. 练习 1
    #+begin_src emacs-lisp
      (* (+ 1 39) (- 53 45))        ; 320
@@ -65,9 +61,7 @@
    #+end_src
 
 * 生成表
-------
 ** Cons 单元和表
------
 1. Cons 单元是一个存放了两个地址的内存空间。Cons 单元可用函数 cons 生成
    #+begin_src emacs-lisp
      (cons 1 2)                      ; 执行后生产 (1 . 2)，cons 这个名字是术语构造 construction 的简称
@@ -102,7 +96,6 @@
    + (I "saw" 3 "girls")
    + ("Sum of" (1 2 3 4) "is" 10)
 ** 进一步认识 Cons 的概念
------
 1. quote 是一个非常重要的特殊形式，它用于防止表达式被求值
    #+begin_src emacs-lisp
      '(+ 2 3)       ; 代表列表 (+ 2 3) 本身
@@ -112,9 +105,24 @@
    #+begin_src emacs-lisp
      (car '(1 2 3))       ; 1
      (cdr '(1 '(2 3)))    ; ('(2 3))
+     (car 'a)             ; 错误，a 不是列表类型
+   #+end_src
+3. list函数使得我们可以构建包含数个元素的表
+   #+begin_src emacs-lisp
+     (list '(1 2) '(3 4))       ; ((1 2) (3 4))
+     (list (+ 1 1) (* 2 2))     ; 会先对表达式求值，返回 (2 4)
+     '((+ 1 1) (* 2 2))         ; 引用表达式则不会进行求值，返回((+ 1 1) (* 2 2))
+     (list 'a (list 'b 'c) 'd)  ; 返回 (a (b c) d)
+   #+end_src
+4. 练习 2：求值下列S-表达式
+   #+begin_src emacs-lisp
+     (car '(0))
+     (cdr '(0))
+     (car '((1 2 3) (4 5 6)))
+     (cdr '(1 2 3 . 4))
+     (cdr (cons 3 (cons 2 (cons 1 '()))))
    #+end_src
 ** 习题解答
------
 1. 练习 1
    #+begin_src emacs-lisp
      (cons "hi" "everybody")
@@ -125,9 +133,129 @@
      (cons "Sum of" (cons (cons 1 (cons 2 (cons 3 (cons 4 nil)))) (cons "is" (cons 10 nil))))
    #+end_src
 2. 练习 2
+   + 0
+   + nil
+   + (1 2 3)
+   + (2 3 . 4)
+   + (2 1)
+
+* 定义函数
+** 定义简单函数并调用
+1. 使用 defun 定义函数
    #+begin_src emacs-lisp
-     ()
+     (defun test ()                ; 无参数
+       "打印一个字符串"
+       (message "hello world"))
+
+     (defun add (x)                ; 有参数
+       "简单的加法函数"
+       (+ x 2))
    #+end_src
+2. 调用函数
+   #+begin_src emacs-lisp
+     (test)    ; "hello world" 无参函数直接使用函数名调用
+     (add 3)   ; 5 有参函数在函数名后跟上参数
+   #+end_src
+3. 练习
+   + 将参数减1的函数
+   + 编写一个 π 的函数
+** 习题解答
+#+begin_src emacs-lisp
+  (defun sub (x)
+    (- x 1))
+  (defun my_pi ()
+    (* 4 (atan 1 1)))
+#+end_src
+
+* 分支
+** if 表达式
+1. 基本用法
+   #+begin_src emacs-lisp
+     (if (> 3 2)
+         (print "这是真的"))
+
+     (if (< 3 2)    
+         (message "这是真的")    ; 条件为真时运行该行
+       (message "这是假的"))     ; 条件为假时运行该行
+   #+end_src
+2. 进阶操作
+   #+begin_src emacs-lisp
+     (if (< 3 2)    
+         (progn                  ; 可通过 progn 执行多条语句
+           (message "第一")
+           (message "第二"))
+       (progn
+         (message "第三")
+         (message "第四")))
+
+     (defun score-grade (score)  ; 多分支结构
+       (if (>= score 90)
+           "A"
+         (if (>= score 80)
+             "B"
+           (if (>= score 70)
+               "C"
+             (if (>= score 60)
+                 "D"
+               "F")))))
+   #+end_src
+3. 练习 1：编写下面的函数
+   + 返回一个实数绝对值的函数
+   + 返回一个实数的倒数的函数。如果参数为0，则返回 nil
+   + 将一个整数转化为 ASCII 码字符的函数。如果给定的整数不能够转化为字符，那么就返回 nil
+** and 和 or
+1. and具有任意个数的参数，并从左到右对它们求值，如果某一参数为假，那么它就返回假，而不对剩余参数求值
+   #+begin_src emacs-lisp
+     (and t t)         ; => t
+     (and t nil)       ; => nil
+     (and nil nil t)   ; => nil
+   #+end_src
+2. or 具有可变个数的参数，并从左到右对它们求值。它返回第一个值不是假，而余下的参数不会被求值
+   #+begin_src emacs-lisp
+     (or 1 2 3)        ; 1
+     (or nil nil)      ; nil
+     (or)              ; nil
+   #+end_src
+3. 练习 2：编写下面的函数
+   + 一个接受三个实数作为参数的函数，若参数皆为正数则返回它们的乘积
+   + 一个接受三个实数作为参数的函数，若参数至少一个为负数则返回它们的乘积
+** 其他分支结构
+1. cond 可以处理多个分支条件
+   #+begin_src emacs-lisp
+     
+   #+end_src
+** 练习解答
+1. 练习 1
+   #+begin_src emacs-lisp
+     (defun abs (x)
+       (if (>= x 0)
+           x
+         (- x)))
+     
+     (defun rev (x)
+       (if (eql x 0)
+           nil
+         (/ 1.0 x)))
+
+     (defun test (x)
+       (if (<= 33 x 126)    ; 可以这么写，表示 33 <= x <= 126
+           (string x)
+         nil))
+   #+end_src
+2. 练习 2
+   #+begin_src emacs-lisp
+     (defun test1 (x y z)
+       (if (and (> x 0) (> y 0) (> z 0))
+           (* x y z)))
+
+     (defun test2 (x y z)
+       (if (or (< x 0) (< y 0) (< z 0))
+           (* x y z)))
+   #+end_src
+
+
+
+
 
 
 
