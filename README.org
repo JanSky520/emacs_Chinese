@@ -15,6 +15,6 @@
 
 + 由于本人正在学习《计算机程序的构造和解释》这本书，本书用的是 scheme 语言，本人懒得学 scheme，故准备直接用的 elisp 完成
   书籍的学习。重新整理了 elisp 的语法笔记，方便快速掌握相关语法知识学习本书。
-  想要快速了解 elisp 语法的可参考 easy_elisp_note 这本笔记。
+  想要快速了解 elisp 语法的可参考 [[file:./easy_elisp_note.org][速通 elisp]] 这篇笔记。
 
 欢迎有意加入汉化的兄弟们可以联系我，邮箱 zhangrihao24@mails.ucas.ac.cn

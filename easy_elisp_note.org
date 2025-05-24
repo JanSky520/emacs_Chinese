@@ -1,3 +1,8 @@
+#+title:   elisp 快速笔记
+#+author:  JanSky
+#+date:    2025-05-22
+#+STARTUP: overview
+
 * 将 elisp 作为简单的计算器
 ** 四种基本算术操作
 1. 四则运算的基本用法，及浮点数的转换
@@ -305,14 +310,61 @@
         (t 'D)))
    #+end_src
 
+* 局部变量
+** let 表达式
+1. 仅在作用域内生效，注意 let 后的括号
+   #+begin_src emacs-lisp
+     (let ((name "Alice")
+           (age 30))
+       (message "%s is %d years old" name age))    ; 仅在该作用域内生效
 
+     (let ((x 10)
+           (y 20))    ; 所有要绑定的变量整体用一个括号括起来
+       (message "Sum: %d, Product: %d" (+ x y) (* x y)))
 
+     (let ((x 2)
+           (y x))    ; error 不能引用同级的变量
+       (message "Inner x: %d, y: %d" x y))
+   #+end_src
+2. let 嵌套
+   #+begin_src emacs-lisp
+     (let ((x 1))
+       (let ((x 2)
+             (y x))  ; 不能引用同级的变量，这里的 x 来自外层 let，故 x = 1
+         (message "Inner x: %d, y: %d" x y)))    ; "Inner x: 2, y: 1"
 
+     (let ((x 10))             ; 外层 x
+       (let ((x 20)            ; 内层 x 遮蔽了外层的 x
+             (y x))            ; 这里的 x 是外层的 10
+         (message "Inner x=%d, y=%d" x y))    ; Inner x=20, y=10
+       (message "Outer x=%d" x))              ; "Outer x=10"
+   #+end_src
+** let* 表达式
+1. 可以引用同级的定义
+   #+begin_src emacs-lisp
+     (let* ((x 10)
+            (y (+ x 5))   ; 可以引用前面定义的 x
+            (z (+ x y)))  ; 可以引用 x 和 y
+       (message "x=%d, y=%d, z=%d" x y z))    ; "x=10, y=15, z=25"
+   #+end_src
+2. let* 同样也可以嵌套使用
+   #+begin_src emacs-lisp
+     (let* ((x 10)
+            (y (let* ((a (* x 2)))
+                 (+ a 5))))
+       (message "y=%d" y))    ; "y=25"
+   #+end_src
 
-
-
-
-
+* 重复
+** 递归函数
+1. 在自己的定义中调用自己的函数叫做递归函数
+   #+begin_src emacs-lisp
+     (defun factorial (n)
+       "计算 n 的阶乘"
+       (if (<= n 1)
+           1
+         (* n (factorial (1- n)))))
+   #+end_src
 
 
 
