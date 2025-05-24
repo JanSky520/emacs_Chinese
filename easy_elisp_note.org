@@ -115,6 +115,7 @@
 3. list函数使得我们可以构建包含数个元素的表
    #+begin_src emacs-lisp
      (list '(1 2) '(3 4))       ; ((1 2) (3 4))
+     (list 2 1 3 4)             ; (2 1 3 4)
      (list (+ 1 1) (* 2 2))     ; 会先对表达式求值，返回 (2 4)
      '((+ 1 1) (* 2 2))         ; 引用表达式则不会进行求值，返回((+ 1 1) (* 2 2))
      (list 'a (list 'b 'c) 'd)  ; 返回 (a (b c) d)
@@ -389,7 +390,6 @@
 4. 练习2：用尾递归函数编写
    + 用于翻转表元素顺序的my-reverse函数。（reverse函数是预定义函数）
    + 求和由数构成的表。
-   + 将一个代表正整数的字符串转化为对应整数。例如，"1232"会被转化为1232。不需要检查不合法的输入。
 ** 习题解答
 1. 练习 1
    #+begin_src emacs-lisp
@@ -417,7 +417,20 @@
         ((eql (car ls) x) num)
         (t (test4 (cdr ls) x (+ 1 num)))))
    #+end_src
+2. 练习 2
+   #+begin_src emacs-lisp
+     (defun test1 (ls)
+       (cond
+        ((null ls) nil)
+        (t (append (test1 (cdr ls)) (list (car ls))))))
 
+     (defun test2 (ls &optional sum)
+       (unless sum (setq sum 0))
+       (cond
+        ((null ls) sum)
+        (t (test2 (cdr ls) (+ sum (car ls))))))
+     (test1 '(d c a 2 e s))
+   #+end_src
 
 
 
