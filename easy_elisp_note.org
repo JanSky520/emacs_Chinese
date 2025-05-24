@@ -217,7 +217,7 @@
    #+end_src
 2. or 具有可变个数的参数，并从左到右对它们求值。它返回第一个值不是假，而余下的参数不会被求值
    #+begin_src emacs-lisp
-     (or 1 2 3)        ; 1
+     (or 4 2 3)        ; 4
      (or nil nil)      ; nil
      (or)              ; nil
    #+end_src
@@ -363,8 +363,48 @@
        "计算 n 的阶乘"
        (if (<= n 1)
            1
-         (* n (factorial (1- n)))))
+         (* n (factorial (- n 1)))))
+     (factorial 4)
+
+     (defun double-elements (lst)                ; 递归能很好的处理表
+       "递归地将表 LST 中的每个元素乘以 2"
+       (if (null lst)                            ; 基本情况：空表
+           nil
+         (cons (* 2 (car lst))                   ; 当前元素翻倍
+               (double-elements (cdr lst)))))
    #+end_src
+2. 尾递归是一种特殊的递归形式，它可以被编译器优化为迭代，从而避免递归带来的堆栈溢出问题
+   #+begin_src emacs-lisp
+     (defun factorial-tail (n &optional acc)                              ; 第 1 次传参 fact (4)
+       "使用尾递归计算 N 的阶乘，ACC 是累积器，默认为 1。"                ; 第 2 次传参 fact (3 4)
+       (if (<= n 1)                                                       ; 第 3 次传参 fact (2 12)
+           (or acc 1)                                                     ; 第 4 次传参 fact (1 24)
+         (factorial-tail (- n 1) (* n (or acc 1)))))                      ; 返回结果 24
+   #+end_src
+3. 练习1：用递归编写下面的函数
+   + 用于统计表中元素个数的 my-length 函数。（length是一个预定义函数）
+   + 一个求和表中元素的函数
+   + 一个分别接受一个表 ls 和一个对象 x 的函数，该函数返回从 ls 中删除x后得到的表
+   + 一个分别接受一个表 ls 和一个对象 x 的函数，该函数返回 x 在 ls 中首次出现的位置。索引从0开始。如果 x 不在 ls 中，函数返回 nil
+4. 练习2：用尾递归函数编写
+   + 用于翻转表元素顺序的my-reverse函数。（reverse函数是预定义函数）
+   + 求和由数构成的表。
+   + 将一个代表正整数的字符串转化为对应整数。例如，"1232"会被转化为1232。不需要检查不合法的输入。
+** 习题解答
+1. 练习 1
+   #+begin_src emacs-lisp
+     
+   #+end_src
+
+
+
+
+
+
+
+
+
+
 
 
 
