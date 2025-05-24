@@ -393,7 +393,29 @@
 ** 习题解答
 1. 练习 1
    #+begin_src emacs-lisp
-     
+     (defun my-length (ls)
+       (if (null ls)
+           0
+         (+ 1 (my-length (cdr ls)))))
+
+     (defun sum (ls)
+       (if (null ls)
+           0
+         (+ (car ls) (sum (cdr ls)))))
+
+     (defun test3 (ls x)
+       (if (null ls)                ; 判断结束条件，为空返回空表
+           nil
+         (if (eql (car ls) x)       ; 取出表的第一个元素与 x 作比较
+             (test3 (cdr ls) x)     ; 如果相等继续判断后续的表
+           (cons (car ls) (test3 (cdr ls) x)))))    ; 如果不想等就用当前元素拼接后续的表
+
+     (defun test4 (ls x &optional num)
+       (unless num (setq num 0))
+       (cond
+        ((null ls) nil)
+        ((eql (car ls) x) num)
+        (t (test4 (cdr ls) x (+ 1 num)))))
    #+end_src
 
 
