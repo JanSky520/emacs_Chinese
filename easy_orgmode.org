@@ -1,0 +1,137 @@
+#+title:   org 学习笔记
+#+author:  JanSky
+#+date:    2025-05-25
+#+STARTUP: overview indent
+
+
+* 文档结构
+** 标题
++ 标题定义了大纲树的结构，Org 标题从左边距开始，以一个或多个 *** 加空格开头。
+   #+begin_src org
+     * 一级标题
+     ** 二级标题
+        文字内容
+     *** 三级标题
+   #+end_src
++ 想让大纲层次感明显，可以在文件最顶部加入 =#+STARTUP: indent= 实现。
++ 在 emacs 配置文件中添加 =(setq org-startup-numerated t)= 可实现全局的标题编号。
+** 文本内容的隐藏与显示
++ 光标移动至标题处按 =TAB= 键可打开或隐藏当前标题所属的内容。
++ 光标移动至标题处按 =S-TAB= 可实现全部标题的打开或隐藏。
++ 可在文件开头处添加 =#+STARTUP= 配置代码设置标题内容属性。
+  #+begin_src org
+    #+STARTUP: overview          ;; 显示顶级标题，其他内容折叠
+    #+STARTUP: content           ;; 显示所有标题，隐藏正文内容
+    #+STARTUP: showall           ;; 完全展开所有内容（标题和正文）
+    #+STARTUP: show2levels       ;; 展开一级和二级标题
+    #+STARTUP: show3levels       ;; 展开到三级标题，下同
+    #+STARTUP: show4levels
+    #+STARTUP: show5levels
+  #+end_src
+** 纯文本列表
++ 无序列表项以 *-* 或 *+* 作为项目符号开头。
++ 有序列表项以数字加句点或右括号开头，例如 *1.* 或 *1)* 开头。
++ 无序列表中还可以使用 *::* 来充当描述符号，作用相当于冒号但比冒号更美观。
+  #+begin_src org
+    - 苹果 :: 蔷薇科水果，富含维生素C
+    - 香蕉 :: 芭蕉科植物，高钾食品      （明确关联术语与描述）
+  #+end_src
++ *C-c -* 快捷键可以在各标号中（ *-* *+* *1.* *1)* ）循环切换。
+
+* 表格
+** 内置表格编辑器
++ 任何以 *|* 作为首个非空白字符的行都被视为表格的一部分，同时 *|* 也是列分隔符，以 *|-* 开头的是水平分隔符。
++ 每次在表格内按下 *TAB* 、 *RET* 或 *C-c C-c* 时，表格会自动重新对齐，按 *TAB* 还会跳转到下一个字段，按 *RET* 自动创建新行。
++ *C-c -* 在当前行下方插入一条水平线，如果是 *C-u C-c -* 则会在当前行上方创建该线。
+** 电子表格
++ 要查看某个字段的坐标，可在该字段内按 *C-c ?* 后会在 minibuffer 内显示坐标。
++ *@ROW* 表示行坐标，列坐标用 *$COLUMN* 表示；例如 @2 表示第二行，$3 表示第三列。
++ 表格中还可以用 *calc* 公式计算，类似 excel 表（具体用法参考原手册）。
+   
+* 超链接
+** 链接的格式
++ Org 能够识别纯 URI，可能被尖括号包裹，并将其激活为可点击的链接。
+  #+begin_src org
+    [[LINK][DESCRIPTION]]
+    [[LINK]]
+  #+end_src
++ 有时需要用到转义的时候需要添加 *\* 符号来实现转义。
++ 有时链接可能会被隐藏而无法编辑，可以把光标移动到链接处使用 *C-c C-l* 命令。
+** 内部链接
++ 使用标题名可以实现标题的跳转，如 ~[[*表格][描述]]~ 会跳转到标题2。
++ 表格或代码名称可以通过 ~#+NAME:表格名称/代码名称~ 指定，跳转到指定的表格或代码。
++ 可以进行图片的跳转，如 ~[[file:~/下载/你的名字.png][查看图片]]~
++ 还可以使用尖括号实现无标题的跳转。
+  #+begin_src org
+    <<my-anchor>>  <!-- 定义锚点 -->
+
+    [[my-anchor][跳转到锚点]]
+  #+end_src
+** 外部链接
++ *file* 文件链接，可打开本地或远程链接。
++ *elisp* 激活时执行一个 elisp 命令。
++ *http* 或者 *https* 可以打开一个网页链接。
++ *shell* 激活时执行一个 shell 命令。
+
+* 待办事项
+** 基本待办事项功能
++ 当标题以单词 *TODO* 开头时，任何标题都会变成待办事项，例如 ~*** TODO Write letter to Sam Fortune~ 。
++ *C-c C-t* 可以把普通标题设置成 *TODO* ，把 *TODO* 转变成 *DONE* ，不停循环。
+** 进度记录
++ 通过配置 ~(setq org-log-done 'time)~ 可以实现在 *DONE* 某个事项时在下方显示完成的时间。
++ 或者使用 ~(setq org-log-done 'note)~ 还可以添加备注。
+** 其他用法
++ 可以 A、B、C 来表示优先级，例如 ~*** TODO [#A] 内容~ 中 A 表示最高级,也可使用数字来设置优先级。
++ 可以使用 *C-c ,* 来时修改优先级，会提示在 minibuffer 中输入。
++ 可以将大的任务分解成子任务，在标题后面加入 *[0/0]* 或 *[0%]* 来显示进度，完成任务会自动更新进度。
+  #+begin_src org
+    * Organize Party [33%]
+    ** TODO Call people [1/2]
+    *** TODO Peter
+    *** DONE Sarah
+    ** TODO Buy food
+    ** DONE Talk to neighbor
+  #+end_src
++ 每个项目都可以通过以字符串 *[ ]* 开头而变成复选框。此功能类似于 TODO 事项，但更为轻量。有三种状态如下
+  #+begin_src org
+    * TODO Organize party [2/4]
+      - [-] call people [1/3]
+        - [ ] Peter
+        - [X] Sarah
+        - [ ] Sam
+     - [X] order food
+     - [ ] think about what music to play
+     - [X] talk to the neighbors
+  #+end_src
++ 按 *C-c C-c* 可以完成一个复选框，完成全部的子复选框，父复选框会自动更新。
+
+* 标签
+** 标签的基本用法
+1. 标签利用了大纲树形结构的层级特性，如果某个标题带有特定标签，其所有子标题也会继承该标签。
+   #+begin_src org
+     * Meeting with the French group      :work:
+     ** Summary by Frank                  :boss:notes:
+     *** TODO Prepare slides for him      :action:
+   #+end_src
+2. 把光标移动到标题行，按 *C-c C-c* 可以快速设置一个标签。
+
+
+
+
+* 常用快捷键
++ *C-c -* 快捷键可以在各标号中（ *-* *+* *1.* *1)* ）循环切换
++ *C-c -* 在表格当前行下方插入一条水平线
++ *C-u C-c -* 在表格当前行上方创建该线
++ *C-c ?* 后会在 minibuffer 内显示表格坐标
++ 把光标移动到链接处使用 *C-c C-l* 可以编辑超链接
++ *C-c C-t* 可以把普通标题设置成待办事项
++ *C-c ,* 修改待办事项的优先级
++ *C-c C-c* 可以完成一个复选框
++ *C-c C-c* 可以快速设置一个标签
++ 
++ 
++ 
+
+
+
+
