@@ -105,15 +105,31 @@
   #+end_src
 + 按 *C-c C-c* 可以完成一个复选框，完成全部的子复选框，父复选框会自动更新。
 
-* 标签
+* 标签与属性
 ** 标签的基本用法
-1. 标签利用了大纲树形结构的层级特性，如果某个标题带有特定标签，其所有子标题也会继承该标签。
-   #+begin_src org
-     * Meeting with the French group      :work:
-     ** Summary by Frank                  :boss:notes:
-     *** TODO Prepare slides for him      :action:
-   #+end_src
-2. 把光标移动到标题行，按 *C-c C-c* 可以快速设置一个标签。
++ 标签利用了大纲树形结构的层级特性，如果某个标题带有特定标签，其所有子标题也会继承该标签。
+  #+begin_src org
+    * Meeting with the French group      :work:
+    ** Summary by Frank                  :boss:notes:
+    *** TODO Prepare slides for him      :action:
+  #+end_src
++ 把光标移动到标题行，按 *C-c C-c* 可以快速设置一个标签。
+** 属性的基本用法
++ 属性是一种比标签更结构化的元数据系统，允许你为标题或文件附加键值对，它们常用于存储额外的信息、配置任务或控制导出行为。
++ 属性的语法以 *:PROPERTIES:* 开头，并以 *:END:* 结尾。
+  #+begin_src org
+    * CD collection
+      :PROPERTIES:
+      :NDisks_ALL:  1 2 3 4
+      :Publisher_ALL: "Deutsche Grammophon" Philips EMI
+      :END:
+  #+end_src
+
+
+
+
+
+
 
 
 
