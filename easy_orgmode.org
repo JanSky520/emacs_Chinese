@@ -118,21 +118,14 @@
 + 属性是一种比标签更结构化的元数据系统，允许你为标题或文件附加键值对，它们常用于存储额外的信息、配置任务或控制导出行为。
 + 属性的语法以 *:PROPERTIES:* 开头，并以 *:END:* 结尾。
   #+begin_src org
-    * CD collection
+    * 标题
       :PROPERTIES:
-      :NDisks_ALL:  1 2 3 4
-      :Publisher_ALL: "Deutsche Grammophon" Philips EMI
+      :key1: value1
+      :key2: value2
       :END:
   #+end_src
-
-
-
-
-
-
-
-
-
++ 上面的用法作用域仅限当前标题，要使属性全文件可用可在文件开头添加 ~#+PROPERTY: var foo=1~ 给 var 赋值使全文件可用。
++ 若想为现有属性值追加内容，可在属性名后添加 *+* ，如 ~#+PROPERTY: var+ bar=2~ 将使属性 var 获得值 foo=1 bar=2。
 
 * 常用快捷键
 + *C-c -* 快捷键可以在各标号中（ *-* *+* *1.* *1)* ）循环切换
