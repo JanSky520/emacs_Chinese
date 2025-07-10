@@ -28,6 +28,7 @@
     #+STARTUP: show4levels
     #+STARTUP: show5levels
   #+end_src
++ 在 emacs 配置文件中添加 =(setq org-hide-emphasis-markers t)= 可以 org 的隐藏加粗、斜体等符号
 ** 纯文本列表
 + 无序列表项以 *-* 或 *+* 作为项目符号开头。
 + 有序列表项以数字加句点或右括号开头，例如 *1.* 或 *1)* 开头。
