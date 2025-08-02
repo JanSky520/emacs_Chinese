@@ -1,0 +1,28 @@
+#+title:   elisp 精修笔记
+#+author:  JanSky
+#+date:    2025-07-11
+#+STARTUP: overview indent
+
+
+* elisp 简介
+** 简单的输出
++ 初识 elisp 我们会发现全部都是括号，括号是 elisp 的重要组成部分。
++ 我们从 hello world 开始进入 elisp 的世界
+  #+begin_src emacs-lisp
+    (+ 1 2)    ; 运算符号前置
+    (message "hello world")    ; 会在底部的回显区显示 hello world
+  #+end_src
+** 一些默认的约定
++ elisp 代码示例格式如 ~(list 1 2 3)~ 用括号包围，lisp 用无数个括号实现我们需要的功能。
++ nil 有三种不同的含义：表示 nil 的的符号、表示逻辑假、表示空列表，用作变量时候 nil 始终是 nil 值。
++ elisp 中 () 和 nil 表示的含义相同，本笔记中空列表用 () 表示，false 用 nil 表示。
++ 用 t 表示逻辑真值 true，与 nil 对立。
+
+* 数据类型
+
+
+
+
+
+
+
