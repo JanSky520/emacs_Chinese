@@ -1,0 +1,109 @@
+#+title:   use-package 快速上手
+#+author:  JanSky
+#+date:    2025-10-21
+#+STARTUP: overview indent
+
+
+* 如何加载包
+#+begin_src emacs-lisp
+  ;; 延迟加载
+  (use-package foo
+  :defer t)    ;; 非 nil 值表示阻止此包被立即加载
+  :defer 30    ;; 在空闲 30 秒后加载
+  :demand t    ;; 强制立即加载该包，同时指定了 :demand t 和 :defer t， :defer 关键字将优先生效
+
+  ;; 条件加载包
+  :if (display-graphic-p)            ;; 只想在图形化 Emacs 会话中加载
+  :if (eq system-type 'gnu/linux)    ;; 以下示例仅在 GNU/Linux 系统上加载软件包
+  :if (memq window-system '(ns x))   ;; 下面的示例仅在 macOS 和 X 系统上加载软件包
+  :if (package-installed-p 'foo)     ;; 以下示例仅在安装了‘ foo ’包时加载一个包
+  :if (locate-library "foo.el")      ;; 仅当你的 load-path 中存在 foo.el 时（例如，如果你手动安装了该文件）才会加载一个包
+  :after (foo bar)                   ;; 只有在 foo 和 bar 都被加载后，才会加载
+
+  ;; 手动安装包
+  (use-package org
+  :load-path "site-lisp/org/lisp/"             ;; 设置加载包的文件地址
+  :commands org-mode)                          ;; 在 org-mode 启动后才启用包
+  :autoload org-crypt-use-before-save-magic    ;; :autoload 关键字采用与 :commands 相同的参数，但用于自动加载非交互式函数
+#+end_src
+
+* 配置包
+#+begin_src emacs-lisp
+  ;; 使用 Lisp 代码配置软件包
+  :preface    ;; 主要用于那些不依赖包本身的预备设置工作，是最早执行的
+  :init       ;; 在加载软件包前执行
+  :config     ;; 在加载软件包后执行
+              ;; 在可能的情况下，最好避免使用 :preface、:config 和 :init
+              ;; 议优先使用支持自动加载的关键字，例如 :bind、:hook 以及 :mode，因为它们会为您设置自动加载功能，无需任何样板代码
+
+  ;; 按键绑定
+  :bind (("M-o l" . highlight-lines-matching-regexp)    ;; 组合使用，可同时绑定多个按键
+         ("M-o r" . highlight-regexp)
+         ("M-o w" . highlight-phrase))
+  :bind ([remap fill-paragraph] . unfill-toggle)        ;; 重新映射，将把默认绑定为 M-q 的 fill-paragraph 重新绑定到 unfill-toggle
+  :bind (("C-c t" . term)                               ;; :map 实现局部映射，仅当在这个包的模式下才会生效
+         :map term-mode-map
+         ("M-p" . term-send-up)
+         ("M-n" . term-send-down))
+  :bind-keymap ("C-c p" . foo-command-map)              ;; 通过 :bind-keymap 绑定的“命令”必须是包中定义的键映射，而非交互式函数
+
+  ;; 钩子
+  :hook (prog-mode . company-mode)    ;; 等同于 (add-hook 'prog-mode-hook #'company-mode)
+  :hook prog-mode                     ;; 等同于上面，更简化的形式
+                                      ;; :hook 也隐含了 :defer t
+
+  ;; 模式和解释器
+  (use-package ruby-mode
+    :mode "\\.rb\\'"        ;; 把文件扩展名是 .rb 结尾的启用 ruby-mode 模式，支持正则表达式
+    :interpreter "ruby")    ;; 第一行出现 ruby 则启用 ruby-mode 模式，例如文件开头是 #!/usr/bin/env ruby
+
+  ;; 用户选项
+  (use-package comint
+    :defer t
+    :custom          ;; 在 :init 之后、:config 之前执行，省去里 setq，语义表达更明显
+    (comint-buffer-maximum-size 20000 "Increase comint buffer size.")
+    (comint-prompt-read-only t "Make the prompt read only."))
+
+  ;; 字体外观
+  (use-package example
+    :custom-face     ;; 设置字体外观
+    (example-1-face ((t (:foreground "LightPink"))))    ;; 对所有显示设备设置前景色为浅粉色
+    (example-2-face ((t (:foreground "LightGreen"))) face-defspec-spec))
+#+end_src
+
+* 自动安装
+#+begin_src emacs-lisp
+  :ensure t    ;; 自动安装包
+
+  (use-package tex        ;； 使用模式名 tex
+    :ensure auctex        ;； 但安装的包是 auctex
+    :mode ("\\.tex\\'" . latex-mode)
+    :config
+    (setq TeX-auto-save t))
+
+  (use-package bbdb
+  :vc (:url "https://git.savannah.nongnu.org/git/bbdb.git"    ;; 当包仓库没有这个包的时候去网址里下载。例如 git
+       :rev :newest))                                         ;; :rev - 版本/分支，:newest 表示最新版本
+
+  (use-package company
+    :ensure t
+    :pin gnu)    ;; 更改默认下载的仓库
+#+end_src
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
