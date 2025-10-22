@@ -93,8 +93,39 @@
     :pin gnu)    ;; 更改默认下载的仓库
 #+end_src
 
+* 推荐用法及参考示例
+#+begin_src emacs-lisp
+  ;; 给出的一个推荐的 company 插件的配置参考
+  (use-package company
+    :ensure t
+    :hook (prog-mode . company-mode)      ; 按需加载
+    :bind (:map company-active-map        ; 局部键位映射
+                ("C-n" . company-select-next)
+                ("C-p" . company-select-previous))
+    :custom                              ; 定制变量
+    (company-idle-delay 0.3)
+    (company-minimum-prefix-length 2)
+    :config                              ; 加载后配置
+    (global-company-mode)
+    (setq company-backends '(company-capf company-dabbrev)))
 
+  ;; 不推荐这么配置
+  (use-package example    ;; 配置混乱，语法重复，不利于阅读与维护
+    :init
+    (add-hook 'some-hook 'example-mode)  ; 应该用 :hook
+    (global-set-key (kbd "C-c e") 'example-command)  ; 应该用 :bind
+    (setq example-variable value))       ; 应该用 :custom
 
+  ;; 修改后的配置
+  (use-package example
+    :hook (some-hook . example-mode)     ; 自动延迟加载
+    :bind ("C-c e" . example-command)    ; 自动设置自动加载
+    :custom
+    (example-variable value))            ; 语义更清晰
+
+  ;; 灵活使用关键字搭配可以使代码显得简洁明了
+  ;; 关键字加载的顺序 :preface → :ensure → :init → :hook/:bind/:mode → :custom → :config
+#+end_src
 
 
 
