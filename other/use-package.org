@@ -48,9 +48,12 @@
   :bind-keymap ("C-c p" . foo-command-map)              ;; 通过 :bind-keymap 绑定的“命令”必须是包中定义的键映射，而非交互式函数
 
   ;; 钩子
-  :hook (prog-mode . company-mode)    ;; 等同于 (add-hook 'prog-mode-hook #'company-mode)
-  :hook prog-mode                     ;; 等同于上面，更简化的形式
-                                      ;; :hook 也隐含了 :defer t
+  :hook (prog-mode . company-mode)             ;; 等同于 (add-hook 'prog-mode-hook #'company-mode)
+  :hook prog-mode                              ;; 等同于上面，更简化的形式
+  :hook ((prog-mode . company-mode)            ;; 要在同一个钩子中添加多个函数
+         (prog-mode . some-other-function))
+  :hook (prog-mode text-mode)                  ;; 等效于 :hook ((prog-mode text-mode) . company-mode)
+                                               ;; :hook 也隐含了 :defer t
 
   ;; 模式和解释器
   (use-package ruby-mode
