@@ -419,10 +419,10 @@
    #+end_src
 2. 练习 2
    #+begin_src emacs-lisp
-     (defun test1 (ls)
+     (defun test1-tail (ls &optional acc)
        (cond
-        ((null ls) nil)
-        (t (append (test1 (cdr ls)) (list (car ls))))))
+        ((null ls) acc) 
+        (t (test1-tail (cdr ls) (cons (car ls) acc)))))
 
      (defun test2 (ls &optional sum)
        (unless sum (setq sum 0))
