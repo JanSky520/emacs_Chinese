@@ -1,4 +1,4 @@
-#+title:   use-package 快速上手
+#+title:   use-package 笔记
 #+author:  JanSky
 #+date:    2025-10-21
 #+STARTUP: overview indent
