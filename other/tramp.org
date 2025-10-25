@@ -1,0 +1,42 @@
+#+title:   tramp 笔记
+#+author:  JanSky
+#+date:    2025-10-25
+#+STARTUP: overview indent
+
+
+* 快速入门
++ 语法采用 method user host 三个部分，如需指定端口号，则要变为 host#port
++ 使用 =C-x C-f= 输入 /ssh:user@host:/path/to/file 可以打开一个远程的文件，在 windows 上可以使用 /plink:user@host:/path/to/file（通常不推荐使用 plink）
++ 在 linux 中，一般的方法是无法用 emacs gui 编辑系统文件，可以使用 /sudo::/path/to/file 打开并编辑一个系统文件
++ 可以结合 ssh 如 /ssh:user@host|sudo::/path/to/file 远程连接并使用 root 权限打开文件
++ 还可以使用 /smb:user%domain@host:/path/to/file 来访问 windows 的文件
++ 使用 usb 连接的安装设备可使用 /adb::/path/to/file 访问文件
+
+* 配置 tramp
++ 并非所有的方法在加载 trmap 后都会启用，可以手动在配置文件中添加如 =(with-eval-after-load 'tramp (tramp-enable-method "dockor"))= 激活 docker
++ 如上法激活后，可使用 /docker:容器名:/路径/文件 访问 docker 的文件
++ deepseek 给出了一个容器没有启动也能访问镜像内容的方法 /docker-image:镜像名:/路径/文件 （是否有用可自行测试）
++ GVFS 是 GNOME 桌面环境的虚拟文件系统，远程文件通过 GVFS 经由 FUSE 在本地挂载， TRAMP 在内部使用这个本地挂载的目录
++ 用户可以设置默认的方法访问远程文件 =(customize-set-variable 'tramp-default-method "ssh")= （一般用户直接使用 ssh 即可，不必纠结）
++ 一些常用的配置方法
+  #+begin_src emacs-lisp
+    (customize-set-variable 'tramp-default-user "root")    ;; 设置默认用户名后，/ssh:host:/path/file （即使默认了用户，也可指定其他用户）
+
+    (custom-set-variables                 ;; 设置的一个默认的配置示例
+     '(tramp-default-method "ssh")
+     '(tramp-default-user "john")
+     '(tramp-default-host "target"))
+
+    (add-to-list 'tramp-connection-properties        ;; 当连接到 ssh:user@randomhost.your.domain: 时，使用 /bin/ksh 作为远程 shell
+                 (list (regexp-quote "/ssh:user@randomhost.your.domain:")
+                       "remote-shell" "/bin/ksh"))
+
+    (customize-set-variable         ;; 设置中文密码输入提示口令，自行测试可行性
+     'tramp-password-prompt-regexp
+     (concat
+      "^.*"
+      (regexp-opt
+       '("密码" "口令")
+       t)
+      ".*:\0? *"))
+  #+end_src
