@@ -15,3 +15,4 @@
 
 * emacs 相关的其他包使用
 + 关于 [[file:other/use-package.org][use-package 使用笔记]] 的文章，可用于初学者学习或老手快速查阅相关命令
++ [[file:other/tramp.org][tramp 使用笔记]] 的文章，可用于初学者学习或老手
