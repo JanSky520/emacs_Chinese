@@ -4,6 +4,9 @@
 #+STARTUP: overview indent
 
 
+* 一些想说的话
+其实 tramp 并没有什么需要配置的，默认的就已经够用了，一般用户连接直接 =C-x C-f= 然后输入 ssh 连接即可，
+官方给出的文档很多在我看来也没什么好设置的，自己用的舒服就行。下面给出的一些配置参考只是告诉大家有这么一个用法，并不是一定要这么去配置。
 * 快速入门
 + 语法采用 method user host 三个部分，如需指定端口号，则要变为 host#port
 + 使用 =C-x C-f= 输入 /ssh:user@host:/path/to/file 可以打开一个远程的文件，在 windows 上可以使用 /plink:user@host:/path/to/file（通常不推荐使用 plink）
@@ -40,3 +43,7 @@
        t)
       ".*:\0? *"))
   #+end_src
+
+* 其他一些杂项配置
++ =C-x C-f /ssh:bird@bastion|ssh:you@remotehost:/path RET= 支持临时指定多个代理
++ tramp 与 eshell 适配良好，你可以在远程连接中 eshell 进行终端交互
