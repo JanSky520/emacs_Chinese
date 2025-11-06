@@ -139,11 +139,39 @@
   (setcdr arr '(f g))     ;; 修改列表的第一个元素以后的元素为 (f g)
   (nconc arr '(x y z))    ;; 后续接上 (x y z) 返回 (b c d x y z)，重复执行会在结尾不停的续接
 
-  (memq 'c '(a b c d))    ;; 只保留元素 c 后面的，返回 (c d)
-  (delq 'c '(a b c d))    ;; 删除元素 c
+  (memq 'c '(a b c d))     ;; 只保留元素 c 后面的，返回 (c d)
+  (delq 'c '(a b c d))     ;; 删除元素 c
+  (remq 'a '(a b a c a))   ;; 删除列表中所有的元素 a，返回 (b c)
+
+  ;; 关联列表 alist 记录了从键到值的映射，它是有 cons 组成的列表
+  (setq my-alist '((name . "Alice")    ;; 定义一个简单的 alist
+                 (age . 25)
+                 (city . "Beijing")))
+  (assoc 'city my-alist)         ;; 根据 key 查找
+  (rassoc "Alice" my-alist)      ;; 根据值来查找
+
+  ;; plist 是成对元素的列表
+  (setq my-plist '(pine cones num (1 2 3) color "blue"))
+  (plist-get my-plist 'num)             ;; 获取 num 的值
+  (plist-put my-plist 'num '(5 6 7))    ;; 把 num 的值替换成 (5 6 7)
 #+end_src
 
+* 序列、数组与向量
+#+begin_src emacs-lisp
+  ;; 任何的列表和数组都是序列
+  ;; 数组是一个固定长度的对象
 
+  (sequencep [a b c])     ;; 如果对象是列表、向量、字符串、布尔向量或字符表则返回 t
+  (length [a b c])        ;; 求序列的长度
+  (length< [a b c] 4)     ;; 如果序列长度小于 4 则返回 t，length= 与 length> 类似
+  (elt [a b c] 2)         ;; 返回序列下标元素
+  (reverse [a b c])       ;; 反转序列，原序列不会改变
+  (nreverse [a b c])      ;; 反转序列，原序列会改变
+  (sort [5 2 4] '<)       ;; 按从小到大排列
+  (seq-take [a b c] 2)    ;; 返回前两个元素 [a b]
+
+  
+#+end_src
 
 
 
