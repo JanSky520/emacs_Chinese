@@ -1,0 +1,152 @@
+#+title:   elisp 教程
+#+author:  JanSky
+#+date:    2025-11-5
+#+STARTUP: overview indent
+
+
+* 数字
+#+begin_src emacs-lisp
+  #b101100    ;; #b 表示 2 进制
+  #o54        ;; #o 表示 8 进制
+  #x2c        ;; #x 表示 16 进制
+  #24r1k      ;; #24 表示 24 进制数，r 是分隔符
+  #2r101100   ;; 安装上面的例子，我们还可以用 #2 来表示 2 进制，r 来做分隔符
+
+  (max-char)              ;; 函数，返回 emacs 可处理的最大 unicode 字符
+  most-positive-fixnum    ;; 变量，可处理的最大整数
+  most-negative-fixnum    ;; 变量，可处理的最小整数
+  integer-width           ;; 变量，
+  
+  15e2          ;; 等价于 15.0 * 100
+  15e+2         ;; 等价于如上
+  1500000e-3    ;; 等价于 1500000.0 / 1000
+
+  (/ 0.0 0.0)    ;; 返回 NaN，NaN 表示不是一个数字
+  (/ 1.0 0)      ;; 返回 INF，IFN 表示无穷大
+  (isnan x)      ;; 检测 x 是不是 NaN
+
+  (floatp 10.2)    ;; 检测是否为浮点数
+  (integerp 10)    ;; 检测是否为整数
+  (numberp 10)     ;; 检测是否为整数或浮点数
+  (natnump 10)     ;; 检测是否为自然数
+  (zerop 10)       ;; 检测是否为零
+
+  (eq 10 10.0)
+  (eql 10 10.0)
+  (equal 10 10.0)    ;; 皆是不相等，数字的比较 eq eql equal 三个函数都是一样的返回值
+  (= 10 10.0)        ;; 相等，数字的比较一般都是用 =
+  (> 10 7 5 4 2)     ;; 返回 t ，可多数逐级比较，前一个必须比后一个大才返回 t，其他如 > >= <= 一样
+  (max x y z)        ;; 可多个数，返回最大值
+  (min x y z)        ;; 可多个数，返回最小值
+
+  (float 10.0)       ;; 转化为浮点数，ffloat 函数返回的是浮点数
+  (truncate -1.3)    ;; 向零取整，ftruncate 函数返回的是浮点数
+  (floor -1.3)       ;; 向负无穷大取整，ffloor 函数返回的是浮点数
+  (ceiling -1.3)     ;; 向正无穷大取整，fceiling 函数返回的是浮点数
+  (round -1.3)       ;; 四舍五入，fround 函数返回的是浮点数
+
+  (1+ 10)         ;; 自身加 1，1- 为减一，与 c 语言中的 ++ 不同，不会改变变量自身的值
+  (/ 10.0 5 2)    ;; 运算中有一个为浮点数结果即为浮点数，可多数累除，从左往右一次除，其他运算符 + - * 如此一样
+  (% 10 4)        ;; 模运算
+  (mod 10.5 4)    ;; 模运算，与 % 不同，mod 允许浮点数运算
+
+  (ash #b0101 1)          ;; 算术位移，左移一位
+  (ash -10 -1)            ;; 算术位移，右移一位
+  (lsh -10 -1)            ;; 逻辑位移，用法如上
+  (logand #b010 #b011)    ;; 按位与操作
+  (logior #b010 #b011)    ;; 按位或操作
+  (logxor #b010 #b011)    ;; 按位异或操作
+  (lognot #b10)           ;; 按位取反，注意这是补码形式的，等价于 (- -1 #b10)
+  (logcount -3)           ;; 整数时候计算二进制中 1 的个数，复数则计算 0 的个数
+
+  (exp 4)       ;; 表示 e 的 4 次方
+  (expt 2 3)    ;; 表示 2 的 3 次方
+  (sqrt 16)     ;; 表示 16 的平方根，返回的是浮点数
+  (log 16 4)    ;; 表示以 4 为底 16 的对数
+  (random 10)   ;; 表示 0 到 10 之间的随机整数
+  float-e       ;; 表示常数 e
+  float-pi      ;; 表示圆周率 pi
+#+end_src
+
+* 字符串和字符
+#+begin_src emacs-lisp
+  ;; 在 elisp 中，字符是整数，整数是不是字符取决于用法
+  ?a    ;; 表示字符 a，如果不加 “?”,则表示的是变量 a
+  (stringp "he")            ;; 判断是不是字符串
+  (string-or-null-p nil)    ;; 如果是字符串或 nil，则返回 t
+  (char-or-string-p 12)     ;; 是字符串或字符（即整数）则返回 t
+
+  (make-string 5 ?a)          ;; 创建 5 个字符 a 组成的字符串 "aaaaa"
+  (string ?h ?e ?l)           ;; 组成字符串 "hel"
+  (aref "hello" 1)            ;; 取出字符下标为 1 的字符串，从 0 开始
+
+  (substring "hello" 1 4)          ;; 从下标 0 开始，截取第 1 到 3 个字符组成字符串 "ell"
+  (substring "hello" -3 -1)        ;; 倒数第 3 到倒数第 2 个 组成字符串 “ll”
+  (substring [a b c d e f] 1 4)    ;; 支持向量，返回 [b c d]
+
+  (concat "he" "-ad" "c")       ;; 组成字符串 “he-adc”
+  (concat "he" (list 97 98))    ;; 可以列表组成字符串 "heab"
+
+  (split-string "hello15280740096ad" "[^0-9]+")    ;; 用正则表达式匹配手机号
+
+  (aset "hello" 1 ?x)      ;; 替换下标为 1 的字符为 x
+  (aset [a b c d] 1 'x)    ;; 替换下标为 1 的字符为 x
+  (store-substring "hello world" 6 "Emacs")     ;; 替换下标从 6 开始变成 "hello Emacs"
+
+  (char-equal ?x ?x)     ;; 字符比较，相同的字符返回 t
+  (string= "ab" "ab")    ;; 字符串比较，相同的字符串返回 t
+  (string< "ab" "ba")    ;; 比较第一对不匹配的字符
+
+  (number-to-string 123)      ;; 数字转化为字符串
+  (string-to-number "123")    ;; 字符串转数字
+  (string-to-char "abc")      ;; 返回字符串中的第一个字符
+
+  (downcase "Hello World")    ;; 把大写转化为小写
+  (upcase "hello world")      ;; 把小写转化为大写
+
+  (format "hello %s" "world")            ;; 类似于 c 语言的 printf 格式的用法，返回值为 "hello world"
+  (format-message "hello %s" "world")    ;; 用法与上面的基本一致，更安全，优秀推荐使用
+#+end_src
+
+* 列表
+#+begin_src emacs-lisp
+  (consp '(a . b))            ;; 检测是否是 cons 单元
+  (atom 'a)                   ;; 检测是否是原子
+  (listp '(a b c))            ;; 检测是否是列表
+  (null nil)                  ;; 检测是否为 nil
+  (proper-list-p '(a b c))    ;; 检测如果是列表则返回列表的长度，不是则返回 nil
+
+  (car '(a b c))             ;; 返回第一个元素 a，car-safe 是 car 的安全版本
+  (cdr '(a b c))             ;; 返回剩下的 (b c)，cdr-safe 是 cdr 的安全版本
+  (pop arr)                  ;; 删除 arr 中的第一个元素
+  (nth 2 '(a b c))           ;; 返回列表下标的第 2 个元素
+  (nthcdr 2 '(a b c d e))    ;; 返回列表下标第二个以后的元素 (c d e)
+  (last '(a b c d) 2)        ;; 返回最后两个 (c d)
+  (safe-length '(a b c))     ;; 返回列表的长度
+  (butlast '(a b c d) 2)     ;; 删除最后两个元素，剩下 (a b)
+
+  (cons 'a 'b)                ;; 构建一个简单的 (a . b)
+  (list 1 2 '(3 4))           ;; 构建列表 (1 2 (3 4))
+  (make-list 3 'x)            ;; 构建列表 (x x x)
+  (append '(a b) '(c d))      ;; 构建新列表 (a b c d)
+  (number-sequence 3 10 2)    ;; 创建一个 3 到 10 的列表，间隔为 2，返回 (3 5 7 9)
+
+  (setq arr '(b c d))
+  (push 'a arr)            ;; 将 a 插入到列表开头，返回 (a b c)
+  (add-to-list 'arr 'a)    ;; 将 a 插入到列表开头，返回 (a b c)，如果元素已存在，则不会增加元素
+
+  (setcar arr 'a)         ;; 修改列表的第一个元素为 a
+  (setcdr arr '(f g))     ;; 修改列表的第一个元素以后的元素为 (f g)
+  (nconc arr '(x y z))    ;; 后续接上 (x y z) 返回 (b c d x y z)，重复执行会在结尾不停的续接
+
+  (memq 'c '(a b c d))    ;; 只保留元素 c 后面的，返回 (c d)
+  (delq 'c '(a b c d))    ;; 删除元素 c
+#+end_src
+
+
+
+
+
+
+
+
