@@ -174,7 +174,222 @@
 #+end_src
 
 
+* 数据类型
+** 数字
 
+* 变量
+** 全局变量
+#+begin_src emacs-lisp
+  (setq str "hello")    ;; setq 定义一个全局的变量
+  (setq str "world")    ;; 在次设置 str 可以重置全局变量
+  (boundp 'str)         ;; 检测变量是否绑定
+  (makunbound 'str)     ;; 可以解除 str 的变量绑定
+
+  (defvar bar 23                      ;; 与 setq 用法相同都是定义变量，只不过只在第一次定义的时候使用，更改变量用 setq 
+    "The normal weight of a bar.")    ;; 附带文档说明，方便知道变量的作用
+  (defconst bar 23                    ;; defconst 会无条件初始化变量，而 defvar 仅在变量原本为空时才进行初始化
+    "The normal weight of a bar.")    ;; 附带文档说明，方便知道变量的作用
+#+end_src
+** 局部变量
+#+begin_src emacs-lisp
+  (let ((x 1)    ;; 局部绑定，x y 作用域只在 let 的括号范围内生效
+        (y 3))
+    (list x y))
+
+  (let ((x 1)     ;; 定的顺序是未指定的，可能打印出 1 或 2
+        (x 2))    ;; 避免在单个作用域内多次绑定同一变量 let 形式
+    (print x))
+
+  (let* ((y 1)     ;; 如果使用的是 let 会出现错误，y 没有定义，let 是整个变量赋值结束后才会绑定
+         (z y))    ;; let* 可以每次都进行一次绑定
+    (list y z))
+
+  (let ((x 1)
+        (y 3))
+    (setq x 5 y 10)    ;; 利用 setq 在局部中重新设置变量值
+    (list x y))
+
+  (let ((x 2))
+    (boundp 'x)        ;; 检测变量是否绑定
+    (makunbound 'x)    ;; 取消 x 的变量绑定
+    x)
+#+end_src
+** 变量绑定的作用域规则
+#+begin_src emacs-lisp
+  (defvar my-ticker nil)
+  (let ((x 0))
+  (setq my-ticker (lambda ()
+                    (setq x (1+ x)))))
+  my-ticker
+#+end_src
+
+* 控制结构
+** 顺序结构
+#+begin_src emacs-lisp
+  (progn    ;; 执行多条语句，返回最后一条语句
+    (message "第一条语句")
+    (message "第二条语句")
+    (message "第三条语句"))
+
+  (prog1    ;; 执行多条语句，返回第一条语句
+    (message "第一条语句")
+    (message "第二条语句")
+    (message "第三条语句"))
+
+  (prog2    ;; 执行多条语句，返回第二条语句
+    (message "第一条语句")
+    (message "第二条语句")
+    (message "第三条语句"))
+#+end_src
+** 条件语句
+#+begin_src emacs-lisp
+  (if condition      ;; 当条件满足时可执行语句 statement1，否则执行 statement2
+      (statement1)
+    (statement2))
+
+  (when condition    ;; 当条件满足时可同时执行多条语句，返回最后一条语句
+    (statement1)
+    (statement2)
+    (statement3)
+    ...)
+
+  (unless condition    ;; 当条件不满足时可同时执行多条语句，返回最后一条语句
+    (statement1)
+    (statement2)
+    (statement3)
+    ...)
+
+  (cond                 ;; 条件满足哪个就执行哪个，都没有满足的就执行最后语句默认语句
+   (condition1 statements...)
+   (condition2 statements...)
+   ...
+   (t default-statements...))
+
+  ;; 简单的例子：判断奇偶数 --------------------------------------------------
+
+  (if (= 0 (% 4 2))
+      (message "是偶数")
+    (message "是奇数"))
+
+  (when (= 0 (% 4 2))
+    (message "是偶数"))
+  (when (/= 0 (% 4 2))
+    (message "是奇数"))
+
+  (unless (/= 0 (% 4 2))
+    (message "是偶数"))
+  (unless (= 0 (% 5 2))
+    (message "是奇数"))
+
+  (cond
+   ((/= 0 (% 4 2)) (message "是奇数"))
+   ((= 0 (% 4 2)) (message "是偶数"))
+    (t (message "不是一个数")))
+#+end_src
+** 组合条件的结构体
+#+begin_src emacs-lisp
+  (not arg)          ;; 如果参数是 nil 则返回 t
+  (and (print 1) (print 2) (print 3) ...)    ;; 一条语句一条语句的判断，返回最后一条语句；或遇见 nil 返回
+  (or (print 1) (print 2) (print 3) ...)     ;; 一条语句一条语句的判断，遇见 t 直接返回
+  (xor arg1 arg2)    ;; 两个参数的真值不同返回 t
+
+  ;; 简单的例子 --------------------------------------------------
+
+  (not nil)          ;; 返回 t
+  (and 1 2 nil 3)    ;; 遇见 nil 返回 nil
+  (or nil 5 2 3)     ;; 遇见第一个真值，返回 5
+  (xor t t)          ;; 真值相同返回 nil
+#+end_src
+** pcase 宏
+#+begin_src emacs-lisp
+  (pcase 要匹配的值
+    (模式1 执行代码1...)
+    (模式2 执行代码2...)
+    ...)
+
+  (pcase (% 5 2)
+    (0 "偶数")    ;; 结果是 0 返回 "偶数"
+    (1 "奇数")    ;; 结果是 1 返回 "奇数"
+    (_ "其他"))   ;; 结果是其他返回 "其他"，_ 符号表示其余结果
+
+  (pcase (% 5 2)                ;; pred 表示用 (% 5 2) 的值 1 去匹配下面的语句
+    ((pred (= 0)) "是偶数")     ;; 等价于 (= 0 1) 注意顺序，0 在前面
+    ((pred (= 1)) "是奇数"))    ;; 等价于 (= 1 1)
+
+  (pcase (* 4 2)                          ;; 使用 lambda 函数在逻辑上会更好的理解
+    ((pred (lambda (x) (> x 0))) "是正数")
+    ((pred (lambda (x) (< x 0))) "是负数"))
+
+  (pcase '(0 1)    ;; 利用反引号的特性进行匹配
+    ('(0 0) '在原点)
+    (`(0 ,y) '在y轴上)
+    (`(,x 0) '在x轴上)
+    (_ '在坐标轴内))
+#+end_src
+** 迭代
+#+begin_src emacs-lisp
+  (dotimes (i 5)    ;; i 从 0 开始，每循环 1 次加 1，最后返回 nil
+    (message "第 %d 次循环" i))
+
+  (dolist (i (number-sequence 0 4 1))    ;; 这里 number-sequence 表示 0 到 4 的范围，步长是 1
+    (message "第 %d 次循环" i))
+  (dolist (i '(0 1 2 3 4))
+     (message "第 %d 次循环" i))
+
+  (setq i 0)
+  (while (< i 5)    ;; while 最后永远返回的是 nil
+    (message "第 %d 次循环" i)
+    (setq i (+ i 1)))
+#+end_src
+
+** 非局部退出
+#+begin_src emacs-lisp
+  (catch 'my-tag         ;; 设置标志
+    (message "第一步")
+    (message "第二步") 
+    (throw 'my-tag nil)    ;; 跳回 catch
+    (message "第三步"))    ;; 这行不会执行
+
+  (defun check-number (n)
+    (catch 'result
+      (when (< n 0) (throw 'result '负数))    ;; 如果是负数，立即返回
+      (when (> n 100) (throw 'result '太大))    ;; 如果太大，立即返回
+      '正常))
+
+  ;; 后面还有一些类似与 C 语言的错误处理的机制，有兴趣的可自行参阅官方文档
+#+end_src
+
+* 函数
+** 函数的定义
+#+begin_src emacs-lisp
+  (defun func(arg1 arg2 ...)
+    "函数的描述文档"
+    (函数内容))
+
+  (defun test-add(x y)
+    "加法运算"
+    (+ x y))
+
+  (defun foo(a b &optional c d &rest e)    ;; a b 是必要参数，c d 是可选的，e 表示剩下的所有参数都放进一个列表里
+    "多参数"
+    (...))
+
+  (test-add 2 3)    ;; 调用函数及传参
+#+end_src
+** 匿名函数
+#+begin_src emacs-lisp
+  (lambda (a b c) (+ a b c))                    ;; 匿名函数指的是没有名字的函数，用 lambda 表示这是一个匿名函数
+  (setq test-add (lambda (a b c) (+ a b c)))    ;; 这个相当于把这个匿名函数的赋予给了变量 test-add
+  (funcall test-add 1 2 3)                 ;; 匿名函数可以用 funcall 主动调用，后面跟上参数
+#+end_src
+** 高级用法
+#+begin_src emacs-lisp
+  (setq f 'list)          ;; 相当于把 list 赋予变量 f，不明白的就理解成 c 语言的 typedef 就行了
+  (funcall f 'x 'y 'z)    ;; 使用 funcall 就相当于 (list 'x 'y 'z)
+  (apply f 'x 'y '(z))    ;; 与 funcall 用法基本相同，就是必须得以列表结尾
+
+  (mapcar #'car '((a b) (c d) (e f)))    ;; mapcar 将指定的函数作用于序列里的每个，#' 表示引用的是个函数，是推荐的写法  
+#+end_src
 
 
 
