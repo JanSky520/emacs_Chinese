@@ -176,6 +176,9 @@
 
 * 数据类型
 ** 数字
+** 字符串与字符
+** 列表
+** 序列、数组与向量
 
 * 变量
 ** 全局变量
@@ -390,6 +393,25 @@
 
   (mapcar #'car '((a b) (c d) (e f)))    ;; mapcar 将指定的函数作用于序列里的每个，#' 表示引用的是个函数，是推荐的写法  
 #+end_src
+
+* 输入输出
+** 输入流与函数
+#+begin_src emacs-lisp
+  (read "hello world")        ;; 从字符串读取 hello，在空格处断开
+  (read t)                    ;; 从标准输入
+  (read nil)                  ;; 从迷你缓冲区
+
+  (read-from-string "hello world")    ;; 从字符串读取 hello，在空格处断开，返回读取的字符串与字符串长度
+#+end_src
+** 输出流与函数
+#+begin_src emacs-lisp
+  (message "hello %s" "world")    ;; 推荐使用 message 函数
+  (print "hello world")
+  (prin1 "hello world")
+  (princ "hello world")
+#+end_src
+
+* 
 
 
 
