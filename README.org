@@ -11,8 +11,6 @@
 * elisp 食用指南
 + 初学者可以参考 [[file:./elisp/elisp-速学笔记.org][速通 elisp]] 这篇笔记，了解基本的语法。
 + 完整的教程可阅读 [[file:./elisp/elisp-笔记.org][elisp 教程]] 这篇文章，涵盖了大部分的语法知识。
-+ 另有一篇 [[file:elisp/elisp_function.el][elisp 内置函数速览]] 的笔记收录了常用的 elisp 内置函数的用法。
-+ 关于 [[file:elisp/elisp_guide.org][elisp 快速指南]] 这本书的汉化是否继续推进还在考虑中。
 
 * emacs 相关的其他包使用
 + 关于 [[file:other/use-package.org][use-package 使用笔记]] 的文章，可用于初学者学习或老手快速查阅相关命令
