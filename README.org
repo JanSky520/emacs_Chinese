@@ -13,5 +13,6 @@
 + 完整的教程可阅读 [[file:./elisp/elisp-笔记.org][elisp 教程]] 这篇文章，涵盖了大部分的语法知识。
 
 * emacs 相关的其他包使用
-+ 关于 [[file:other/use-package.org][use-package 使用笔记]] 的文章，可用于初学者学习或老手快速查阅相关命令
-+ [[file:other/tramp.org][tramp 使用笔记]] 的文章，可用于初学者学习或老手
++ [[file:other/use-package.org][use-package 使用笔记]] 可用于初学者学习或老手快速查阅相关命令
++ [[file:other/tramp.org][tramp 使用笔记]] 可用于初学者学习或老手
++ [[file:./other/eshell.org][eshell 使用笔记]] 介绍了一些 eshell 的常用方法和自己实现的一些小功能仅供参考

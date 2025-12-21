@@ -39,6 +39,11 @@
   ;; 例如 alias cls "clear-scrollback" 可重写 cls 命令
   ;; alias ls "ls" "-al" 加参数的时候要另起一个双引号，"ls -al" 这种写法错误
 
+  (add-hook 'eshell-mode-hook                          ;; 当运行 eshell 时
+            (lambda ()
+              (shell-command "fcitx5-remote -c")       ;; 关闭输入法
+              (display-line-numbers-mode -1)))         ;; 不显示行号
+
   (defun my-eshell-prompt ()
     "浅色主题最佳可读性提示符"
     (concat
@@ -54,6 +59,7 @@
 * 实用功能实现
 #+begin_src emacs-lisp
   (defun toggle-eshell()
+    "在底部显示 eshell"
     (interactive)
     (if (get-buffer-window "*eshell*")                   ;; 检查是否存在显示 *eshell* 缓冲区的窗口
         (let ((buf (get-buffer "*eshell*")))             ;; 为变量 buf 绑定 *eshell*
@@ -61,16 +67,15 @@
           (delete-window (get-buffer-window buf)))       ;; 关闭窗口
       (let ((win (split-window-below 32)))               ;; 否则，在底部新建一个窗口,高度自定义
         (select-window win)                              ;; 焦点切换到这个窗口
-        (eshell)                                         ;; 运行 eshell
-        (display-line-numbers-mode -1))))                ;; 不显示行号
+        (eshell))))                                      ;; 执行 eshell
 
   (defun esh-coderun ()
     "快速执行代码"
     (interactive)
-    (let* ((file (buffer-name))       ;; 获取文件名
-           (main (file-name-base))    ;; 获取不带扩展名的文件名
+    (let* ((file (buffer-name))              ;; 获取文件名
+           (main (file-name-base))           ;; 获取不带扩展名的文件名
            (cmd (format "clang %s -o %s && ./%s" file main main)))    ;; 设定好需要执行的命令
-      (toggle-eshell)                 ;; 打开 eshell
-      (insert cmd)                    ;; 插入命令
-      (eshell-send-input)))           ;; 执行命令
+      (toggle-eshell)                        ;; 打开 eshell
+      (insert cmd)                           ;; 插入命令
+      (eshell-send-input)))                  ;; 执行命令
 #+end_src
