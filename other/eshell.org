@@ -1,0 +1,53 @@
+#+title:   eshell 教程
+#+author:  JanSky
+#+date:    2025-12-20
+#+STARTUP: overview indent
+
+
+* 基础用法
+#+begin_src emacs-lisp
+  ;; 执行 eshell-command 命令会在底部显示让用户输入一个终端命令，可以快速执行一次终端命令
+  (eshell-command-result "ls")    ;; 这个函数可以快速执行 ls 命令，返回结果显示在 minibuffer 处
+
+  (eshell-execute-file file &optional args dest)    ;; 执行一个脚本
+  ;; file: 执行的脚本路径，是个字符串
+  ;; args: 需要传递的参数
+  ;; dest: 为 t 时在当前缓冲区显示，nil 表示静默运行
+  (eshell-execute-file "~/test.eshell" nil t)    ;; 执行这个函数会在尾巴显示脚本打印的信息
+
+  ;; 执行 eshell 可以在缓冲区打开 eshll 终端，可以当作一个普通的终端是用，但无法运行 tui 应用
+  ;; 用户可以在 eshell 中直接运行 elisp 代码
+  (setq eshell-prefer-lisp-functions t)    ;; 当 Eshell 遇到一个命令名时，优先查找 Elisp 函数
+
+  ;; 在 eshell 中输入 cd /ssh:user@remote: 即可进入远程服务器的目录
+#+end_src
+
+* 高级用法
+#+begin_src emacs-lisp
+  (setq eshell-visual-commands    ;; 将 tui 命令放到此处可以运行 tui，但不推荐用 eshell 运行 tui 应用
+        '("btop" "yazi"))
+  (setq eshell-destroy-buffer-when-process-dies t)    ;; 退出 tui 应用时自带销毁
+
+  (setq eshell-history-file-name "~/.emacs.d/eshell/history")    ;; eshell 历史文件保存位置
+  (setq eshell-load-history t                                    ;; 启动时加载历史
+        eshell-save-history-on-exit t                            ;; 退出时保存历史
+        eshell-history-size 1000)                                ;; 历史记录大小
+
+  (setq eshell-banner-message "")                      ;; 取消 eshell 启动问候
+
+  ;; 在 ~/.emacs.d/eshell/alias 文件中可编写 alias 命令
+  ;; 例如 alias cls "clear-scrollback" 可重写 cls 命令
+  ;; alias ls "ls" "-al" 加参数的时候要另起一个双引号，"ls -al" 这种写法错误
+
+  (defun my-eshell-prompt ()
+    "浅色主题最佳可读性提示符"
+    (concat
+     (propertize "🦊 " 'face '(:foreground "#8B4513"))                       ;; 图标 - 深棕色
+     (propertize (user-login-name) 'face '(:foreground "#191970"))           ;; 用户名 - 藏青色
+     (propertize "@" 'face '(:foreground "#505050"))                         ;; 分隔符 - 深灰色
+     (propertize (file-name-nondirectory (eshell/pwd))                       ;; 目录名 - 深绿色
+                 'face '(:foreground "#006400" :bold t :weight 'bold))
+     (propertize "/ > " 'face '(:foreground "#4B0082"))))                    ;; 结尾符号 - 深紫色
+  (setq eshell-prompt-function 'my-eshell-prompt)
+#+end_src
+
