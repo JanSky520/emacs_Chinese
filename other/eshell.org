@@ -51,3 +51,26 @@
   (setq eshell-prompt-function 'my-eshell-prompt)
 #+end_src
 
+* 实用功能实现
+#+begin_src emacs-lisp
+  (defun toggle-eshell()
+    (interactive)
+    (if (get-buffer-window "*eshell*")                   ;; 检查是否存在显示 *eshell* 缓冲区的窗口
+        (let ((buf (get-buffer "*eshell*")))             ;; 为变量 buf 绑定 *eshell*
+          (kill-buffer buf)                              ;; 杀死缓冲区
+          (delete-window (get-buffer-window buf)))       ;; 关闭窗口
+      (let ((win (split-window-below 32)))               ;; 否则，在底部新建一个窗口,高度自定义
+        (select-window win)                              ;; 焦点切换到这个窗口
+        (eshell)                                         ;; 运行 eshell
+        (display-line-numbers-mode -1))))                ;; 不显示行号
+
+  (defun esh-coderun ()
+    "快速执行代码"
+    (interactive)
+    (let* ((file (buffer-name))       ;; 获取文件名
+           (main (file-name-base))    ;; 获取不带扩展名的文件名
+           (cmd (format "clang %s -o %s && ./%s" file main main)))    ;; 设定好需要执行的命令
+      (toggle-eshell)                 ;; 打开 eshell
+      (insert cmd)                    ;; 插入命令
+      (eshell-send-input)))           ;; 执行命令
+#+end_src
