@@ -16,7 +16,7 @@
   (max-char)              ;; 函数，返回 emacs 可处理的最大 unicode 字符
   most-positive-fixnum    ;; 变量，可处理的最大整数
   most-negative-fixnum    ;; 变量，可处理的最小整数
-  integer-width           ;; 变量，
+  integer-width           ;; 变量，官方文档没看懂啥意思
 
   15e2          ;; 等价于 15.0 * 100
   15e+2         ;; 等价于如上
@@ -78,14 +78,14 @@
 
   (make-string 5 ?a)          ;; 创建 5 个字符 a 组成的字符串 "aaaaa"
   (string ?h ?e ?l)           ;; 组成字符串 "hel"
-  (aref "hello" 1)            ;; 取出字符下标为 1 的字符串，从 0 开始
+  (aref "hello" 4)            ;; 取出字符下标为 1 的字符串，从 0 开始
 
   (substring "hello" 1 4)          ;; 从下标 0 开始，截取第 1 到 3 个字符组成字符串 "ell"
   (substring "hello" -3 -1)        ;; 倒数第 3 到倒数第 2 个 组成字符串 “ll”
   (substring [a b c d e f] 1 4)    ;; 支持向量，返回 [b c d]
 
   (concat "he" "-ad" "c")       ;; 组成字符串 “he-adc”
-  (concat "he" (list 97 98))    ;; 可以列表组成字符串 "heab"
+  (concat "he" (list 97 98))    ;; 可以与列表组成字符串 "heab"
 
   (split-string "hello15280740096ad" "[^0-9]+")    ;; 用正则表达式匹配手机号
 
@@ -114,6 +114,7 @@
   (listp '(a b c))            ;; 检测是否是列表
   (null nil)                  ;; 检测是否为 nil
   (proper-list-p '(a b c))    ;; 检测如果是列表则返回列表的长度，不是则返回 nil
+  (setq arr '(b c d))         ;; 创建一个列表
 
   (car '(a b c))             ;; 返回第一个元素 a，car-safe 是 car 的安全版本
   (cdr '(a b c))             ;; 返回剩下的 (b c)，cdr-safe 是 cdr 的安全版本
@@ -130,7 +131,6 @@
   (append '(a b) '(c d))      ;; 构建新列表 (a b c d)
   (number-sequence 3 10 2)    ;; 创建一个 3 到 10 的列表，间隔为 2，返回 (3 5 7 9)
 
-  (setq arr '(b c d))
   (push 'a arr)            ;; 将 a 插入到列表开头，返回 (a b c)
   (add-to-list 'arr 'a)    ;; 将 a 插入到列表开头，返回 (a b c)，如果元素已存在，则不会增加元素
 
@@ -138,14 +138,14 @@
   (setcdr arr '(f g))     ;; 修改列表的第一个元素以后的元素为 (f g)
   (nconc arr '(x y z))    ;; 后续接上 (x y z) 返回 (b c d x y z)，重复执行会在结尾不停的续接
 
-  (memq 'c '(a b c d))     ;; 只保留元素 c 后面的，返回 (c d)
+  (memq 'c '(a b c d))     ;; 查询列表是否有该元素，没有返回 nil，有就只保留元素 c 后面的，返回 (c d)
   (delq 'c '(a b c d))     ;; 删除元素 c
   (remq 'a '(a b a c a))   ;; 删除列表中所有的元素 a，返回 (b c)
 
   ;; 关联列表 alist 记录了从键到值的映射，它是有 cons 组成的列表
   (setq my-alist '((name . "Alice")    ;; 定义一个简单的 alist
-                 (age . 25)
-                 (city . "Beijing")))
+                   (age . 25)
+                   (city . "Beijing")))
   (assoc 'city my-alist)         ;; 根据 key 查找
   (rassoc "Alice" my-alist)      ;; 根据值来查找
 
@@ -386,21 +386,43 @@
 * 输入输出
 ** 输入流与函数
 #+begin_src emacs-lisp
-  (read "hello world")        ;; 从字符串读取 hello，在空格处断开
-  (read t)                    ;; 从标准输入
-  (read nil)                  ;; 从迷你缓冲区
+  ;; (read &optional stream)
+  (read "(+ 1 2) (2 3)")      ;; 若参数是字符串，则从字符串读取，在空格处断开，当前第一个括号是一个整体
+  (read t)                    ;; 从 minibuffer 交互读取，不能有空格
+  (read nil)                  ;; 从标准输入读取，不能有空格
+  (read (current-buffer))     ;; 从当前缓冲区的 point 位置开始读取，读取后 point 会移动到表达式之后
 
-  (read-from-string "hello world")    ;; 从字符串读取 hello，在空格处断开，返回读取的字符串与字符串长度
+  ;; (read-from-string string &optional start end)
+  (read-from-string "(+ 1 2) world")         ;; 从字符串中读取，在空格处断开，返回读取的字符串与读取的字符串长度
+  (read-from-string "(+ 1 2) world" 7)       ;; 不能包含空格，返回读取指定开始位置的字符串与之前字符串长度
+  (read-from-string "(+ 1 2) world" 8 11)    ;; 不能包含空格，返回读取指定开始与结束位置的字符串与之前字符串长度
+
+  ;; (read-positioning-symbols &optional stream)
+  (read-positioning-symbols)                       ;; 不带参数的情况下用法与 (read t) 用法差不多
+  (read-positioning-symbols "(+ as 2dd) world")    ;; 返回符号字符串中符号所在的位置
+
+  ;; (readablep object)
+  (readablep 123)    ;; 检查目标对象能否被可被读取
+
+  (read-number "请输入一个数字: ")         ;; 专门读取整数或浮点数
+  (read-char "按键: ")                     ;; 读取一个字符
+  (read-from-minibuffer "请输入姓名: ")    ;; 从 minibuffer 读取字符串
 #+end_src
 ** 输出流与函数
 #+begin_src emacs-lisp
   (message "hello %s" "world")    ;; 推荐使用 message 函数
-  (print "hello world")
-  (prin1 "hello world")
-  (princ "hello world")
+  (print "hello world")           ;; 输出到 stream，前后各打印一个换行符
+  (prin1 "hello world")           ;; 与 print 差不多，但不会打印换行符
+  (princ "hello world")           ;; 不会插入引号和换行符
+  (write-char ?A)                 ;; 将一个字符写入到输出流中
+  (pp "hello world")              ;; 比 prin1 更美观的打印
+
+  ;; (prin1-to-string object &optional noescape overrides)
+  (prin1-to-string "foo")      ;; 输出双引号
+  (prin1-to-string "foo" t)    ;; 不会输出双引号
 #+end_src
 
-* 
+* minibuffer
 
 
 
