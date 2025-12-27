@@ -11,6 +11,7 @@
 * elisp 指南
 + 初学者可以参考 [[file:./elisp/elisp-速学笔记.org][速通 elisp]] 这篇笔记，了解基本的语法。
 + 完整的教程可阅读 [[file:./elisp/elisp-笔记.org][elisp 教程]] 这篇文章，涵盖了大部分的语法知识。
++ 学习完语法部分可以进行 [[file:./elisp/练习.org][elisp 练习]]
 
 * emacs 相关的其他包使用
 + [[file:other/use-package.org][use-package 使用笔记]] 可用于初学者学习或老手快速查阅相关命令
