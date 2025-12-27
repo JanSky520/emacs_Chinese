@@ -5,25 +5,25 @@
 
 
 * 基本类型
-** 输入一个整数 n，输出这个整数
++ 输入一个整数 n，输出这个整数
   #+begin_src elisp
     (message "输出：%d" (read-number "输入："))
   #+end_src
-** 输入一个浮点数 n，输出这个浮点数
++ 输入一个浮点数 n，输出这个浮点数
   #+begin_src elisp
     (message "输出：%f" (read-number "输入："))
   #+end_src
-** 输入一个字符 c，输出这个字符
++ 输入一个字符 c，输出这个字符
   #+begin_src elisp
     (message "输出：%c" (read-char "输入："))
   #+end_src
-** 在一行上输入三个整数 a b c，用空格隔开，输出第二个整数
++ 在一行上输入三个整数 a b c，用空格隔开，输出第二个整数
   #+begin_src elisp
     (let ((input (read-from-minibuffer "输入三个整数（空格分隔）: ")))
       (message "第二个整数是: %d" 
                (nth 1 (mapcar 'string-to-number (split-string input)))))
   #+end_src
-** 输入一个可见字符 c，用字符 c 拼成三行三列的矩形
++ 输入一个可见字符 c，用字符 c 拼成三行三列的矩形
   #+begin_src elisp
     (defun prt (c num)
       (when (> num 0)
@@ -31,30 +31,30 @@
             (princ (format "%c%c%c\n" c c c))))
     (prt (read-char "输入一个字符：") 3)
   #+end_src
-** 输入一个字符，输出该字符相应的ASCII码
++ 输入一个字符，输出该字符相应的ASCII码
   #+begin_src elisp
     (message "%d" (read-char "输入一个字符："))
   #+end_src
-** 将浮点数转换为整数类型，要求四舍五入
++ 将浮点数转换为整数类型，要求四舍五入
   #+begin_src elisp
     (let ((num (read-number "输入一个数：")))
       (message "%d" (round num)))
   #+end_src
-** 将大写字母转化为小写字母
++ 将大写字母转化为小写字母
   #+begin_src elisp
     (message "%c" (+ 32 (read-char "输入大写字母：")))
   #+end_src
 
 * 输出格式化
-** 十六进制整数 ABCDEF 对应的十进制整数，所占域宽为 15
++ 十六进制整数 ABCDEF 对应的十进制整数，所占域宽为 15
   #+begin_src elisp
     (message "%15d" #xABCDEF)
   #+end_src
-** 十进制整数 1234 对应的八进制和十六进制，用空格分开，在八进制前显示0，在十六进制数前显示0x
++ 十进制整数 1234 对应的八进制和十六进制，用空格分开，在八进制前显示0，在十六进制数前显示0x
   #+begin_src elisp
     (message "0%o 0x%X" 1234 1234)
   #+end_src
-** 第一行输入一个可见字符 c，第二行输入一个整数 a，第三行输入一个浮点数 f，最好按顺序输出，空格隔开
++ 第一行输入一个可见字符 c，第二行输入一个整数 a，第三行输入一个浮点数 f，最好按顺序输出，空格隔开
   #+begin_src elisp
     (let ((c (read-char "输入字符："))
           (a (read-number "输入整数："))
@@ -63,33 +63,33 @@
   #+end_src
 
 * 运算
-** 给定一个浮点数，要求得到该浮点数的个位数
++ 给定一个浮点数，要求得到该浮点数的个位数
   #+begin_src elisp
     (message "%d" (% (truncate (read-number "输入一个浮点数：")) 10))
   #+end_src
-** 已知一张电影票价是 100 元，请你计算，他为 n 位朋友买票，总共需要花费多少钱
++ 已知一张电影票价是 100 元，请你计算，他为 n 位朋友买票，总共需要花费多少钱
   #+begin_src elisp
     (let ((ticket 100)
           (n (read-number "请输入人数：")))
       (message "%d" (* n ticket)))
   #+end_src
-** 给定两个整数 a 和 b，请计算 a 除以 b 的整数商和余数
++ 给定两个整数 a 和 b，请计算 a 除以 b 的整数商和余数
   #+begin_src elisp
     (let ((a (read-number "请输入整数："))
           (b (read-number "请输入整数：")))
       (message "%d %d" (/ a b) (% a b)))
   #+end_src
-** 给定一个整数，请计算该整数的十位数字
++ 给定一个整数，请计算该整数的十位数字
   #+begin_src elisp
     (message "%d" (% (/ (read-number "请输入一个整数：") 10) 10))
   #+end_src
-** 知道原计划星期 x 开学，通知开学时间延期 n 天，请问开学日期是星期几（星期日用 7 表示）
++ 知道原计划星期 x 开学，通知开学时间延期 n 天，请问开学日期是星期几（星期日用 7 表示）
 #+begin_src elisp
   (let ((x (read-number "星期几开学："))
           (n (read-number "延迟几天：")))
       (message "星期 %d 开学" (% (+ x n) 7)))
 #+end_src
-** 给定秒数 seconds，将其转换为对应的小时数、分钟数和秒数，使得总时间不变
++ 给定秒数 seconds，将其转换为对应的小时数、分钟数和秒数，使得总时间不变
 #+begin_src elisp
   (let* ((num (read-number "请输入秒数："))
          (sec (% num 60))
@@ -97,17 +97,17 @@
          (hour (/ num 3600)))
     (message "%d小时 %d分 %d秒" hour min sec))
 #+end_src
-** 不使用累计乘法的基础上，通过移位运算 << 实现 2 的 n 次方的计算
++ 不使用累计乘法的基础上，通过移位运算 << 实现 2 的 n 次方的计算
 #+begin_src elisp
   (let ((n (read-number "请输入：")))
     (message "%d" (lsh 2 (- n 1))))
 #+end_src
-** 一年约有 31560000 秒，现在，对于给定的年龄，计算该年龄合多少秒
++ 一年约有 31560000 秒，现在，对于给定的年龄，计算该年龄合多少秒
 #+begin_src elisp
   (let ((n (read-number "请输入：")))
     (message "%d" (* n 31560000)))
 #+end_src
-** 输入 n 科成绩，统计其中的最高分，最低分以及平均分
++ 输入 n 科成绩，统计其中的最高分，最低分以及平均分
 #+begin_src elisp
   (defun avg (course n)
     (/ (apply '+ course) n))
@@ -119,7 +119,7 @@
       (push (read-number "请输入成绩：") course))
     (message "最大值 %f 最小值 %f 平均值 %f" (apply 'max course) (apply 'min course) (avg course n)))
 #+end_src
-** 根据给出的三角形 3 条边 a b c 计算三角形的周长和面积
++ 根据给出的三角形 3 条边 a b c 计算三角形的周长和面积
 #+begin_src elisp
   (defun area (a b c)
     (let ((s (/ (+ a b c) 2.0)))
@@ -130,44 +130,44 @@
         (c (read-number "请输入边 a：")))
     (message "周长：%.2f 面积：%.2f" (+ a b c) (area a b c)))
 #+end_src
-** 输入一个浮点数 f，表示华氏温度，输出对应的摄氏温度 c，c=5/9*(f-32)
++ 输入一个浮点数 f，表示华氏温度，输出对应的摄氏温度 c，c=5/9*(f-32)
 #+begin_src elisp
   (let* ((f (read-number "请输入华氏度："))
          (c (* (/ 5.0 9) (- f 32))))
     (message "%.3f" c))
 #+end_src
-** 输入半径 r，输出圆的面积
++ 输入半径 r，输出圆的面积
 #+begin_src elisp
   (let ((r (read-number "输入半径：")))
     (message "%.2f" (* r r float-pi)))
 #+end_src
-** 一个水杯高度 h 厘米，地面半径 r 厘米，10L 水需要几杯
++ 一个水杯高度 h 厘米，地面半径 r 厘米，10L 水需要几杯
 #+begin_src elisp
   (let* ((h (read-number "输入高度："))
          (r (read-number "输入半径："))
          (v (* h r r float-pi)))
     (message "%d" (ceiling (/ 10000 v))))
 #+end_src
-** 输入等差数列的第一项 a 和第二项 b，求第三项是多少
++ 输入等差数列的第一项 a 和第二项 b，求第三项是多少
 #+begin_src elisp
   (let* ((a (read-number "第一项："))
          (b (read-number "第二项："))
          (d (- b a)))
     (message "%d" (+ b d)))
 #+end_src
-** 输入半径为 r 的球，他想知道这个球的体积
++ 输入半径为 r 的球，他想知道这个球的体积
 #+begin_src elisp
   (let* ((r (read-number "输入半径："))
          (v (* float-pi r r r (/ 4.0 3))))
     (message "%.2f" v))
 #+end_src
-** 前面有 n 个人在等电梯。电梯每次可以至多乘坐 12 人，每次上下各需要的时间为 2，我到楼上要多久
++ 前面有 n 个人在等电梯。电梯每次可以至多乘坐 12 人，每次上下各需要的时间为 2，我到楼上要多久
 #+begin_src elisp
   (let* ((n (read-number "等待人数："))
          (m (+ (* (/ n 12) 4) 2)))
     (message "%d" m))
 #+end_src
-** 输入两个整数，用欧几里得算法求两数的最大公约数与最小公倍数的和
++ 输入两个整数，用欧几里得算法求两数的最大公约数与最小公倍数的和
 #+begin_src elisp
   (defun gcd-fun (n m)
     (let ((tmp (% m n)))
@@ -185,7 +185,7 @@
          (lcm (/ (* n m) gcd)))
     (message "%d" (+ gcd lcm)))
 #+end_src
-** 输入一个整数，修改每一位，如果是偶数改成 0，奇数改成 1
++ 输入一个整数，修改每一位，如果是偶数改成 0，奇数改成 1
 #+begin_src elisp
   (let* ((n (read-from-minibuffer "请输入："))
          (len (length n)))
@@ -195,7 +195,7 @@
         (aset n i ?1)))
     (message "%d" (string-to-number n)))
 #+end_src
-** 输入 a b c d 四个成绩，总成绩 = a * 20% + b * 10% + c * 20% + d * 50%
++ 输入 a b c d 四个成绩，总成绩 = a * 20% + b * 10% + c * 20% + d * 50%
 #+begin_src elisp
   (let ((a (* (read-number "请输入：") 0.2))
         (b (* (read-number "请输入：") 0.1))
@@ -203,7 +203,7 @@
         (d (* (read-number "请输入：") 0.5)))
     (message "%.1f" (+ a b c d)))
 #+end_src
-** 输入两个整数，均只保留该数的最后两位，最好求的两个数之和也保留最后两位
++ 输入两个整数，均只保留该数的最后两位，最好求的两个数之和也保留最后两位
 #+begin_src elisp
   (let ((a (% (read-number "请输入：") 100))
         (b (% (read-number "请输入：") 100)))
@@ -211,14 +211,14 @@
 #+end_src
 
 * 分支控制
-** 输入一个分数，大于等于 60 分输出 pass，否则输出 fail
++ 输入一个分数，大于等于 60 分输出 pass，否则输出 fail
 #+begin_src emacs-lisp
   (let ((n (read-number "请输入：")))
     (if (>= n 60)
         (message "pass")
       (message "fail")))
 #+end_src
-** 输入一个字符，判断是元音还是辅音
++ 输入一个字符，判断是元音还是辅音
 #+begin_src elisp
   (let ((c (read-char "请输入字符："))
         (str '(?a ?e ?i ?o ?u ?A ?E ?I ?O ?U)))
@@ -226,7 +226,7 @@
         (message "元音")
       (message "辅音")))
 #+end_src
-** 输入三个整数 x y z，确保 y 的范围在 x 跟 z 之间，是返回 true，否则返回 false
++ 输入三个整数 x y z，确保 y 的范围在 x 跟 z 之间，是返回 true，否则返回 false
 #+begin_src emacs-lisp
   (let ((x (read-number "请输入："))
         (y (read-number "请输入："))
@@ -235,7 +235,7 @@
         (message "true")
       (message "false")))
 #+end_src
-** 输入一个字符，如果是字母打印 yes，否则打印 no
++ 输入一个字符，如果是字母打印 yes，否则打印 no
 #+begin_src emacs-lisp
   (let ((c (read-char "请输入：")))
     (if (or (and (>= c ?a) (<= c ?z))
@@ -243,7 +243,7 @@
         (message "yes")
       (message "no")))
 #+end_src
-** 输入四个整数，找出最大的数
++ 输入四个整数，找出最大的数
 #+begin_src emacs-lisp
   (let ((a (read-number "请输入："))
         (b (read-number "请输入："))
@@ -251,7 +251,7 @@
         (d (read-number "请输入：")))
     (message "%d" (max a b c d)))
 #+end_src
-** 输入一个整数判断是否能被 2 3 7 中哪几个整除，都不能则输出 no
++ 输入一个整数判断是否能被 2 3 7 中哪几个整除，都不能则输出 no
 #+begin_src elisp
   (let ((n (read-number "请输入："))
         (flag 0))
@@ -260,7 +260,7 @@
     (when (= 0 (% n 7)) (message "7") (setq flag 1))
     (when (= flag 0) (message "no")))
 #+end_src
-** 输入年份，判断是否是闰年
++ 输入年份，判断是否是闰年
 #+begin_src elisp
   (let ((year (read-number "请输入：")))
     (cond
